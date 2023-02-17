@@ -2,15 +2,15 @@
 
 # jwt configuration
 jwt:
-  signing-key: qmPlus
+  signing-key: JXBolong
   expires-time: 7d
   buffer-time: 1d
-  issuer: qmPlus
+  issuer: JXBolong
 # zap logger configuration
 zap:
   level: info
   format: console
-  prefix: "[github.com/flipped-aurora/gin-vue-admin/server]"
+  prefix: "[BolongLG2023]"
   director: log
   show-line: true
   encode-level: LowercaseColorLevelEncoder
