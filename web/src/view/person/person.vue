@@ -59,14 +59,14 @@
                     <el-icon>
                       <data-analysis />
                     </el-icon>
-                    北京反转极光科技有限公司-技术部-前端事业群
+                    江西匠和人力资源有限公司-技术部-全栈事业群
                   </li>
                 </el-tooltip>
                 <li>
                   <el-icon>
                     <video-camera />
                   </el-icon>
-                  中国·北京市·朝阳区
+                  中国·南昌市·红谷滩区
                 </li>
                 <el-tooltip
                   class="item"

@@ -28,6 +28,7 @@ func (g *_gorm) Config(prefix string, singular bool) *gorm.Config {
 			SingularTable: singular,
 		},
 		DisableForeignKeyConstraintWhenMigrating: true,
+		FullSaveAssociations:                     true,
 	}
 	_default := logger.New(NewWriter(log.New(os.Stdout, "\r\n", log.LstdFlags)), logger.Config{
 		SlowThreshold: 200 * time.Millisecond,
