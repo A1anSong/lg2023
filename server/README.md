@@ -1,3 +1,6 @@
+# 开发备注
+`go version 1.19`
+
 ## server项目结构
 
 ```shell
