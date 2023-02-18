@@ -28,4 +28,7 @@ type Server struct {
 
 	// 跨域配置
 	Cors CORS `mapstructure:"cors" json:"cors" yaml:"cors"`
+
+	// 担保方自定义配置
+	Insurance Insurance `mapstructure:"insurance" json:"insurance" yaml:"insurance"`
 }

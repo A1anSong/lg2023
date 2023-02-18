@@ -10,6 +10,7 @@ type RouterGroup struct {
 	System  system.RouterGroup
 	Example example.RouterGroup
 	Lg      lg.RouterGroup
+	JRAPI   lg.JRAPIRouter
 }
 
 var RouterGroupApp = new(RouterGroup)

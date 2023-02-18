@@ -10,6 +10,7 @@ type ApiGroup struct {
 	SystemApiGroup  system.ApiGroup
 	ExampleApiGroup example.ApiGroup
 	LgApiGroup      lg.ApiGroup
+	JRAPI           lg.JRAPI
 }
 
 var ApiGroupApp = new(ApiGroup)

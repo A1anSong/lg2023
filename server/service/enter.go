@@ -9,8 +9,8 @@ import (
 type ServiceGroup struct {
 	SystemServiceGroup  system.ServiceGroup
 	ExampleServiceGroup example.ServiceGroup
-
-	LgServiceGroup lg.ServiceGroup
+	LgServiceGroup      lg.ServiceGroup
+	JRAPIService        lg.JRAPIService
 }
 
 var ServiceGroupApp = new(ServiceGroup)
