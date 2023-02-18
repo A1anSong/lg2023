@@ -5,7 +5,7 @@
         <div class="login_panel_form_title">
           <img
             class="login_panel_form_title_logo"
-            :src="$GIN_VUE_ADMIN.appLogo"
+            src="@/assets/logo.png"
             alt
           >
           <p class="login_panel_form_title_p">{{ $GIN_VUE_ADMIN.appName }}</p>
@@ -64,23 +64,23 @@
       </div>
       <div class="login_panel_right" />
       <div class="login_panel_foot">
-        <div class="links">
-          <a href="http://doc.henrongyi.top/" target="_blank">
-            <img src="@/assets/docs.png" class="link-icon" alt="文档">
-          </a>
-          <a href="https://support.qq.com/product/371961" target="_blank">
-            <img src="@/assets/kefu.png" class="link-icon" alt="客服">
-          </a>
-          <a
-            href="https://github.com/flipped-aurora/gin-vue-admin"
-            target="_blank"
-          >
-            <img src="@/assets/github.png" class="link-icon" alt="github">
-          </a>
-          <a href="https://space.bilibili.com/322210472" target="_blank">
-            <img src="@/assets/video.png" class="link-icon" alt="视频站">
-          </a>
-        </div>
+<!--        <div class="links">-->
+<!--          <a href="http://doc.henrongyi.top/" target="_blank">-->
+<!--            <img src="@/assets/docs.png" class="link-icon" alt="文档">-->
+<!--          </a>-->
+<!--          <a href="https://support.qq.com/product/371961" target="_blank">-->
+<!--            <img src="@/assets/kefu.png" class="link-icon" alt="客服">-->
+<!--          </a>-->
+<!--          <a-->
+<!--            href="https://github.com/flipped-aurora/gin-vue-admin"-->
+<!--            target="_blank"-->
+<!--          >-->
+<!--            <img src="@/assets/github.png" class="link-icon" alt="github">-->
+<!--          </a>-->
+<!--          <a href="https://space.bilibili.com/322210472" target="_blank">-->
+<!--            <img src="@/assets/video.png" class="link-icon" alt="视频站">-->
+<!--          </a>-->
+<!--        </div>-->
         <div class="copyright">
           <BottomInfo />
         </div>
