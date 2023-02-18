@@ -165,9 +165,9 @@ export const resetPassword = (data) => {
   })
 }
 
-export const getSaleList = (data) => {
+export const getEmployeeList = (data) => {
   return service({
-    url: '/user/getSaleList',
+    url: '/user/getEmployeeList',
     method: 'post',
     data: data
   })

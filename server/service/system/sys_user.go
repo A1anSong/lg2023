@@ -243,3 +243,17 @@ func (userService *UserService) ResetPassword(ID uint) (err error) {
 	err = global.GVA_DB.Model(&system.SysUser{}).Where("id = ?", ID).Update("password", utils.BcryptHash("123456")).Error
 	return err
 }
+
+func (userService *UserService) GetEmployeeInfoList(info request.PageInfo) (list interface{}, total int64, err error) {
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	db := global.GVA_DB.Model(&system.SysUser{})
+	var userList []system.SysUser
+	db = db.Where("authority_id = 9986")
+	err = db.Count(&total).Error
+	if err != nil {
+		return
+	}
+	err = db.Limit(limit).Offset(offset).Preload("Authorities").Preload("Authority").Order("created_at desc").Find(&userList).Error
+	return userList, total, err
+}
