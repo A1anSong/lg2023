@@ -164,3 +164,11 @@ export const resetPassword = (data) => {
     data: data
   })
 }
+
+export const getSaleList = (data) => {
+  return service({
+    url: '/user/getSaleList',
+    method: 'post',
+    data: data
+  })
+}
