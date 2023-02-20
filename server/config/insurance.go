@@ -20,6 +20,7 @@ type Insurance struct {
 	NNAppKey      string  `mapstructure:"nn-app-key" json:"nn-app-key" yaml:"nn-app-key"`
 	NNAppSecret   string  `mapstructure:"nn-app-secret" json:"nn-app-secret" yaml:"nn-app-secret"`
 	NNTaxNo       string  `mapstructure:"nn-tax-no" json:"nn-tax-no" yaml:"nn-tax-no"`
+	NNTaxRate     float64 `mapstructure:"nn-tax-rate" json:"nn-tax-rate" yaml:"nn-tax-rate"`
 	NNAccessToken string  `mapstructure:"nn-acccess-token" json:"nn-acccess-token" yaml:"nn-acccess-token"`
 	NNTokenTime   int64   `mapstructure:"nn-token-time" json:"nn-token-time" yaml:"nn-token-time"`
 }

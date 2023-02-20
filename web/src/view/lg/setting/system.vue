@@ -69,6 +69,9 @@
           <el-form-item label="税号">
             <el-input v-model="config.insurance['nn-tax-no']" />
           </el-form-item>
+          <el-form-item label="税率">
+            <el-input-number v-model="config.insurance['nn-tax-rate']" style="width:100%" :precision="2" :controls="false" />
+          </el-form-item>
           <el-form-item label="AccessToken">
             <el-input v-model="config.insurance['nn-acccess-token']" :disabled="true" />
           </el-form-item>

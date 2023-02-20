@@ -104,6 +104,7 @@ insurance:
   nn-app-key: SD63236305
   nn-app-secret: SDDED2523BED4643
   nn-tax-no: "339902999999789110"
+  nn-tax-rate: 0.13
   nn-acccess-token: fa35aa5f2feb821e9c02c00qajcdnnms
   nn-token-time: 1676926011642
 jwt:
