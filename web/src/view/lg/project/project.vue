@@ -190,12 +190,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TestProject'
-}
-</script>
-
 <script setup>
 import {
   createProject,
@@ -206,13 +200,13 @@ import {
   getProjectList,
   bindProject,
   unbindProject
-} from '@/api/lgjx/testProject'
+} from '@/api/lg/project'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-import { getTemplateList } from '@/api/lgjx/testTemplate'
+import { getTemplateList } from '@/api/lg/template'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({

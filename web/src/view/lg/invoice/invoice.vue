@@ -89,7 +89,7 @@ import {
   updateInvoice,
   findInvoice,
   getInvoiceList
-} from '@/api/lgjx/invoice'
+} from '@/api/lg/invoice'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'

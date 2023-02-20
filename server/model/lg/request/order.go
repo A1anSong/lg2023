@@ -23,5 +23,6 @@ type OrderSearch struct {
 	AuditRefund     *bool       `json:"auditRefund" form:"auditRefund"`
 	AuditClaim      *bool       `json:"auditClaim" form:"auditClaim"`
 	IsPayed         *bool       `json:"isPayed" form:"isPayed"`
+	EmployeeNo      *uint       `json:"employeeNo" form:"employeeNo"`
 	request.PageInfo
 }

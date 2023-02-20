@@ -25,7 +25,7 @@ import {
   createClaim,
   updateClaim,
   findClaim
-} from '@/api/lgjx/claim'
+} from '@/api/lg/claim'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

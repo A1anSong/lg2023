@@ -64,7 +64,7 @@ import {
   createProject,
   updateProject,
   findProject
-} from '@/api/lgjx/project'
+} from '@/api/lg/project'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

@@ -25,7 +25,7 @@ import {
   createLetter,
   updateLetter,
   findLetter
-} from '@/api/lgjx/letter'
+} from '@/api/lg/letter'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

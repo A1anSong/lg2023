@@ -165,11 +165,6 @@ const toTarget = (name) => {
 }
 
 </script>
-<script>
-export default {
-  name: 'TestDashboard'
-}
-</script>
 
 <style lang="scss" scoped>
 @mixin flex-center {

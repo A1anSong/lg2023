@@ -76,7 +76,7 @@
         <el-form-item label="文件:" prop="templateName">
           <el-upload
             v-model:file-list="fileList"
-            :action="`${path}/testFile/upload`"
+            :action="`${path}/file/upload`"
             :before-upload="checkFile"
             :headers="{ 'x-token': userStore.token }"
             :on-error="uploadError"
@@ -121,14 +121,14 @@ import {
   updateTemplate,
   findTemplate,
   getTemplateList
-} from '@/api/lgjx/testTemplate'
+} from '@/api/lg/template'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import { useUserStore } from '@/pinia/modules/user'
-import { downloadFile } from '@/api/lgjx/testFile'
+import { downloadFile } from '@/api/lg/file'
 
 const path = ref(import.meta.env.VITE_BASE_API)
 

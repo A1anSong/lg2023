@@ -437,20 +437,20 @@ import {
   findOrder,
   getOrderList,
   rePush
-} from '@/api/lgjx/testOrder'
+} from '@/api/lg/order'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 
-import { date } from '@/utils/jxlg/date'
-import { auditStatus, auditType } from '@/utils/jxlg/auditStatus'
-import { productType } from '@/utils/jxlg/productType'
-import { amount } from '@/utils/jxlg/amount'
-import { attachType } from '@/utils/jxlg/attachType'
-import { orderStatus, orderStatusType } from '@/utils/jxlg/orderStatus'
-import { getTemplateList } from '@/api/lgjx/testTemplate'
+import { date } from '@/utils/lg/date'
+import { auditStatus, auditType } from '@/utils/lg/auditStatus'
+import { productType } from '@/utils/lg/productType'
+import { amount } from '@/utils/lg/amount'
+import { attachType } from '@/utils/lg/attachType'
+import { orderStatus, orderStatusType } from '@/utils/lg/orderStatus'
+import { getTemplateList } from '@/api/lg/template'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({

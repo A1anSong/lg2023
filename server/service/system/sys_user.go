@@ -249,7 +249,7 @@ func (userService *UserService) GetEmployeeInfoList(info request.PageInfo) (list
 	offset := info.PageSize * (info.Page - 1)
 	db := global.GVA_DB.Model(&system.SysUser{})
 	var userList []system.SysUser
-	db = db.Where("authority_id = 9986")
+	db = db.Where("id > 2")
 	err = db.Count(&total).Error
 	if err != nil {
 		return

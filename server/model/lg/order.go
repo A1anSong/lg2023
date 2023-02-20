@@ -1,6 +1,9 @@
 package lg
 
-import "github.com/flipped-aurora/gin-vue-admin/server/global"
+import (
+	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
+)
 
 type Order struct {
 	global.GVA_MODEL
@@ -26,6 +29,9 @@ type Order struct {
 	ProjectID  *uint    `json:"projectID" form:"projectID"`
 	Project    *Project `json:"project" form:"project"`
 	IsRepushed *bool    `json:"isRepushed" form:"isRepushed"`
+
+	EmployeeID *uint          `json:"employeeID" form:"employeeID"`
+	Employee   system.SysUser `json:"employee" json:"employee"`
 }
 
 func (Order) TableName() string {

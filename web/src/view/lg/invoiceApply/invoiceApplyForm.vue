@@ -25,7 +25,7 @@ import {
   createInvoiceApply,
   updateInvoiceApply,
   findInvoiceApply
-} from '@/api/lgjx/invoiceApply'
+} from '@/api/lg/invoiceApply'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

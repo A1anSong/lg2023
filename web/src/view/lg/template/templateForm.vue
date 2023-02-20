@@ -25,7 +25,7 @@ import {
   createTemplate,
   updateTemplate,
   findTemplate
-} from '@/api/lgjx/template'
+} from '@/api/lg/template'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

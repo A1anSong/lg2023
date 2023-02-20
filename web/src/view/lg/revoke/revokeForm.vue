@@ -25,7 +25,7 @@ import {
   createRevoke,
   updateRevoke,
   findRevoke
-} from '@/api/lgjx/revoke'
+} from '@/api/lg/revoke'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

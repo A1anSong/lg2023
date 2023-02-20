@@ -212,3 +212,21 @@ func (authorityService *AuthorityService) findChildrenAuthority(authority *syste
 	}
 	return err
 }
+
+func (authorityService *AuthorityService) GetDepartmentInfoList(info request.PageInfo) (list interface{}, total int64, err error) {
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	db := global.GVA_DB.Model(&system.SysAuthority{})
+	var firstAuthority system.SysAuthority
+	err = db.First(&firstAuthority).Error
+	db = db.Where("created_at > ?", firstAuthority.CreatedAt)
+	if err = db.Where("parent_id = ?", "0").Count(&total).Error; total == 0 || err != nil {
+		return
+	}
+	var authority []system.SysAuthority
+	err = db.Limit(limit).Offset(offset).Preload("DataAuthorityId").Where("parent_id = ?", "0").Find(&authority).Error
+	for k := range authority {
+		err = authorityService.findChildrenAuthority(&authority[k])
+	}
+	return authority, total, err
+}

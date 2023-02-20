@@ -25,7 +25,7 @@ import {
   createDelay,
   updateDelay,
   findDelay
-} from '@/api/lgjx/delay'
+} from '@/api/lg/delay'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

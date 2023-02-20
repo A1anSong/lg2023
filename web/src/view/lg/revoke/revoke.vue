@@ -89,7 +89,7 @@ import {
   updateRevoke,
   findRevoke,
   getRevokeList
-} from '@/api/lgjx/revoke'
+} from '@/api/lg/revoke'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'

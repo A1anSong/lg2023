@@ -220,7 +220,8 @@ func (menuService *MenuService) GetMenuAuthority(info *request.GetAuthorityId) (
 }
 
 // UserAuthorityDefaultRouter 用户角色默认路由检查
-//  Author [SliverHorn](https://github.com/SliverHorn)
+//
+//	Author [SliverHorn](https://github.com/SliverHorn)
 func (menuService *MenuService) UserAuthorityDefaultRouter(user *system.SysUser) {
 	var menuIds []string
 	err := global.GVA_DB.Model(&system.SysAuthorityMenu{}).Where("sys_authority_authority_id = ?", user.AuthorityId).Pluck("sys_base_menu_id", &menuIds).Error
@@ -232,4 +233,23 @@ func (menuService *MenuService) UserAuthorityDefaultRouter(user *system.SysUser)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		user.Authority.DefaultRouter = "404"
 	}
+}
+
+func (menuService *MenuService) GetDepartmentMenuTree() (menus []system.SysBaseMenu, err error) {
+	treeMap, err := menuService.getDepartmentMenuTreeMap()
+	menus = treeMap["0"]
+	for i := 0; i < len(menus); i++ {
+		err = menuService.getBaseChildrenList(&menus[i], treeMap)
+	}
+	return menus, err
+}
+
+func (menuService *MenuService) getDepartmentMenuTreeMap() (treeMap map[string][]system.SysBaseMenu, err error) {
+	var allMenus []system.SysBaseMenu
+	treeMap = make(map[string][]system.SysBaseMenu)
+	err = global.GVA_DB.Where("id > 29").Order("sort").Preload("MenuBtn").Preload("Parameters").Find(&allMenus).Error
+	for _, v := range allMenus {
+		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
+	}
+	return treeMap, err
 }

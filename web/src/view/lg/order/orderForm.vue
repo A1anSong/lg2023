@@ -25,7 +25,7 @@ import {
   createOrder,
   updateOrder,
   findOrder
-} from '@/api/lgjx/order'
+} from '@/api/lg/order'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

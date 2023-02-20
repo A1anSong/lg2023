@@ -89,7 +89,7 @@ import {
   updateFile,
   findFile,
   getFileList
-} from '@/api/lgjx/file'
+} from '@/api/lg/file'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'

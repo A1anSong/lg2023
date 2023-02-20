@@ -1,5 +1,6 @@
 <template>
   <div>
+    <warning-bar title="注意：交易中理赔接口会一直返回失败（无论受理成功），理赔请尽量走人工流程" />
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
         <el-form-item label="申请编号">
@@ -430,12 +431,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TestClaimDelay'
-}
-</script>
-
 <script setup>
 import {
   createOrder,
@@ -446,22 +441,23 @@ import {
   getOrderList,
   approveClaim,
   rejectClaim
-} from '@/api/lgjx/testOrder'
+} from '@/api/lg/order'
 
-import { updateApply } from '@/api/lgjx/testApply'
+import { updateApply } from '@/api/lg/apply'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 
-import { date } from '@/utils/jxlg/date'
-import { auditStatus, auditType } from '@/utils/jxlg/auditStatus'
-import { productType } from '@/utils/jxlg/productType'
-import { amount } from '@/utils/jxlg/amount'
-import { attachType } from '@/utils/jxlg/attachType'
-import { orderStatus, orderStatusType } from '@/utils/jxlg/orderStatus'
-import { getTemplateList } from '@/api/lgjx/testTemplate'
+import { date } from '@/utils/lg/date'
+import { auditStatus, auditType } from '@/utils/lg/auditStatus'
+import { productType } from '@/utils/lg/productType'
+import { amount } from '@/utils/lg/amount'
+import { attachType } from '@/utils/lg/attachType'
+import { orderStatus, orderStatusType } from '@/utils/lg/orderStatus'
+import { getTemplateList } from '@/api/lg/template'
+import WarningBar from '@/components/warningBar/warningBar.vue'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({

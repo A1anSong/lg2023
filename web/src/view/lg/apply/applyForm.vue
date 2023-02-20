@@ -25,7 +25,7 @@ import {
   createApply,
   updateApply,
   findApply
-} from '@/api/lgjx/apply'
+} from '@/api/lg/apply'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

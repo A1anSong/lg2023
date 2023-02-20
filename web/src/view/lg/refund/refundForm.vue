@@ -25,7 +25,7 @@ import {
   createRefund,
   updateRefund,
   findRefund
-} from '@/api/lgjx/refund'
+} from '@/api/lg/refund'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

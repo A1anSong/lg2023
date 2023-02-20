@@ -115,7 +115,7 @@
 
 <script>
 export default {
-  name: 'TestInvoiceApply'
+  name: 'invoiceApply'
 }
 </script>
 
@@ -129,13 +129,13 @@ import {
   getInvoiceApplyList,
   approveInvoiceApply,
   rejectInvoiceApply
-} from '@/api/lgjx/testInvoiceApply'
+} from '@/api/lg/invoiceApply'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-import { approveRefund, rejectRefund } from '@/api/lgjx/testOrder'
+import { approveRefund, rejectRefund } from '@/api/lg/order'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({

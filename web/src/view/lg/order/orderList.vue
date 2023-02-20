@@ -12,7 +12,7 @@
           <el-input v-model="searchInfo.insureName" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="保函格式">
-          <el-select v-model="searchInfo.elogTemplateId" clearable>
+          <el-select v-model="searchInfo.elogTemplateId" placeholder="选择条件" clearable>
             <el-option v-for="template in templateData" :key="template.ID" :label="template.templateName" :value="template.ID" />
           </el-select>
         </el-form-item>
@@ -20,7 +20,7 @@
           <el-input v-model="searchInfo.elogNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="订单状态">
-          <el-select v-model="searchInfo.orderStatus" clearable>
+          <el-select v-model="searchInfo.orderStatus" placeholder="选择条件" clearable>
             <el-option value="已撤" />
             <el-option value="未开" />
             <el-option value="已开" />
@@ -31,7 +31,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="审核状态">
-          <el-select v-model="searchInfo.auditStatus" clearable>
+          <el-select v-model="searchInfo.auditStatus" placeholder="选择条件" clearable>
             <el-option label="待审" value="1" />
             <el-option label="通过" value="2" />
             <el-option label="拒绝" value="3" />
@@ -50,16 +50,16 @@
           <el-input v-model.number="searchInfo.insureDay" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" icon="search" @click="onSubmit">查询</el-button>
-          <el-button size="small" icon="refresh" @click="onReset">重置</el-button>
+          <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
+          <el-button icon="refresh" @click="onReset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button size="small" type="success" icon="document" @click="exportExcel">导出excel</el-button>
+        <el-button type="success" icon="document" @click="exportExcel">导出excel</el-button>
       </div>
-      <el-table ref="multipleTable" style="width: 100%" :data="tableData" row-key="ID" border size="small" table-layout="fixed" scrollbar-always-on @selection-change="handleSelectionChange">
+      <el-table ref="multipleTable" style="width: 100%" :data="tableData" row-key="ID" border size="small" table-layout="fixed" empty-text="无数据" scrollbar-always-on @selection-change="handleSelectionChange">
         <el-table-column align="center" label="订单编号" prop="orderNo" width="120px" />
         <el-table-column align="center" label="产品类型" width="80px">
           <template #default="scope">{{ productType(scope.row.apply.productType) }}</template>
@@ -108,10 +108,10 @@
         <el-table-column align="center" label="业务员" prop="employeeNo" min-width="120px" />
         <el-table-column align="center" label="查看" min-width="360" fixed="right">
           <template #default="scope">
-            <el-button type="info" icon="list" size="small" @click="openDetailDialog(scope.row)">详情</el-button>
-            <el-button type="primary" icon="paperclip" size="small" :disabled="scope.row.apply.attachInfo == null || scope.row.apply.attachInfo === '' || scope.row.apply.attachInfo === '[]'" @click="openAttachDialog(scope.row.apply.attachInfo)">附件</el-button>
-            <el-button type="success" icon="printer" size="small" :disabled="scope.row.letter == null" @click="downloadLetterFile(scope.row)">保函</el-button>
-            <el-button type="warning" icon="box" size="small" :disabled="scope.row.letter == null" @click="downloadLetterEncryptFile(scope.row)">密文</el-button>
+            <el-button type="info" icon="list" @click="openDetailDialog(scope.row)">详情</el-button>
+            <el-button type="primary" icon="paperclip" :disabled="scope.row.apply.attachInfo == null || scope.row.apply.attachInfo === '' || scope.row.apply.attachInfo === '[]'" @click="openAttachDialog(scope.row.apply.attachInfo)">附件</el-button>
+            <el-button type="success" icon="printer" :disabled="scope.row.letter == null" @click="downloadLetterFile(scope.row)">保函</el-button>
+            <el-button type="warning" icon="box" :disabled="scope.row.letter == null" @click="downloadLetterEncryptFile(scope.row)">密文</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -187,19 +187,23 @@
 <script setup>
 import {
   getOrderList,
-  getOrderStatisticData, downloadExcel
-} from '@/api/lgjx/testOrder'
+  getOrderStatisticData,
+  downloadExcel
+} from '@/api/lg/order'
 
 import { ref } from 'vue'
 
-import { date } from '@/utils/jxlg/date'
-import { auditStatus, auditType } from '@/utils/jxlg/auditStatus'
-import { productType } from '@/utils/jxlg/productType'
-import { amount } from '@/utils/jxlg/amount'
-import { attachType } from '@/utils/jxlg/attachType'
-import { orderStatus, orderStatusType } from '@/utils/jxlg/orderStatus'
-import { getTemplateList } from '@/api/lgjx/testTemplate'
-import { downloadFile } from '@/api/lgjx/testFile'
+import { date } from '@/utils/lg/date'
+import { auditStatus, auditType } from '@/utils/lg/auditStatus'
+import { productType } from '@/utils/lg/productType'
+import { amount } from '@/utils/lg/amount'
+import { attachType } from '@/utils/lg/attachType'
+import { orderStatus, orderStatusType } from '@/utils/lg/orderStatus'
+import { getTemplateList } from '@/api/lg/template'
+import { downloadFile } from '@/api/lg/file'
+
+import { useUserStore } from '@/pinia/modules/user'
+import { useBtnAuth } from '@/utils/btnAuth'
 
 const orderDetailData = ref({})
 const attachInfoData = ref({})
@@ -219,6 +223,7 @@ const statisticData = ref({
 // 重置
 const onReset = () => {
   searchInfo.value = {}
+  checkAuthoriy()
   getTableData()
 }
 
@@ -239,6 +244,38 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
   page.value = val
   getTableData()
+}
+
+// 检查查看列表权限
+const checkAuthoriy = () => {
+  const userStore = useUserStore()
+  const userInfo = userStore.userInfo
+  const btnAuth = useBtnAuth()
+  const authority = btnAuth.all
+  let type = ''
+  switch (Object.prototype.toString.call(authority)) {
+    case '[object Array]':
+      type = 'Array'
+      break
+    case '[object String]':
+      type = 'String'
+      break
+    case '[object Number]':
+      type = 'Number'
+      break
+    default:
+      type = ''
+      break
+  }
+  if (type === '') {
+    searchInfo.value = { employeeNo: userInfo.ID }
+    return
+  }
+  const waitUse = authority.toString().split(',')
+  const flag = waitUse.some(item => item === userInfo.authorityId.toString())
+  if (!flag) {
+    searchInfo.value = { employeeNo: userInfo.ID }
+  }
 }
 
 // 查询
@@ -264,6 +301,7 @@ const getTemplateData = async() => {
   }
 }
 
+checkAuthoriy()
 getTemplateData()
 getTableData()
 

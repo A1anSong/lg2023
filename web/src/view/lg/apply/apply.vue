@@ -89,7 +89,7 @@ import {
   updateApply,
   findApply,
   getApplyList
-} from '@/api/lgjx/testApply'
+} from '@/api/lg/apply'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'

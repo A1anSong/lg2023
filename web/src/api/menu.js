@@ -111,3 +111,10 @@ export const getBaseMenuById = (data) => {
     data
   })
 }
+
+export const getDepartmentMenuTree = () => {
+  return service({
+    url: '/menu/getDepartmentMenuTree',
+    method: 'post'
+  })
+}

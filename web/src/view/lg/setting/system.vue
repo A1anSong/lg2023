@@ -38,14 +38,8 @@
           <el-form-item label="正式环境地址">
             <el-input v-model="config.insurance['api-domain']" />
           </el-form-item>
-          <el-form-item label="测试环境地址">
-            <el-input v-model="config.insurance['api-domain-test']" />
-          </el-form-item>
           <el-form-item label="交易中心API地址">
             <el-input v-model="config.insurance['jr-api-domain']" />
-          </el-form-item>
-          <el-form-item label="交易中心API测试地址">
-            <el-input v-model="config.insurance['jr-api-domain-test']" />
           </el-form-item>
           <el-form-item label="交易中心AppKey">
             <el-input v-model="config.insurance['app-key']" />
@@ -80,7 +74,7 @@ import { getSystemConfig, setSystemConfig } from '@/api/system'
 import { emailTest } from '@/api/email'
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import WarningBar from '@/components/warningBar/warningBar.vue';
+import WarningBar from '@/components/warningBar/warningBar.vue'
 
 const activeNames = reactive([])
 const config = ref({

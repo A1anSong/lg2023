@@ -89,7 +89,7 @@ import {
   updateRefund,
   findRefund,
   getRefundList
-} from '@/api/lgjx/testRefund'
+} from '@/api/lg/refund'
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'

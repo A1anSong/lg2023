@@ -25,7 +25,7 @@ import {
   createFile,
   updateFile,
   findFile
-} from '@/api/lgjx/file'
+} from '@/api/lg/file'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

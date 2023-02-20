@@ -25,7 +25,7 @@ import {
   createLogout,
   updateLogout,
   findLogout
-} from '@/api/lgjx/logout'
+} from '@/api/lg/logout'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

@@ -25,7 +25,7 @@ import {
   createPay,
   updatePay,
   findPay
-} from '@/api/lgjx/pay'
+} from '@/api/lg/pay'
 
 // 自动获取字典
 import { getDictFunc } from '@/utils/format'

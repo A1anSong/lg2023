@@ -275,3 +275,13 @@ func (a *AuthorityMenuApi) GetMenuList(c *gin.Context) {
 		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
 }
+
+func (a *AuthorityMenuApi) GetDepartmentMenuTree(c *gin.Context) {
+	menus, err := menuService.GetDepartmentMenuTree()
+	if err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(systemRes.SysBaseMenusResponse{Menus: menus}, "获取成功", c)
+}

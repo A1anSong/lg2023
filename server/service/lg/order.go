@@ -58,7 +58,7 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Model(&lg.Order{})
-	db.Joins("Apply").Joins("Project").Joins("Letter")
+	db.Joins("Apply").Joins("Delay").Joins("Refund").Joins("Claim").Joins("Project").Joins("Letter")
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.ApplyNo != nil {
@@ -78,39 +78,39 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	}
 	if info.OrderStatus != nil {
 		if *info.OrderStatus == "已撤" {
-			db = db.Where("order.revoke_id is not null")
+			db = db.Where("lg_order.revoke_id is not null")
 		}
 		if *info.OrderStatus == "销函" {
-			db = db.Where("order.logout_id is not null")
+			db = db.Where("lg_order.logout_id is not null")
 		}
 		if *info.OrderStatus == "理赔" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is not null AND Claim.audit_status = 2")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is not null AND Claim.audit_status = 2")
 		}
 		if *info.OrderStatus == "退函" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is not null AND Refund.audit_status = 2")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is not null AND Refund.audit_status = 2")
 		}
 		if *info.OrderStatus == "延期" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is null")
-			db = db.Where("order.delay_id is not null AND Delay.audit_status = 2")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is not null AND Delay.audit_status = 2")
 		}
 		if *info.OrderStatus == "已开" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is null")
-			db = db.Where("order.delay_id is null")
-			db = db.Where("order.letter_id is not null")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is null")
+			db = db.Where("lg_order.letter_id is not null")
 		}
 		if *info.OrderStatus == "未开" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is null")
-			db = db.Where("order.delay_id is null")
-			db = db.Where("order.letter_id is null")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is null")
+			db = db.Where("lg_order.letter_id is null")
 		}
 	}
 	if info.AuditStatus != nil {
@@ -129,16 +129,19 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 		db = db.Where("Letter.insure_day = ?", info.InsureDay)
 	}
 	if info.AuditDelay != nil {
-		db = db.Where("order.delay_id is not null")
+		db = db.Where("lg_order.delay_id is not null")
 	}
 	if info.AuditRefund != nil {
-		db = db.Where("order.refund_id is not null")
+		db = db.Where("lg_order.refund_id is not null")
 	}
 	if info.AuditClaim != nil {
-		db = db.Where("order.claim_id is not null")
+		db = db.Where("lg_order.claim_id is not null")
 	}
 	if info.IsPayed != nil {
-		db = db.Where("order.pay_id is not null")
+		db = db.Where("lg_order.pay_id is not null")
+	}
+	if info.EmployeeNo != nil {
+		db = db.Where("lg_order.employee_id = ?", info.EmployeeNo)
 	}
 	err = db.Count(&total).Error
 	if err != nil {
@@ -152,7 +155,7 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 		Preload("Letter.ElogEncryptFile").
 		Preload("Delay.ElogFile").
 		Preload("Delay.ElogEncryptFile").
-		Order("order.created_at desc").Offset(offset).Find(&orders).Error
+		Order("lg_order.created_at desc").Offset(offset).Find(&orders).Error
 	return orders, total, err
 }
 
@@ -987,9 +990,9 @@ func (orderService *OrderService) GetOrderStatisticData() (orderStatisticData no
 	db := global.GVA_DB.Model(&lg.Order{})
 	db.Joins("Pay").Joins("Letter").Joins("Refund").Joins("Claim")
 	//未撤函，未理赔，未退函
-	db = db.Where("order.revoke_id is null")
-	db = db.Where("order.claim_id is null")
-	db = db.Where("order.refund_id is null")
+	db = db.Where("lg_order.revoke_id is null")
+	db = db.Where("lg_order.claim_id is null")
+	db = db.Where("lg_order.refund_id is null")
 
 	err = db.Select("COALESCE(SUM(Letter.tender_deposit), 0) as TotalGuaranteeAmount, COALESCE(SUM(Pay.pay_amount), 0) as TotalElogAmount").Scan(&orderStatisticData).Error
 
@@ -1021,39 +1024,39 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	}
 	if info.OrderStatus != nil {
 		if *info.OrderStatus == "已撤" {
-			db = db.Where("order.revoke_id is not null")
+			db = db.Where("lg_order.revoke_id is not null")
 		}
 		if *info.OrderStatus == "销函" {
-			db = db.Where("order.logout_id is not null")
+			db = db.Where("lg_order.logout_id is not null")
 		}
 		if *info.OrderStatus == "理赔" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is not null AND Claim.audit_status = 2")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is not null AND Claim.audit_status = 2")
 		}
 		if *info.OrderStatus == "退函" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is not null AND Refund.audit_status = 2")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is not null AND Refund.audit_status = 2")
 		}
 		if *info.OrderStatus == "延期" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is null")
-			db = db.Where("order.delay_id is not null AND Delay.audit_status = 2")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is not null AND Delay.audit_status = 2")
 		}
 		if *info.OrderStatus == "已开" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is null")
-			db = db.Where("order.delay_id is null")
-			db = db.Where("order.letter_id is not null")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is null")
+			db = db.Where("lg_order.letter_id is not null")
 		}
 		if *info.OrderStatus == "未开" {
-			db = db.Where("order.logout_id is null")
-			db = db.Where("order.claim_id is null")
-			db = db.Where("order.refund_id is null")
-			db = db.Where("order.delay_id is null")
-			db = db.Where("order.letter_id is null")
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is null")
+			db = db.Where("lg_order.letter_id is null")
 		}
 	}
 	if info.AuditStatus != nil {
@@ -1072,19 +1075,22 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 		db = db.Where("Letter.insure_day = ?", info.InsureDay)
 	}
 	if info.AuditDelay != nil {
-		db = db.Where("order.delay_id is not null")
+		db = db.Where("lg_order.delay_id is not null")
 	}
 	if info.AuditRefund != nil {
-		db = db.Where("order.refund_id is not null")
+		db = db.Where("lg_order.refund_id is not null")
 	}
 	if info.AuditClaim != nil {
-		db = db.Where("order.claim_id is not null")
+		db = db.Where("lg_order.claim_id is not null")
 	}
 	if info.IsPayed != nil {
-		db = db.Where("order.pay_id is not null")
+		db = db.Where("lg_order.pay_id is not null")
+	}
+	if info.EmployeeNo != nil {
+		db = db.Where("lg_order.employee_id = ?", info.EmployeeNo)
 	}
 
-	err = db.Limit(limit).Preload(clause.Associations).Order("order.created_at desc").Offset(offset).Find(&orders).Error
+	err = db.Limit(limit).Preload(clause.Associations).Order("lg_order.created_at desc").Offset(offset).Find(&orders).Error
 	if err != nil {
 		return nil, err
 	}
