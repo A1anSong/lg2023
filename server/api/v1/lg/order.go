@@ -291,3 +291,21 @@ func (orderApi *OrderApi) ExportExcel(c *gin.Context) {
 		c.Data(http.StatusOK, "application/octet-stream", excel)
 	}
 }
+
+func (orderApi *OrderApi) FindOrderByNos(c *gin.Context) {
+	type OrderByNos struct {
+		OrderNos []string `json:"orderNos[]" form:"orderNos[]"`
+	}
+	var orderByNos OrderByNos
+	err := c.ShouldBindQuery(&orderByNos)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if orders, err := orderService.GetOrderByNos(orderByNos.OrderNos); err != nil {
+		global.GVA_LOG.Error("查询失败!", zap.Error(err))
+		response.FailWithMessage("查询失败", c)
+	} else {
+		response.OkWithData(gin.H{"orders": orders}, c)
+	}
+}

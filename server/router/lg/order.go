@@ -33,5 +33,6 @@ func (s *OrderRouter) InitOrderRouter(Router *gin.RouterGroup) {
 		orderRouterWithoutRecord.GET("getOrderList", orderApi.GetOrderList)                   // 获取Order列表
 		orderRouterWithoutRecord.GET("getOrderStatisticData", orderApi.GetOrderStatisticData) // 获取Order统计数据
 		orderRouterWithoutRecord.GET("exportExcel", orderApi.ExportExcel)                     // 导出Order数据到excel
+		orderRouterWithoutRecord.GET("findOrderByNos", orderApi.FindOrderByNos)               // 根据OrderNo获取Order
 	}
 }

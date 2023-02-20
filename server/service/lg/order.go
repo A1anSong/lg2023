@@ -1172,3 +1172,8 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	excelData = excelBuffer.Bytes()
 	return
 }
+
+func (orderService *OrderService) GetOrderByNos(orderNos []string) (orders []lg.Order, err error) {
+	err = global.GVA_DB.Where("order_no in ?", orderNos).Preload(clause.Associations).Find(&orders).Error
+	return
+}

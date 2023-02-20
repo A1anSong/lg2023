@@ -56,6 +56,23 @@
             <el-input-number v-model="config.insurance['elog-min-amount']" style="width:100%" :precision="2" :controls="false" />
           </el-form-item>
         </el-collapse-item>
+        <el-collapse-item title="电子发票配置" name="5">
+          <el-form-item label="AppKey">
+            <el-input v-model="config.insurance['nn-app-key']" />
+          </el-form-item>
+          <el-form-item label="AppSecret">
+            <el-input v-model="config.insurance['nn-app-secret']" />
+          </el-form-item>
+          <el-form-item label="税号">
+            <el-input v-model="config.insurance['nn-tax-no']" />
+          </el-form-item>
+          <el-form-item label="AccessToken">
+            <el-input v-model="config.insurance['nn-acccess-token']" :disabled="true" />
+          </el-form-item>
+          <el-form-item label="Token请求时间">
+            <el-date-picker type="datetime" v-model="config.insurance['nn-token-time']" :disabled="true" />
+          </el-form-item>
+        </el-collapse-item>
       </el-collapse>
     </el-form>
     <div class="gva-btn-list">

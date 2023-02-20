@@ -50,8 +50,10 @@
         <el-table-column align="left" label="企业地址" prop="companyAddress" width="120" />
         <el-table-column align="left" label="企业电话" prop="companyTel" width="120" />
         <el-table-column align="left" label="开票备注" prop="remarks" width="120" />
+        <el-table-column align="left" label="开票备注" prop="remarks" width="120" />
         <el-table-column align="left" label="操作" min-width="200" fixed="right">
           <template #default="scope">
+            <el-button type="info" icon="list" @click="openDetailDialog(scope.row)">详情</el-button>
             <el-button
               v-if="scope.row.auditStatus!==2 && scope.row.auditStatus!==3"
               type="success"
@@ -110,12 +112,45 @@
         </div>
       </template>
     </el-dialog>
+    <el-dialog v-model="dialogDetailVisble" title="详情">
+      <el-descriptions style="margin: 10px;" size="small" :column="1" border>
+        <el-descriptions-item label="申请编号">{{ invoiceListData.applyNo }}</el-descriptions-item>
+        <el-descriptions-item label="开票总金额">{{ invoiceListData.invoiceTotalAmount }}</el-descriptions-item>
+        <el-descriptions-item label="发票类型">{{ invoiceListData.invoiceType === 'A1' ? '增值税普通发票' : '' }}</el-descriptions-item>
+        <el-descriptions-item label="发票抬头类型">{{ invoiceListData.invoiceTileType === 'A1' ? '个人或事业单位' : invoiceListData.invoiceTileType === 'B1' ? '企业' : '' }}</el-descriptions-item>
+        <el-descriptions-item label="发票抬头">{{ invoiceListData.invoiceTile }}</el-descriptions-item>
+        <el-descriptions-item label="税号">{{ invoiceListData.taxNo }}</el-descriptions-item>
+        <el-descriptions-item label="开户银行">{{ invoiceListData.bankName }}</el-descriptions-item>
+        <el-descriptions-item label="银行账号">{{ invoiceListData.bankNo }}</el-descriptions-item>
+        <el-descriptions-item label="企业地址">{{ invoiceListData.companyAddress }}</el-descriptions-item>
+        <el-descriptions-item label="企业电话">{{ invoiceListData.companyTel }}</el-descriptions-item>
+        <el-descriptions-item label="开票备注">{{ invoiceListData.remarks }}</el-descriptions-item>
+        <el-descriptions-item label="订单列表">
+          <el-table style="--el-table-border-color: none" :data="orderListData" :show-header="false">
+            <el-table-column prop="orderNo" />
+            <el-table-column>
+              <template #default="scope">{{ amount(scope.row.pay.payAmount) }}元</template>
+            </el-table-column>
+            <el-table-column>
+              <template #default="scope">{{ scope.row.invoice == null ? '未开票' : '已开票' }}</template>
+            </el-table-column>
+            <el-table-column>
+              <template #default="scope">
+                <el-button type="success" icon="list" @click="openDetailDialog(scope.row)">请求开票</el-button>
+                <el-button type="success" icon="list" @click="openDetailDialog(scope.row)">查询结果</el-button>
+                <el-button type="success" icon="list" @click="openDetailDialog(scope.row)">查看详情</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'invoiceApply'
+  name: 'InvoiceApply'
 }
 </script>
 
@@ -135,7 +170,8 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-import { approveRefund, rejectRefund } from '@/api/lg/order'
+import { approveRefund, findOrderByNos, rejectRefund } from '@/api/lg/order'
+import { amount } from '@/utils/lg/amount'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -147,6 +183,9 @@ const rule = reactive({
 })
 
 const elFormRef = ref()
+
+const invoiceListData = ref({})
+const orderListData = ref({})
 
 // =========== 表格控制部分 ===========
 const page = ref(1)
@@ -191,9 +230,28 @@ const getTableData = async() => {
   }
 }
 
+const getOrderData = async()=>{
+
+}
+
 getTableData()
 
 // ============== 表格控制部分结束 ===============
+
+const dialogDetailVisble = ref(false)
+
+const openDetailDialog = async(invoiceApply) => {
+  invoiceListData.value = invoiceApply
+  const orders = new Array(0)
+  JSON.parse(invoiceListData.value.orderList).forEach((order) => {
+    orders.push(order.orderNo)
+  })
+  const table = await findOrderByNos({ orderNos: orders })
+  if (table.code === 0) {
+    orderListData.value = table.data.orders
+  }
+  dialogDetailVisble.value = true
+}
 
 // 获取需要的字典 可能为空 按需保留
 const setOptions = async() => {

@@ -171,3 +171,11 @@ const handleExcelError = (res) => {
     a.click()
   }
 }
+
+export const findOrderByNos = (params) => {
+  return service({
+    url: '/order/findOrderByNos',
+    method: 'get',
+    params
+  })
+}
