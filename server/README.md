@@ -1,5 +1,6 @@
 # 开发备注
 `go version 1.19`
+`LibreOffice 6.1.5.2 10(Build:2)`
 
 ## server项目结构
 
