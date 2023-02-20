@@ -179,3 +179,11 @@ export const findOrderByNos = (params) => {
     params
   })
 }
+
+export const requestInvoice = (data) => {
+  return service({
+    url: '/order/requestInvoice',
+    method: 'put',
+    data
+  })
+}

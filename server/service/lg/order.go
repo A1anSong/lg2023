@@ -1177,3 +1177,8 @@ func (orderService *OrderService) GetOrderByNos(orderNos []string) (orders []lg.
 	err = global.GVA_DB.Where("order_no in ?", orderNos).Preload(clause.Associations).Find(&orders).Error
 	return
 }
+
+func (orderService *OrderService) RequestInvoice(order lg.Order) (err error) {
+	err = lg2.NNRequestAccessToken()
+	return
+}

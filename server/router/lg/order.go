@@ -27,6 +27,7 @@ func (s *OrderRouter) InitOrderRouter(Router *gin.RouterGroup) {
 		orderRouter.PUT("rejectClaim", orderApi.RejectClaim)              // 审批拒绝理赔
 		orderRouter.PUT("openLetter", orderApi.OpenLetter)                // 提交开函申请
 		orderRouter.PUT("rePush", orderApi.RePush)                        // 提交重推申请
+		orderRouter.PUT("requestInvoice", orderApi.RequestInvoice)        // 提交发票申请
 	}
 	{
 		orderRouterWithoutRecord.GET("findOrder", orderApi.FindOrder)                         // 根据ID获取Order

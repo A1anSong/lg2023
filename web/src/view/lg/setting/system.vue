@@ -57,6 +57,9 @@
           </el-form-item>
         </el-collapse-item>
         <el-collapse-item title="电子发票配置" name="5">
+          <el-form-item label="请求地址">
+            <el-input v-model="config.insurance['nn-request-url']" />
+          </el-form-item>
           <el-form-item label="AppKey">
             <el-input v-model="config.insurance['nn-app-key']" />
           </el-form-item>
@@ -70,7 +73,7 @@
             <el-input v-model="config.insurance['nn-acccess-token']" :disabled="true" />
           </el-form-item>
           <el-form-item label="Token请求时间">
-            <el-date-picker type="datetime" v-model="config.insurance['nn-token-time']" :disabled="true" />
+            <el-date-picker type="datetime" v-model="config.insurance['nn-token-time']" value-format="x" :disabled="true" />
           </el-form-item>
         </el-collapse-item>
       </el-collapse>

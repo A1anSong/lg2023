@@ -136,9 +136,9 @@
             </el-table-column>
             <el-table-column>
               <template #default="scope">
-                <el-button type="success" icon="list" @click="openDetailDialog(scope.row)">请求开票</el-button>
-                <el-button type="success" icon="list" @click="openDetailDialog(scope.row)">查询结果</el-button>
-                <el-button type="success" icon="list" @click="openDetailDialog(scope.row)">查看详情</el-button>
+                <el-button type="success" icon="list" @click="requestInvoiceFunc(scope.row)">请求开票</el-button>
+                <el-button type="success" icon="list" @click="requestInvoiceFunc(scope.row)">查询结果</el-button>
+                <el-button type="success" icon="list" @click="requestInvoiceFunc(scope.row)">查看详情</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -170,7 +170,7 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-import { approveRefund, findOrderByNos, rejectRefund } from '@/api/lg/order'
+import {approveApply, approveRefund, findOrderByNos, rejectRefund, requestInvoice} from '@/api/lg/order'
 import { amount } from '@/utils/lg/amount'
 
 // 自动化生成的字典（可能为空）以及字段
@@ -230,8 +230,13 @@ const getTableData = async() => {
   }
 }
 
-const getOrderData = async()=>{
+const orderNos = ref([])
 
+const getOrdersData = async() => {
+  const table = await findOrderByNos({ orderNos: orderNos.value })
+  if (table.code === 0) {
+    orderListData.value = table.data.orders
+  }
 }
 
 getTableData()
@@ -242,14 +247,11 @@ const dialogDetailVisble = ref(false)
 
 const openDetailDialog = async(invoiceApply) => {
   invoiceListData.value = invoiceApply
-  const orders = new Array(0)
+  orderNos.value = []
   JSON.parse(invoiceListData.value.orderList).forEach((order) => {
-    orders.push(order.orderNo)
+    orderNos.value.push(order.orderNo)
   })
-  const table = await findOrderByNos({ orderNos: orders })
-  if (table.code === 0) {
-    orderListData.value = table.data.orders
-  }
+  await getOrdersData()
   dialogDetailVisble.value = true
 }
 
@@ -412,6 +414,17 @@ const rejectInvoiceApplyFunc = async(apply) => {
       getTableData()
     }
   })
+}
+
+const requestInvoiceFunc = async(order) => {
+  const res = await requestInvoice(order)
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '提交成功'
+    })
+    getOrdersData()
+  }
 }
 </script>
 

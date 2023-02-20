@@ -100,11 +100,12 @@ insurance:
   app-secret: KHDmhq7KAIT2Dmr7
   elog-rate: 0.0006
   elog-min-amount: 60
+  nn-request-url: https://sandbox.nuonuocs.cn/open/v1/services
   nn-app-key: SD63236305
   nn-app-secret: SDDED2523BED4643
   nn-tax-no: "339902999999789110"
-  nn-acccess-token: ""
-  nn-token-time: 0001-01-01T00:00:00Z
+  nn-acccess-token: fa35aa5f2feb821e9c02c00qajcdnnms
+  nn-token-time: 1676926011642
 jwt:
   signing-key: 6384fe2c-e99f-48f3-a770-0db405f68ef8
   expires-time: 7d

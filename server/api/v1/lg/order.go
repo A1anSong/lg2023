@@ -309,3 +309,18 @@ func (orderApi *OrderApi) FindOrderByNos(c *gin.Context) {
 		response.OkWithData(gin.H{"orders": orders}, c)
 	}
 }
+
+func (orderApi *OrderApi) RequestInvoice(c *gin.Context) {
+	var order lg.Order
+	err := c.ShouldBindJSON(&order)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := orderService.RequestInvoice(order); err != nil {
+		global.GVA_LOG.Error("提交失败!", zap.Error(err))
+		response.FailWithMessage("提交失败", c)
+	} else {
+		response.OkWithMessage("提交成功", c)
+	}
+}
