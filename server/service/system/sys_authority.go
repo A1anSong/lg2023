@@ -2,6 +2,7 @@ package system
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -218,7 +219,8 @@ func (authorityService *AuthorityService) GetDepartmentInfoList(info request.Pag
 	offset := info.PageSize * (info.Page - 1)
 	db := global.GVA_DB.Model(&system.SysAuthority{})
 	var firstAuthority system.SysAuthority
-	err = db.First(&firstAuthority).Error
+	err = db.Order("created_at").First(&firstAuthority).Error
+	fmt.Println(firstAuthority.AuthorityId)
 	db = db.Where("created_at > ?", firstAuthority.CreatedAt)
 	if err = db.Where("parent_id = ?", "0").Count(&total).Error; total == 0 || err != nil {
 		return

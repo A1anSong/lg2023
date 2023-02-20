@@ -106,7 +106,7 @@
         </el-table-column>
         <el-table-column align="center" label="工号" prop="apply.applicantAuthCode" min-width="120px" />
         <el-table-column align="center" label="业务员" prop="employeeNo" min-width="120px" />
-        <el-table-column align="center" label="查看" min-width="360" fixed="right">
+        <el-table-column align="center" label="查看" min-width="400" fixed="right">
           <template #default="scope">
             <el-button type="info" icon="list" @click="openDetailDialog(scope.row)">详情</el-button>
             <el-button type="primary" icon="paperclip" :disabled="scope.row.apply.attachInfo == null || scope.row.apply.attachInfo === '' || scope.row.apply.attachInfo === '[]'" @click="openAttachDialog(scope.row.apply.attachInfo)">附件</el-button>

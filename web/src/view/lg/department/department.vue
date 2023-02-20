@@ -1,6 +1,6 @@
 <template>
   <div class="authority">
-    <warning-bar title="注：右上角头像下拉可切换角色" />
+    <warning-bar title="注：右上角头像下拉可切换部门" />
     <div class="gva-table-box">
       <div class="gva-btn-list">
         <el-button type="primary" icon="plus" @click="addAuthority(0)">新增部门</el-button>
@@ -28,7 +28,7 @@
               type="primary"
               link
               @click="addAuthority(scope.row.authorityId)"
-            >新增子角色</el-button>
+            >新增子部门</el-button>
             <el-button
               icon="copy-document"
 
@@ -54,7 +54,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- 新增角色弹窗 -->
+    <!-- 新增部门弹窗 -->
     <el-dialog v-model="dialogFormVisible" :title="dialogTitle">
       <el-form ref="authorityForm" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="父级部门" prop="parentId">
@@ -125,7 +125,7 @@ const drawer = ref(false)
 const dialogType = ref('add')
 const activeRow = ref({})
 
-const dialogTitle = ref('新增角色')
+const dialogTitle = ref('新增部门')
 const dialogFormVisible = ref(false)
 const apiDialogFlag = ref(false)
 const copyForm = ref({})
@@ -137,14 +137,14 @@ const form = ref({
 })
 const rules = ref({
   authorityId: [
-    { required: true, message: '请输入角色ID', trigger: 'blur' },
+    { required: true, message: '请输入部门ID', trigger: 'blur' },
     { validator: mustUint, trigger: 'blur', message: '必须为正整数' }
   ],
   authorityName: [
-    { required: true, message: '请输入角色名', trigger: 'blur' }
+    { required: true, message: '请输入部门名', trigger: 'blur' }
   ],
   parentId: [
-    { required: true, message: '请选择父角色', trigger: 'blur' },
+    { required: true, message: '请选择父部门', trigger: 'blur' },
   ]
 })
 
@@ -182,10 +182,10 @@ const autoEnter = (activeName, oldActiveName) => {
     }
   }
 }
-// 拷贝角色
+// 拷贝部门
 const copyAuthorityFunc = (row) => {
   setOptions()
-  dialogTitle.value = '拷贝角色'
+  dialogTitle.value = '拷贝部门'
   dialogType.value = 'copy'
   for (const k in form.value) {
     form.value[k] = row[k]
@@ -197,9 +197,9 @@ const opdendrawer = (row) => {
   drawer.value = true
   activeRow.value = row
 }
-// 删除角色
+// 删除部门
 const deleteAuth = (row) => {
-  ElMessageBox.confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+  ElMessageBox.confirm('此操作将永久删除该部门, 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
@@ -249,7 +249,7 @@ const enterDialog = () => {
   if (form.value.authorityId === 0) {
     ElMessage({
       type: 'error',
-      message: '角色id不能为0'
+      message: '部门id不能为0'
     })
     return false
   }
@@ -349,19 +349,19 @@ const setAuthorityOptions = (AuthorityData, optionsData, disabled) => {
           }
         })
 }
-// 增加角色
+// 增加部门
 const addAuthority = (parentId) => {
   initForm()
-  dialogTitle.value = '新增角色'
+  dialogTitle.value = '新增部门'
   dialogType.value = 'add'
   form.value.parentId = parentId
   setOptions()
   dialogFormVisible.value = true
 }
-// 编辑角色
+// 编辑部门
 const editAuthority = (row) => {
   setOptions()
-  dialogTitle.value = '编辑角色'
+  dialogTitle.value = '编辑部门'
   dialogType.value = 'edit'
   for (const key in form.value) {
     form.value[key] = row[key]
