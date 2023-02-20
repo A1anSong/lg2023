@@ -161,7 +161,7 @@ func (b *BaseApi) Register(c *gin.Context) {
 	userReturn, err := userService.Register(*user)
 	if err != nil {
 		global.GVA_LOG.Error("注册失败!", zap.Error(err))
-		response.FailWithDetailed(systemRes.SysUserResponse{User: userReturn}, "注册失败", c)
+		response.FailWithDetailed(systemRes.SysUserResponse{User: userReturn}, "注册失败："+err.Error(), c)
 		return
 	}
 	response.OkWithDetailed(systemRes.SysUserResponse{User: userReturn}, "注册成功", c)
@@ -377,7 +377,7 @@ func (b *BaseApi) SetUserInfo(c *gin.Context) {
 	})
 	if err != nil {
 		global.GVA_LOG.Error("设置失败!", zap.Error(err))
-		response.FailWithMessage("设置失败", c)
+		response.FailWithMessage("设置失败："+err.Error(), c)
 		return
 	}
 	response.OkWithMessage("设置成功", c)

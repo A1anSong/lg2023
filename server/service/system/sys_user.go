@@ -26,6 +26,11 @@ func (userService *UserService) Register(u system.SysUser) (userInter system.Sys
 	if !errors.Is(global.GVA_DB.Where("username = ?", u.Username).First(&user).Error, gorm.ErrRecordNotFound) { // 判断用户名是否注册
 		return userInter, errors.New("用户名已注册")
 	}
+	if u.EmployeeNo != nil {
+		if !errors.Is(global.GVA_DB.Where("employee_no = ?", u.EmployeeNo).First(&user).Error, gorm.ErrRecordNotFound) { // 判断人员编号是否已经存在
+			return userInter, errors.New("该人员编号已经存在")
+		}
+	}
 	// 否则 附加uuid 密码hash加密 注册
 	u.Password = utils.BcryptHash(u.Password)
 	u.UUID = uuid.NewV4()
@@ -164,17 +169,26 @@ func (userService *UserService) DeleteUser(id int) (err error) {
 //@return: err error, user model.SysUser
 
 func (userService *UserService) SetUserInfo(req system.SysUser) error {
+	if req.EmployeeNo != nil {
+		var user system.SysUser
+		if !errors.Is(global.GVA_DB.Where("employee_no = ?", req.EmployeeNo).First(&user).Error, gorm.ErrRecordNotFound) { // 判断人员编号是否已经存在
+			if user.ID != req.ID { //确认是否为同一人
+				return errors.New("该人员编号已经存在")
+			}
+		}
+	}
 	return global.GVA_DB.Model(&system.SysUser{}).
-		Select("updated_at", "nick_name", "header_img", "phone", "email", "sideMode", "enable").
+		Select("updated_at", "nick_name", "header_img", "phone", "email", "side_mode", "enable", "employee_no").
 		Where("id=?", req.ID).
 		Updates(map[string]interface{}{
-			"updated_at": time.Now(),
-			"nick_name":  req.NickName,
-			"header_img": req.HeaderImg,
-			"phone":      req.Phone,
-			"email":      req.Email,
-			"side_mode":  req.SideMode,
-			"enable":     req.Enable,
+			"updated_at":  time.Now(),
+			"nick_name":   req.NickName,
+			"header_img":  req.HeaderImg,
+			"phone":       req.Phone,
+			"email":       req.Email,
+			"side_mode":   req.SideMode,
+			"enable":      req.Enable,
+			"employee_no": req.EmployeeNo,
 		}).Error
 }
 
