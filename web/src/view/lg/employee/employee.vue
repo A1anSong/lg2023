@@ -287,6 +287,8 @@ const userInfo = ref({
   userName: '',
   password: '',
   nickName: '',
+  phone: '',
+  email: '',
   headerImg: '',
   authorityId: '',
   authorityIds: [],
@@ -347,8 +349,16 @@ const enterAddUserDialog = async() => {
 const addUserDialog = ref(false)
 const closeAddUserDialog = () => {
   userForm.value.resetFields()
+  userInfo.value.userName = ''
+  userInfo.value.password = ''
+  userInfo.value.nickName = ''
+  userInfo.value.phone = ''
+  userInfo.value.email = ''
   userInfo.value.headerImg = ''
+  userInfo.value.authorityId = ''
   userInfo.value.authorityIds = []
+  userInfo.value.enable = 1
+  userInfo.value.employeeNo = ''
   addUserDialog.value = false
 }
 
