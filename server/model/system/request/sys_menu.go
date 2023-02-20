@@ -43,6 +43,7 @@ func DepartmentMenu() []system.SysBaseMenu {
 		ParentId:  "0",
 		Path:      "person",
 		Name:      "person",
+		Hidden:    true,
 		Component: "view/person/person.vue",
 		Sort:      4,
 		Meta: system.Meta{
