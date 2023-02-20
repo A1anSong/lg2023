@@ -25,3 +25,29 @@ func DefaultMenu() []system.SysBaseMenu {
 		},
 	}}
 }
+
+func DepartmentMenu() []system.SysBaseMenu {
+	return []system.SysBaseMenu{{
+		GVA_MODEL: global.GVA_MODEL{ID: 30},
+		ParentId:  "0",
+		Path:      "dash",
+		Name:      "dash",
+		Component: "view/lg/dashboard/dash.vue",
+		Sort:      101,
+		Meta: system.Meta{
+			Title: "总览",
+			Icon:  "odometer",
+		},
+	}, {
+		GVA_MODEL: global.GVA_MODEL{ID: 11},
+		ParentId:  "0",
+		Path:      "person",
+		Name:      "person",
+		Component: "view/person/person.vue",
+		Sort:      4,
+		Meta: system.Meta{
+			Title: "个人信息",
+			Icon:  "message",
+		},
+	}}
+}

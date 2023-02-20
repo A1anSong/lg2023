@@ -84,6 +84,14 @@ export const updateAuthority = (data) => {
   })
 }
 
+export const createDepartment = (data) => {
+  return service({
+    url: '/authority/createDepartment',
+    method: 'post',
+    data
+  })
+}
+
 export const getDepartmentList = (data) => {
   return service({
     url: '/authority/getDepartmentList',

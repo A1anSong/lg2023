@@ -97,9 +97,9 @@
 import {
   getDepartmentList,
   deleteAuthority,
-  createAuthority,
+  createDepartment,
   updateAuthority,
-  copyAuthority
+  copyAuthority,
 } from '@/api/authority'
 
 import Menus from '@/view/lg/department/components/menus.vue'
@@ -258,7 +258,7 @@ const enterDialog = () => {
       switch (dialogType.value) {
         case 'add':
           {
-            const res = await createAuthority(form.value)
+            const res = await createDepartment(form.value)
             if (res.code === 0) {
               ElMessage({
                 type: 'success',

@@ -206,6 +206,29 @@ func (a *AuthorityApi) SetDataAuthority(c *gin.Context) {
 	}
 	response.OkWithMessage("设置成功", c)
 }
+func (a *AuthorityApi) CreateDepartment(c *gin.Context) {
+	var authority system.SysAuthority
+	err := c.ShouldBindJSON(&authority)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	err = utils.Verify(authority, utils.AuthorityVerify)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	authority.DefaultRouter = "dash"
+	if authBack, err := authorityService.CreateAuthority(authority); err != nil {
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		response.FailWithMessage("创建失败"+err.Error(), c)
+	} else {
+		_ = menuService.AddMenuAuthority(systemReq.DepartmentMenu(), authority.AuthorityId)
+		_ = casbinService.UpdateCasbin(authority.AuthorityId, systemReq.DefaultCasbin())
+		response.OkWithDetailed(systemRes.SysAuthorityResponse{Authority: authBack}, "创建成功", c)
+	}
+}
 
 func (a *AuthorityApi) GetDepartmentList(c *gin.Context) {
 	var pageInfo request.PageInfo

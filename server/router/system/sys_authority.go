@@ -18,6 +18,7 @@ func (s *AuthorityRouter) InitAuthorityRouter(Router *gin.RouterGroup) {
 		authorityRouter.PUT("updateAuthority", authorityApi.UpdateAuthority)    // 更新角色
 		authorityRouter.POST("copyAuthority", authorityApi.CopyAuthority)       // 拷贝角色
 		authorityRouter.POST("setDataAuthority", authorityApi.SetDataAuthority) // 设置角色资源权限
+		authorityRouter.POST("createDepartment", authorityApi.CreateDepartment) // 创建部门
 	}
 	{
 		authorityRouterWithoutRecord.POST("getAuthorityList", authorityApi.GetAuthorityList)   // 获取角色列表
