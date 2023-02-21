@@ -16,6 +16,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"net/http"
 	"time"
 )
@@ -84,22 +85,29 @@ func (invoiceApplyService *InvoiceApplyService) ApproveInvoiceApply(invoiceApply
 		}
 		if len(orderList) > 0 {
 			totalAmount = 0
-			for _, order := range orderList {
-				totalAmount += *order.OrderPayAmount
+			for _, reqOrder := range orderList {
+				var order lg.Order
+				err = global.GVA_DB.Model(lg.Order{}).Where("order_no = ?", *reqOrder.OrderNo).Preload(clause.Associations).First(&order).Error
+				if err != nil {
+					return err
+				}
+				totalAmount += *order.Pay.PayAmount
+				var invoiceOrderList []jrclientrequest.Order
+				err = json.Unmarshal([]byte(*order.Invoice.OrderList), &invoiceOrderList)
+				if err != nil {
+					return err
+				}
 				invoice := jrclientrequest.Invoice{
-					InvoiceNo:          "0123456789abcdef",
-					InvoiceAmount:      *order.OrderPayAmount,
-					InvoiceType:        "A1",
-					InvoiceForm:        "B1",
-					InvoicePoint:       0.0001,
-					InvoiceContent:     "发票内容",
-					InvoiceRemark:      "发票备注",
-					InvoiceTime:        "2022-12-19 17:00:00",
-					InvoiceDownloadUrl: global.GVA_CONFIG.Insurance.APIDomain + "/invoiceFileDownload?param=testInvoiceDownloadUrl",
-					OrderList: []jrclientrequest.Order{{
-						OrderNo:            *order.OrderNo,
-						OrderInvoiceAmount: *order.OrderPayAmount,
-					}},
+					InvoiceNo:          *order.Invoice.InvoiceNo,
+					InvoiceAmount:      *order.Invoice.InvoiceAmount,
+					InvoiceType:        *order.Invoice.InvoiceType,
+					InvoiceForm:        *order.Invoice.InvoiceForm,
+					InvoicePoint:       *order.Invoice.InvoicePoint,
+					InvoiceContent:     *order.Invoice.InvoiceContent,
+					InvoiceRemark:      *order.Invoice.InvoiceRemark,
+					InvoiceTime:        *order.Invoice.InvoiceTime,
+					InvoiceDownloadUrl: *order.Invoice.InvoiceDownloadUrl,
+					OrderList:          invoiceOrderList,
 				}
 				invoiceList = append(invoiceList, invoice)
 			}
