@@ -11,6 +11,8 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrclientrequest"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrclientresponse"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrresponse"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nn/nnrequest"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nn/nnresponse"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nonmigrate"
 	lgReq "github.com/flipped-aurora/gin-vue-admin/server/model/lg/request"
 	lg2 "github.com/flipped-aurora/gin-vue-admin/server/utils/lg"
@@ -20,6 +22,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"math"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -1178,7 +1181,127 @@ func (orderService *OrderService) GetOrderByNos(orderNos []string) (orders []lg.
 	return
 }
 
-func (orderService *OrderService) RequestInvoice(order lg.Order) (err error) {
-	err = lg2.NNRequestAccessToken()
-	return
+func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestInvoice) (err error) {
+	type NNDetail struct {
+		GoodsName   string `json:"goodsName"`
+		WithTaxFlag string `json:"withTaxFlag"`
+		Price       string `json:"price"`
+		Num         string `json:"num"`
+		TaxRate     string `json:"taxRate"`
+	}
+	type NNOrder struct {
+		BuyerName     string     `json:"buyerName"`
+		BuyerTaxNum   *string    `json:"buyerTaxNum,omitempty"`
+		BuyerTel      *string    `json:"buyerTel,omitempty"`
+		BuyerAddress  *string    `json:"buyerAddress,omitempty"`
+		BuyerAccount  *string    `json:"buyerAccount,omitempty"`
+		SalerTaxNum   string     `json:"salerTaxNum"`
+		SalerTel      string     `json:"salerTel"`
+		SalerAddress  string     `json:"salerAddress"`
+		OrderNo       string     `json:"orderNo"`
+		InvoiceDate   string     `json:"invoiceDate"`
+		Remark        *string    `json:"remark,omitempty"`
+		Clerk         string     `json:"clerk"`
+		PushMode      string     `json:"pushMode"`
+		BuyerPhone    *string    `json:"buyerPhone,omitempty"`
+		InvoiceType   string     `json:"invoiceType"`
+		InvoiceDetail []NNDetail `json:"invoiceDetail"`
+	}
+	type NNReq struct {
+		Order NNOrder `json:"order"`
+	}
+	bankName := ""
+	bankNo := ""
+	if reqInvoice.InvoiceApply.BankName != nil {
+		bankName = *reqInvoice.InvoiceApply.BankName
+	}
+	if reqInvoice.InvoiceApply.BankNo != nil {
+		bankName = *reqInvoice.InvoiceApply.BankNo
+	}
+	buyerAccount := bankName + bankNo
+	timestamp := time.Now().Unix()
+	rand.Seed(timestamp)
+	randomOrder := rand.Intn(899999) + 100000
+	pushMode := -1
+	if reqInvoice.InvoiceApply.CompanyTel != nil {
+		pushMode = 1
+	}
+	nnreq := NNReq{
+		Order: NNOrder{
+			BuyerName:    *reqInvoice.InvoiceApply.InvoiceTile,
+			BuyerTaxNum:  reqInvoice.InvoiceApply.TaxNo,
+			BuyerTel:     reqInvoice.InvoiceApply.CompanyTel,
+			BuyerAddress: reqInvoice.InvoiceApply.CompanyAddress,
+			BuyerAccount: &buyerAccount,
+			SalerTaxNum:  global.GVA_CONFIG.Insurance.NNTaxNo,
+			SalerTel:     global.GVA_CONFIG.Insurance.Tel,
+			SalerAddress: global.GVA_CONFIG.Insurance.Address,
+			OrderNo:      time.Now().Format("20060102150405") + strconv.Itoa(randomOrder),
+			InvoiceDate:  time.Now().Format("2006-01-02 15:04:05"),
+			Remark:       reqInvoice.InvoiceApply.Remarks,
+			Clerk:        reqInvoice.Clerk,
+			PushMode:     strconv.Itoa(pushMode),
+			BuyerPhone:   reqInvoice.InvoiceApply.CompanyTel,
+			InvoiceType:  "1",
+			InvoiceDetail: []NNDetail{{
+				GoodsName:   "电子保函",
+				WithTaxFlag: "1",
+				Price:       strconv.FormatFloat(*reqInvoice.Order.Pay.PayAmount, 'f', 8, 64),
+				Num:         "1",
+				TaxRate:     strconv.FormatFloat(global.GVA_CONFIG.Insurance.NNTaxRate, 'f', 2, 64),
+			}},
+		},
+	}
+	jsonReq, _ := json.Marshal(&nnreq)
+	res, err := lg2.NNSendRequest("nuonuo.ElectronInvoice.requestBillingNew", string(jsonReq))
+	if err != nil {
+		return
+	}
+	var resInvoice nnresponse.ResponseInvoice
+	err = json.Unmarshal(res, &resInvoice)
+	if err != nil {
+		return
+	}
+	if resInvoice.Code != "E0000" {
+		return errors.New(resInvoice.Code + ":" + resInvoice.Describe)
+	}
+	invoiceForm := "B1"
+	invoicePoint, _ := strconv.ParseFloat(fmt.Sprintf("%.6f", global.GVA_CONFIG.Insurance.NNTaxRate), 64)
+	invoiceContent := "发票内容"
+	type Result struct {
+		InvoiceSerialNum string `json:"invoiceSerialNum"`
+	}
+	type ResultRequestInvoice struct {
+		Code     string `json:"code"`
+		Describe string `json:"describe"`
+		Result   Result `json:"result"`
+	}
+	var resultRequestInvoice ResultRequestInvoice
+	err = json.Unmarshal(res, &resultRequestInvoice)
+	if err != nil {
+		return
+	}
+	orderList := `[{orderNo:"` + *reqInvoice.Order.OrderNo + `",orderInvoiceAmount:` + strconv.FormatFloat(*reqInvoice.Order.Pay.PayAmount, 'f', 2, 64) + `}]`
+	invoice := lg.Invoice{
+		InvoiceNo:          &nnreq.Order.OrderNo,
+		InvoiceAmount:      reqInvoice.Order.Pay.PayAmount,
+		InvoiceType:        reqInvoice.InvoiceApply.InvoiceType,
+		InvoiceTileType:    reqInvoice.InvoiceApply.InvoiceType,
+		InvoiceTile:        reqInvoice.InvoiceApply.InvoiceTile,
+		TaxNo:              reqInvoice.InvoiceApply.TaxNo,
+		BankName:           reqInvoice.InvoiceApply.BankName,
+		BankNo:             reqInvoice.InvoiceApply.BankNo,
+		CompanyAddress:     reqInvoice.InvoiceApply.CompanyAddress,
+		CompanyTel:         reqInvoice.InvoiceApply.CompanyTel,
+		Remarks:            reqInvoice.InvoiceApply.Remarks,
+		InvoiceForm:        &invoiceForm,
+		InvoicePoint:       &invoicePoint,
+		InvoiceContent:     &invoiceContent,
+		InvoiceRemark:      reqInvoice.InvoiceApply.Remarks,
+		InvoiceTime:        &nnreq.Order.InvoiceDate,
+		InvoiceSerialNum:   &resultRequestInvoice.Result.InvoiceSerialNum,
+		InvoiceDownloadUrl: nil,
+		OrderList:          &orderList,
+	}
+	return global.GVA_DB.Create(&invoice).Error
 }

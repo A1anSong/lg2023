@@ -5,6 +5,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nn/nnrequest"
 	lgReq "github.com/flipped-aurora/gin-vue-admin/server/model/lg/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
 	"github.com/gin-gonic/gin"
@@ -311,16 +312,16 @@ func (orderApi *OrderApi) FindOrderByNos(c *gin.Context) {
 }
 
 func (orderApi *OrderApi) RequestInvoice(c *gin.Context) {
-	var order lg.Order
-	err := c.ShouldBindJSON(&order)
+	var reqInvoice nnrequest.NNRequestInvoice
+	err := c.ShouldBindJSON(&reqInvoice)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if err := orderService.RequestInvoice(order); err != nil {
+	if err := orderService.RequestInvoice(reqInvoice); err != nil {
 		global.GVA_LOG.Error("提交失败!", zap.Error(err))
 		response.FailWithMessage("提交失败", c)
 	} else {
-		response.OkWithMessage("提交成功", c)
+		response.OkWithMessage("提交成功，等待约一分钟左右可点击查询开票结果", c)
 	}
 }

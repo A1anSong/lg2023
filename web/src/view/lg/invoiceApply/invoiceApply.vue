@@ -114,17 +114,17 @@
     </el-dialog>
     <el-dialog v-model="dialogDetailVisble" title="详情">
       <el-descriptions style="margin: 10px;" size="small" :column="1" border>
-        <el-descriptions-item label="申请编号">{{ invoiceListData.applyNo }}</el-descriptions-item>
-        <el-descriptions-item label="开票总金额">{{ invoiceListData.invoiceTotalAmount }}</el-descriptions-item>
-        <el-descriptions-item label="发票类型">{{ invoiceListData.invoiceType === 'A1' ? '增值税普通发票' : '' }}</el-descriptions-item>
-        <el-descriptions-item label="发票抬头类型">{{ invoiceListData.invoiceTileType === 'A1' ? '个人或事业单位' : invoiceListData.invoiceTileType === 'B1' ? '企业' : '' }}</el-descriptions-item>
-        <el-descriptions-item label="发票抬头">{{ invoiceListData.invoiceTile }}</el-descriptions-item>
-        <el-descriptions-item label="税号">{{ invoiceListData.taxNo }}</el-descriptions-item>
-        <el-descriptions-item label="开户银行">{{ invoiceListData.bankName }}</el-descriptions-item>
-        <el-descriptions-item label="银行账号">{{ invoiceListData.bankNo }}</el-descriptions-item>
-        <el-descriptions-item label="企业地址">{{ invoiceListData.companyAddress }}</el-descriptions-item>
-        <el-descriptions-item label="企业电话">{{ invoiceListData.companyTel }}</el-descriptions-item>
-        <el-descriptions-item label="开票备注">{{ invoiceListData.remarks }}</el-descriptions-item>
+        <el-descriptions-item label="申请编号">{{ invoiceApplyData.applyNo }}</el-descriptions-item>
+        <el-descriptions-item label="开票总金额">{{ invoiceApplyData.invoiceTotalAmount }}</el-descriptions-item>
+        <el-descriptions-item label="发票类型">{{ invoiceApplyData.invoiceType === 'A1' ? '增值税普通发票' : '' }}</el-descriptions-item>
+        <el-descriptions-item label="发票抬头类型">{{ invoiceApplyData.invoiceTileType === 'A1' ? '个人或事业单位' : invoiceApplyData.invoiceTileType === 'B1' ? '企业' : '' }}</el-descriptions-item>
+        <el-descriptions-item label="发票抬头">{{ invoiceApplyData.invoiceTile }}</el-descriptions-item>
+        <el-descriptions-item label="税号">{{ invoiceApplyData.taxNo }}</el-descriptions-item>
+        <el-descriptions-item label="开户银行">{{ invoiceApplyData.bankName }}</el-descriptions-item>
+        <el-descriptions-item label="银行账号">{{ invoiceApplyData.bankNo }}</el-descriptions-item>
+        <el-descriptions-item label="企业地址">{{ invoiceApplyData.companyAddress }}</el-descriptions-item>
+        <el-descriptions-item label="企业电话">{{ invoiceApplyData.companyTel }}</el-descriptions-item>
+        <el-descriptions-item label="开票备注">{{ invoiceApplyData.remarks }}</el-descriptions-item>
         <el-descriptions-item label="订单列表">
           <el-table style="--el-table-border-color: none" :data="orderListData" :show-header="false">
             <el-table-column prop="orderNo" />
@@ -170,8 +170,9 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-import {approveApply, approveRefund, findOrderByNos, rejectRefund, requestInvoice} from '@/api/lg/order'
+import { approveApply, approveRefund, findOrderByNos, rejectRefund, requestInvoice } from '@/api/lg/order'
 import { amount } from '@/utils/lg/amount'
+import {useUserStore} from "@/pinia/modules/user";
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -184,7 +185,7 @@ const rule = reactive({
 
 const elFormRef = ref()
 
-const invoiceListData = ref({})
+const invoiceApplyData = ref({})
 const orderListData = ref({})
 
 // =========== 表格控制部分 ===========
@@ -246,9 +247,9 @@ getTableData()
 const dialogDetailVisble = ref(false)
 
 const openDetailDialog = async(invoiceApply) => {
-  invoiceListData.value = invoiceApply
+  invoiceApplyData.value = invoiceApply
   orderNos.value = []
-  JSON.parse(invoiceListData.value.orderList).forEach((order) => {
+  JSON.parse(invoiceApplyData.value.orderList).forEach((order) => {
     orderNos.value.push(order.orderNo)
   })
   await getOrdersData()
@@ -417,7 +418,9 @@ const rejectInvoiceApplyFunc = async(apply) => {
 }
 
 const requestInvoiceFunc = async(order) => {
-  const res = await requestInvoice(order)
+  const userStore = useUserStore()
+  const userInfo = userStore.userInfo
+  const res = await requestInvoice({ order: order, invoiceApply: invoiceApplyData.value, clerk: userInfo.nickName })
   if (res.code === 0) {
     ElMessage({
       type: 'success',
