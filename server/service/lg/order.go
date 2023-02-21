@@ -1257,7 +1257,7 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 	if err != nil {
 		return
 	}
-	var resInvoice nnresponse.ResponseInvoice
+	var resInvoice nnresponse.NNRequestInvoice
 	err = json.Unmarshal(res, &resInvoice)
 	if err != nil {
 		return
@@ -1303,5 +1303,48 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 		InvoiceDownloadUrl: nil,
 		OrderList:          &orderList,
 	}
-	return global.GVA_DB.Create(&invoice).Error
+	err = global.GVA_DB.Create(&invoice).Error
+	if err != nil {
+		return
+	}
+	return global.GVA_DB.Model(&lg.Order{}).Where("id = ?", reqInvoice.Order.ID).Update("invoice_id", invoice.ID).Error
+}
+
+func (orderService *OrderService) QueryInvoice(reqInvoice nnrequest.NNQueryInvoice) (err error) {
+	type NNReq struct {
+		SerialNos            []string `json:"serialNos,omitempty"`
+		OrderNos             []string `json:"orderNos,omitempty"`
+		IsOfferInvoiceDetail string   `json:"isOfferInvoiceDetail,omitempty"`
+	}
+	nnreq := NNReq{
+		SerialNos: []string{*reqInvoice.Order.Invoice.InvoiceSerialNum},
+	}
+	jsonReq, _ := json.Marshal(&nnreq)
+	res, err := lg2.NNSendRequest("nuonuo.ElectronInvoice.queryInvoiceResult", string(jsonReq))
+	if err != nil {
+		return
+	}
+	var resInvoice nnresponse.NNRequestInvoice
+	err = json.Unmarshal(res, &resInvoice)
+	if err != nil {
+		return
+	}
+	if resInvoice.Code != "E0000" {
+		return errors.New(resInvoice.Code + ":" + resInvoice.Describe)
+	}
+	type Result struct {
+		PdfUrl string `json:"pdfUrl"`
+	}
+	type ResultRequestInvoice struct {
+		Code     string   `json:"code"`
+		Describe string   `json:"describe"`
+		Result   []Result `json:"result"`
+	}
+	var resultRequestInvoice ResultRequestInvoice
+	err = json.Unmarshal(res, &resultRequestInvoice)
+	if err != nil {
+		return
+	}
+	reqInvoice.Order.Invoice.InvoiceDownloadUrl = &resultRequestInvoice.Result[0].PdfUrl
+	return global.GVA_DB.Save(&reqInvoice.Order.Invoice).Error
 }

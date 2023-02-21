@@ -325,3 +325,18 @@ func (orderApi *OrderApi) RequestInvoice(c *gin.Context) {
 		response.OkWithMessage("提交成功，等待约一分钟左右可点击查询开票结果", c)
 	}
 }
+
+func (orderApi *OrderApi) QueryInvoice(c *gin.Context) {
+	var reqInvoice nnrequest.NNQueryInvoice
+	err := c.ShouldBindJSON(&reqInvoice)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := orderService.QueryInvoice(reqInvoice); err != nil {
+		global.GVA_LOG.Error("提交失败!", zap.Error(err))
+		response.FailWithMessage("提交失败", c)
+	} else {
+		response.OkWithMessage("提交成功，等待约一分钟左右可点击查询开票结果", c)
+	}
+}

@@ -11,7 +11,7 @@ type Invoice struct {
 	InvoiceTile        *string  `json:"InvoiceTile" form:"InvoiceTile" gorm:"type:varchar(200);"`
 	TaxNo              *string  `json:"TaxNo" form:"TaxNo" gorm:"type:varchar(20);"`
 	BankName           *string  `json:"BankName" form:"BankName" gorm:"type:varchar(200);"`
-	BankNo             *string  `json:"BankNo" form:"BankNo" gorm:"type:varchar(19);"`
+	BankNo             *string  `json:"BankNo" form:"BankNo" gorm:"type:varchar(64);"`
 	CompanyAddress     *string  `json:"CompanyAddress" form:"CompanyAddress" gorm:"type:varchar(512);"`
 	CompanyTel         *string  `json:"CompanyTel" form:"CompanyTel" gorm:"type:varchar(64);"`
 	Remarks            *string  `json:"Remarks" form:"InvoiceTile" gorm:"type:varchar(200);"`

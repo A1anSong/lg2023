@@ -137,8 +137,8 @@
             <el-table-column>
               <template #default="scope">
                 <el-button type="success" icon="list" @click="requestInvoiceFunc(scope.row)">请求开票</el-button>
-                <el-button type="success" icon="list" @click="requestInvoiceFunc(scope.row)">查询结果</el-button>
-                <el-button type="success" icon="list" @click="requestInvoiceFunc(scope.row)">查看详情</el-button>
+                <el-button type="success" icon="list" @click="queryInvoiceFunc(scope.row)">查询结果</el-button>
+                <el-button type="success" icon="list" @click="downloadInvoiceFunc(scope.row)">查看发票</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -170,9 +170,9 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
-import { approveApply, approveRefund, findOrderByNos, rejectRefund, requestInvoice } from '@/api/lg/order'
+import { approveApply, approveRefund, findOrderByNos, queryInvoice, rejectRefund, requestInvoice } from '@/api/lg/order'
 import { amount } from '@/utils/lg/amount'
-import {useUserStore} from "@/pinia/modules/user";
+import { useUserStore } from '@/pinia/modules/user'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -427,6 +427,23 @@ const requestInvoiceFunc = async(order) => {
       message: '提交成功'
     })
     getOrdersData()
+  }
+}
+
+const queryInvoiceFunc = async(order) => {
+  const res = await queryInvoice({ order: order })
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '提交成功'
+    })
+    getOrdersData()
+  }
+}
+
+const downloadInvoiceFunc = async(order) => {
+  if (order.invoice != null && order.invoice.invoiceDownloadUrl != null) {
+    window.open(order.invoice.invoiceDownloadUrl)
   }
 }
 </script>

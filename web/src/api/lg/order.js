@@ -187,3 +187,11 @@ export const requestInvoice = (data) => {
     data
   })
 }
+
+export const queryInvoice = (data) => {
+  return service({
+    url: '/order/queryInvoice',
+    method: 'put',
+    data
+  })
+}
