@@ -96,7 +96,9 @@ export default ({
   }
 
   if (NODE_ENV === 'development') {
-    config.plugins.push(fullImportPlugin())
+    config.plugins.push(
+      fullImportPlugin()
+    )
   } else {
     config.plugins.push(AutoImport({
       resolvers: [ElementPlusResolver()]
