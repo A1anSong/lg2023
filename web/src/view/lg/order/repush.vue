@@ -370,14 +370,14 @@
         <el-table-column align="center" label="操作" min-width="200" fixed="right">
           <template #default="scope">
             <el-tag
-              v-if="!scope.row.isRepushed"
+              v-if="scope.row.isRepushed == true"
               type="danger"
               effect="dark"
               size="large"
             >已重推
             </el-tag>
             <el-button
-              v-if="scope.row.isRepushed && scope.row.project"
+              v-if="scope.row.isRepushed == false && scope.row.project"
               type="success"
               icon="select"
               size="small"
@@ -385,7 +385,7 @@
             >重推
             </el-button>
             <el-tag
-              v-if="scope.row.isRepushed && scope.row.project === null"
+              v-if="scope.row.isRepushed == false && scope.row.project === null"
               type="info"
               effect="dark"
               size="large"

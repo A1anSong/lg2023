@@ -1266,7 +1266,7 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 		return errors.New(resInvoice.Code + ":" + resInvoice.Describe)
 	}
 	invoiceForm := "B1"
-	invoicePoint, _ := strconv.ParseFloat(fmt.Sprintf("%.6f", global.GVA_CONFIG.Insurance.NNTaxRate), 64)
+	invoicePoint, _ := strconv.ParseFloat(fmt.Sprintf("%.6f", global.GVA_CONFIG.Insurance.NNTaxRate*100), 64)
 	invoiceContent := "发票内容"
 	type Result struct {
 		InvoiceSerialNum string `json:"invoiceSerialNum"`
@@ -1281,7 +1281,7 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 	if err != nil {
 		return
 	}
-	orderList := `[{orderNo:"` + *reqInvoice.Order.OrderNo + `",orderInvoiceAmount:` + strconv.FormatFloat(*reqInvoice.Order.Pay.PayAmount, 'f', 2, 64) + `}]`
+	orderList := `[{"orderNo":"` + *reqInvoice.Order.OrderNo + `","orderInvoiceAmount":` + strconv.FormatFloat(*reqInvoice.Order.Pay.PayAmount, 'f', 2, 64) + `}]`
 	invoice := lg.Invoice{
 		InvoiceNo:          &nnreq.Order.OrderNo,
 		InvoiceAmount:      reqInvoice.Order.Pay.PayAmount,

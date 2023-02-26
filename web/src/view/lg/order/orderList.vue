@@ -326,7 +326,7 @@ const exportExcel = async() => {
 }
 
 const downloadLetterFile = (order) => {
-  if (order.delay.elogFile !== null) {
+  if (order.delay_id != null && order.delay.elogFile != null) {
     downloadFile(order.delay.elogFile)
   } else {
     downloadFile(order.letter.elogFile)
@@ -334,7 +334,7 @@ const downloadLetterFile = (order) => {
 }
 
 const downloadLetterEncryptFile = (order) => {
-  if (order.delay.elogEncryptFile !== null) {
+  if (order.delay_id != null && order.delay.elogEncryptFile != null) {
     downloadFile(order.delay.elogEncryptFile)
   } else {
     downloadFile(order.letter.elogEncryptFile)
