@@ -61,23 +61,28 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Model(&lg.Order{})
-	db.Joins("Apply").Joins("Delay").Joins("Refund").Joins("Claim").Joins("Project").Joins("Letter")
+	db.Joins("left join lg_apply on lg_apply.id = lg_order.apply_id").
+		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").
+		Joins("left join lg_delay on lg_delay.id = lg_order.delay_id").
+		Joins("left join lg_letter on lg_letter.id = lg_order.letter_id").
+		Joins("left join lg_project on lg_project.id = lg_order.project_id").
+		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.ApplyNo != nil {
-		db = db.Where("Apply.apply_no = ?", info.ApplyNo)
+		db = db.Where("lg_apply.apply_no = ?", info.ApplyNo)
 	}
 	if info.ProjectName != nil {
-		db = db.Where("Apply.project_name = ?", info.ProjectName)
+		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
 	}
 	if info.InsureName != nil {
-		db = db.Where("Apply.insure_name = ?", info.InsureName)
+		db = db.Where("lg_apply.insure_name = ?", info.InsureName)
 	}
 	if info.ElogTemplateId != nil {
-		db = db.Where("Project.template_id = ?", info.ElogTemplateId)
+		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
 	}
 	if info.ElogNo != nil {
-		db = db.Where("Letter.elog_no = ?", info.ElogNo)
+		db = db.Where("lg_letter.elog_no = ?", info.ElogNo)
 	}
 	if info.OrderStatus != nil {
 		if *info.OrderStatus == "已撤" {
@@ -88,18 +93,18 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 		}
 		if *info.OrderStatus == "理赔" {
 			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is not null AND Claim.audit_status = 2")
+			db = db.Where("lg_order.claim_id is not null AND lg_claim.audit_status = 2")
 		}
 		if *info.OrderStatus == "退函" {
 			db = db.Where("lg_order.logout_id is null")
 			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is not null AND Refund.audit_status = 2")
+			db = db.Where("lg_order.refund_id is not null AND lg_refund.audit_status = 2")
 		}
 		if *info.OrderStatus == "延期" {
 			db = db.Where("lg_order.logout_id is null")
 			db = db.Where("lg_order.claim_id is null")
 			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is not null AND Delay.audit_status = 2")
+			db = db.Where("lg_order.delay_id is not null AND lg_delay.audit_status = 2")
 		}
 		if *info.OrderStatus == "已开" {
 			db = db.Where("lg_order.logout_id is null")
@@ -117,19 +122,19 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 		}
 	}
 	if info.AuditStatus != nil {
-		db = db.Where("Apply.audit_status = ?", info.AuditStatus)
+		db = db.Where("lg_apply.audit_status = ?", info.AuditStatus)
 	}
 	if info.OpenBeginDate != nil {
-		db = db.Where("Apply.open_begin_date BETWEEN ? AND ?", info.OpenBeginDate[0], info.OpenBeginDate[1])
+		db = db.Where("lg_apply.open_begin_date BETWEEN ? AND ?", info.OpenBeginDate[0], info.OpenBeginDate[1])
 	}
 	if info.ApplyCreatedAt != nil {
-		db = db.Where("Apply.created_at BETWEEN ? AND ?", info.ApplyCreatedAt[0], info.ApplyCreatedAt[1])
+		db = db.Where("lg_apply.created_at BETWEEN ? AND ?", info.ApplyCreatedAt[0], info.ApplyCreatedAt[1])
 	}
 	if info.LetterCreatedAt != nil {
-		db = db.Where("Letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
+		db = db.Where("lg_letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
 	}
 	if info.InsureDay != nil {
-		db = db.Where("Letter.insure_day = ?", info.InsureDay)
+		db = db.Where("lg_letter.insure_day = ?", info.InsureDay)
 	}
 	if info.AuditDelay != nil {
 		db = db.Where("lg_order.delay_id is not null")
@@ -1007,23 +1012,28 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Model(&lg.Order{})
-	db.Joins("Apply").Joins("Pay").Joins("Letter").Joins("Revoke").Joins("Delay").Joins("Refund").Joins("Claim").Joins("Logout").Joins("Invoice").Joins("Project")
+	db.Joins("left join lg_apply on lg_apply.id = lg_order.apply_id").
+		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").
+		Joins("left join lg_delay on lg_delay.id = lg_order.delay_id").
+		Joins("left join lg_letter on lg_letter.id = lg_order.letter_id").
+		Joins("left join lg_project on lg_project.id = lg_order.project_id").
+		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.ApplyNo != nil {
-		db = db.Where("Apply.apply_no = ?", info.ApplyNo)
+		db = db.Where("lg_apply.apply_no = ?", info.ApplyNo)
 	}
 	if info.ProjectName != nil {
-		db = db.Where("Apply.project_name = ?", info.ProjectName)
+		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
 	}
 	if info.InsureName != nil {
-		db = db.Where("Apply.insure_name = ?", info.InsureName)
+		db = db.Where("lg_apply.insure_name = ?", info.InsureName)
 	}
 	if info.ElogTemplateId != nil {
-		db = db.Where("Project.template_id = ?", info.ElogTemplateId)
+		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
 	}
 	if info.ElogNo != nil {
-		db = db.Where("Letter.elog_no = ?", info.ElogNo)
+		db = db.Where("lg_letter.elog_no = ?", info.ElogNo)
 	}
 	if info.OrderStatus != nil {
 		if *info.OrderStatus == "已撤" {
@@ -1034,18 +1044,18 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 		}
 		if *info.OrderStatus == "理赔" {
 			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is not null AND Claim.audit_status = 2")
+			db = db.Where("lg_order.claim_id is not null AND lg_claim.audit_status = 2")
 		}
 		if *info.OrderStatus == "退函" {
 			db = db.Where("lg_order.logout_id is null")
 			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is not null AND Refund.audit_status = 2")
+			db = db.Where("lg_order.refund_id is not null AND lg_refund.audit_status = 2")
 		}
 		if *info.OrderStatus == "延期" {
 			db = db.Where("lg_order.logout_id is null")
 			db = db.Where("lg_order.claim_id is null")
 			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is not null AND Delay.audit_status = 2")
+			db = db.Where("lg_order.delay_id is not null AND lg_delay.audit_status = 2")
 		}
 		if *info.OrderStatus == "已开" {
 			db = db.Where("lg_order.logout_id is null")
@@ -1063,19 +1073,19 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 		}
 	}
 	if info.AuditStatus != nil {
-		db = db.Where("Apply.audit_status = ?", info.AuditStatus)
+		db = db.Where("lg_apply.audit_status = ?", info.AuditStatus)
 	}
 	if info.OpenBeginDate != nil {
-		db = db.Where("Apply.open_begin_date BETWEEN ? AND ?", info.OpenBeginDate[0], info.OpenBeginDate[1])
+		db = db.Where("lg_apply.open_begin_date BETWEEN ? AND ?", info.OpenBeginDate[0], info.OpenBeginDate[1])
 	}
 	if info.ApplyCreatedAt != nil {
-		db = db.Where("Apply.created_at BETWEEN ? AND ?", info.ApplyCreatedAt[0], info.ApplyCreatedAt[1])
+		db = db.Where("lg_apply.created_at BETWEEN ? AND ?", info.ApplyCreatedAt[0], info.ApplyCreatedAt[1])
 	}
 	if info.LetterCreatedAt != nil {
-		db = db.Where("Letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
+		db = db.Where("lg_letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
 	}
 	if info.InsureDay != nil {
-		db = db.Where("Letter.insure_day = ?", info.InsureDay)
+		db = db.Where("lg_letter.insure_day = ?", info.InsureDay)
 	}
 	if info.AuditDelay != nil {
 		db = db.Where("lg_order.delay_id is not null")
@@ -1124,8 +1134,16 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 		var projectCity string
 		var projectCounty string
 		if order.ProjectID != nil {
-			projectCity = *order.Project.ProjectCity
-			projectCounty = *order.Project.ProjectCounty
+			if order.Project.ProjectCity != nil {
+				projectCity = *order.Project.ProjectCity
+			} else {
+				projectCity = ""
+			}
+			if order.Project.ProjectCounty != nil {
+				projectCounty = *order.Project.ProjectCounty
+			} else {
+				projectCounty = ""
+			}
 		} else {
 			projectCity = ""
 			projectCounty = ""

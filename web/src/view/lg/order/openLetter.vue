@@ -1,5 +1,6 @@
 <template>
   <div>
+    <warning-bar title="此页面显示的是开函失败订单" />
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
         <el-form-item label="申请编号">
@@ -444,6 +445,7 @@ import { amount } from '@/utils/lg/amount'
 import { attachType } from '@/utils/lg/attachType'
 import { orderStatus, orderStatusType } from '@/utils/lg/orderStatus'
 import { getTemplateList } from '@/api/lg/template'
+import WarningBar from '@/components/warningBar/warningBar.vue'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
