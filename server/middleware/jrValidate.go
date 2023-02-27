@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"bytes"
 	"encoding/base64"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi"
@@ -9,24 +8,13 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrresponse"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils/lg"
 	"github.com/gin-gonic/gin"
-	"io"
 	"net/http"
 )
 
 func JRValidate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO: 联调后删除
-		data, err := c.GetRawData()
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-		fmt.Printf("%v\n", string(data))
-		//很关键
-		//把读过的字节流重新放到body
-		c.Request.Body = io.NopCloser(bytes.NewBuffer(data))
-
 		var request jrrequest.JRRequest
-		err = c.ShouldBindJSON(&request)
+		err := c.ShouldBindJSON(&request)
 		if err != nil {
 			c.JSON(http.StatusOK, jrresponse.JRResponse{
 				Code: int(jrapi.MissingParam),
