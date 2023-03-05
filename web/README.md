@@ -1,5 +1,5 @@
 # 开发备注
-`node version v16.17.0`
+`node version v18.14.2`
 
 # qm-plus-vue-page
 
