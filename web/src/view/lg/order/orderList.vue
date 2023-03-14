@@ -80,7 +80,6 @@
         <el-button type="success" icon="document" @click="exportExcel">导出excel</el-button>
       </div>
       <el-table
-        ref="multipleTable"
         style="width: 100%"
         :data="tableData"
         row-key="ID"

@@ -77,7 +77,6 @@
     </div>
     <div class="gva-table-box">
       <el-table
-        ref="multipleTable"
         style="width: 100%"
         :data="tableData"
         row-key="ID"
@@ -359,12 +358,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TestAuditOrder'
-}
-</script>
-
 <script setup>
 import {
   getOrderList,
@@ -407,7 +400,6 @@ const authEncrypt = ref(false)
 const authCheck = computed(() => {
   return (authDetail.value === true ? 1 : 0) + (authAttach.value === true ? 1 : 0) + (authElog.value === true ? 1 : 0) + (authEncrypt.value === true ? 1 : 0)
 })
-const authOperation = ref(false)
 
 // 重置
 const onReset = () => {
@@ -571,33 +563,6 @@ const checkAuthorityEncrypt = () => {
   }
 }
 
-const checkAuthorityOperation = () => {
-  const authority = btnAuth.operation
-  let type = ''
-  switch (Object.prototype.toString.call(authority)) {
-    case '[object Array]':
-      type = 'Array'
-      break
-    case '[object String]':
-      type = 'String'
-      break
-    case '[object Number]':
-      type = 'Number'
-      break
-    default:
-      type = ''
-      break
-  }
-  if (type === '') {
-    return
-  }
-  const waitUse = authority.toString().split(',')
-  const flag = waitUse.some(item => item === userInfo.authorityId.toString())
-  if (flag) {
-    authOperation.value = true
-  }
-}
-
 // 查询
 const getTableData = async() => {
   const table = await getOrderList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
@@ -622,7 +587,6 @@ checkAuthorityDetail()
 checkAuthorityAttach()
 checkAuthorityElog()
 checkAuthorityEncrypt()
-checkAuthorityOperation()
 getTemplateData()
 getTableData()
 
@@ -669,7 +633,7 @@ const approveApplyFunc = async(apply) => {
         type: 'success',
         message: '提交成功'
       })
-      getTableData()
+      await getTableData()
     }
   })
 }
@@ -686,7 +650,7 @@ const rejectApplyFunc = async(apply) => {
         type: 'success',
         message: '提交成功'
       })
-      getTableData()
+      await getTableData()
     }
   })
 }
