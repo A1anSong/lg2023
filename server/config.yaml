@@ -89,7 +89,9 @@ insurance:
   credit-code: 91361123MA35PEGG4X
   address: 江西省上饶市玉山县冰溪镇府前路财政局
   zip-code: "334700"
-  tel: "13800138000"
+  tel: 0793-2585999
+  bankName: 中国建设银行玉山支行
+  bankNo: 3605 0183 0450 0000 0145
   temp-dir: ./tmp/
   key-file: ./jxbl/jxbl.p12
   stamp-file: ./jxbl/stamp.png
@@ -106,8 +108,11 @@ insurance:
   nn-app-secret: SDDED2523BED4643
   nn-tax-no: "339902999999789110"
   nn-tax-rate: 0.13
-  nn-acccess-token: fa35aa5f2feb821e9c02c00qajcdnnms
-  nn-token-time: 1676926011642
+  nn-checker: 胡怀闽
+  nn-payee: 游丹
+  nn-clerk: 游丹
+  nn-acccess-token: fa35aa5f2feb821e9c02c00jk1ctdhbs
+  nn-token-time: 1678817857034
 jwt:
   signing-key: 6384fe2c-e99f-48f3-a770-0db405f68ef8
   expires-time: 7d

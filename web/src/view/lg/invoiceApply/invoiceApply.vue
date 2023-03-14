@@ -172,7 +172,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import { approveApply, approveRefund, findOrderByNos, queryInvoice, rejectRefund, requestInvoice } from '@/api/lg/order'
 import { amount } from '@/utils/lg/amount'
-import { useUserStore } from '@/pinia/modules/user'
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -418,9 +417,7 @@ const rejectInvoiceApplyFunc = async(apply) => {
 }
 
 const requestInvoiceFunc = async(order) => {
-  const userStore = useUserStore()
-  const userInfo = userStore.userInfo
-  const res = await requestInvoice({ order: order, invoiceApply: invoiceApplyData.value, clerk: userInfo.nickName })
+  const res = await requestInvoice({ order: order, invoiceApply: invoiceApplyData.value })
   if (res.code === 0) {
     ElMessage({
       type: 'success',

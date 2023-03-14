@@ -1216,9 +1216,12 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 		SalerTaxNum   string     `json:"salerTaxNum"`
 		SalerTel      string     `json:"salerTel"`
 		SalerAddress  string     `json:"salerAddress"`
+		SalerAccount  *string    `json:"salerAccount,omitempty"`
 		OrderNo       string     `json:"orderNo"`
 		InvoiceDate   string     `json:"invoiceDate"`
 		Remark        *string    `json:"remark,omitempty"`
+		Checker       *string    `json:"checker,omitempty"`
+		Payee         *string    `json:"payee,omitempty"`
 		Clerk         string     `json:"clerk"`
 		PushMode      string     `json:"pushMode"`
 		BuyerPhone    *string    `json:"buyerPhone,omitempty"`
@@ -1237,6 +1240,9 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 		bankName = *reqInvoice.InvoiceApply.BankNo
 	}
 	buyerAccount := bankName + bankNo
+	salerAccount := global.GVA_CONFIG.Insurance.BankName + global.GVA_CONFIG.Insurance.BankNo
+	checker := global.GVA_CONFIG.Insurance.NNChecker
+	payee := global.GVA_CONFIG.Insurance.NNPayee
 	timestamp := time.Now().Unix()
 	rand.Seed(timestamp)
 	randomOrder := rand.Intn(899999) + 100000
@@ -1254,10 +1260,13 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 			SalerTaxNum:  global.GVA_CONFIG.Insurance.NNTaxNo,
 			SalerTel:     global.GVA_CONFIG.Insurance.Tel,
 			SalerAddress: global.GVA_CONFIG.Insurance.Address,
+			SalerAccount: &salerAccount,
 			OrderNo:      time.Now().Format("20060102150405") + strconv.Itoa(randomOrder),
 			InvoiceDate:  time.Now().Format("2006-01-02 15:04:05"),
 			Remark:       reqInvoice.InvoiceApply.Remarks,
-			Clerk:        reqInvoice.Clerk,
+			Checker:      &checker,
+			Payee:        &payee,
+			Clerk:        global.GVA_CONFIG.Insurance.NNClerk,
 			PushMode:     strconv.Itoa(pushMode),
 			BuyerPhone:   reqInvoice.InvoiceApply.CompanyTel,
 			InvoiceType:  "1",

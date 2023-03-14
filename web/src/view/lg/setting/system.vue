@@ -19,6 +19,15 @@
           <el-form-item label="邮政编码">
             <el-input v-model="config.insurance['zip-code']" />
           </el-form-item>
+          <el-form-item label="电话">
+            <el-input v-model="config.insurance['tel']" />
+          </el-form-item>
+          <el-form-item label="开户银行">
+            <el-input v-model="config.insurance['bankName']" />
+          </el-form-item>
+          <el-form-item label="银行账户">
+            <el-input v-model="config.insurance['bankNo']" />
+          </el-form-item>
         </el-collapse-item>
         <el-collapse-item title="开函配置" name="2">
           <el-form-item label="临时文件路径">
@@ -71,6 +80,15 @@
           </el-form-item>
           <el-form-item label="税率">
             <el-input-number v-model="config.insurance['nn-tax-rate']" style="width:100%" :precision="2" :controls="false" />
+          </el-form-item>
+          <el-form-item label="复核人">
+            <el-input v-model="config.insurance['nn-checker']" />
+          </el-form-item>
+          <el-form-item label="收款人">
+            <el-input v-model="config.insurance['nn-payee']" />
+          </el-form-item>
+          <el-form-item label="开票人">
+            <el-input v-model="config.insurance['nn-clerk']" />
           </el-form-item>
           <el-form-item label="AccessToken">
             <el-input v-model="config.insurance['nn-acccess-token']" :disabled="true" />
