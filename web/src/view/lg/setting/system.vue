@@ -39,6 +39,9 @@
           <el-form-item label="单位公章文件">
             <el-input v-model="config.insurance['stamp-file']" />
           </el-form-item>
+          <el-form-item label="法人章文件">
+            <el-input v-model="config.insurance['legal-file']" />
+          </el-form-item>
           <el-form-item label="签章程序路径">
             <el-input v-model="config.insurance['sign-program']" />
           </el-form-item>
