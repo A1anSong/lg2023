@@ -86,13 +86,14 @@ hua-wei-obs:
   secret-key: you-secret-key
 insurance:
   name: 玉山县玉清融资担保有限责任公司
-  credit-code: 1234567890abcdefgh
-  address: 玉山县玉清融资担保有限责任公司地址
-  zip-code: "000000"
+  credit-code: 91361123MA35PEGG4X
+  address: 江西省上饶市玉山县冰溪镇府前路财政局
+  zip-code: "334700"
   tel: "13800138000"
   temp-dir: ./tmp/
   key-file: ./jxbl/jxbl.p12
   stamp-file: ./jxbl/stamp.png
+  legal-file: ./jxbl/legal.png
   sign-program: ./jxblSignature.jar
   api-domain: https://testlg.jxbolong.cn/lg
   jr-api-domain: http://112.95.248.184:9110/api/lemon-openapi

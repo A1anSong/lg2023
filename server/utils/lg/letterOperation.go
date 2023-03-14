@@ -163,11 +163,11 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	_ = os.Remove(global.GVA_CONFIG.Insurance.TempDir + "letter" + fileName + ".docx")
 	_ = os.Remove(global.GVA_CONFIG.Insurance.TempDir + "letter" + fileName + "encrypt.docx")
 
-	err = exec.Command("java", "-jar", global.GVA_CONFIG.Insurance.SignProgram, global.GVA_CONFIG.Insurance.KeyFile, global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+".pdf", global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+"Signed.pdf", global.GVA_CONFIG.Insurance.StampFile).Run()
+	err = exec.Command("java", "-jar", global.GVA_CONFIG.Insurance.SignProgram, global.GVA_CONFIG.Insurance.KeyFile, global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+".pdf", global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+"Signed.pdf", global.GVA_CONFIG.Insurance.StampFile, global.GVA_CONFIG.Insurance.LegalFile).Run()
 	if err != nil {
 		return
 	}
-	err = exec.Command("java", "-jar", global.GVA_CONFIG.Insurance.SignProgram, global.GVA_CONFIG.Insurance.KeyFile, global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+"encrypt.pdf", global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+"encryptSigned.pdf", global.GVA_CONFIG.Insurance.StampFile).Run()
+	err = exec.Command("java", "-jar", global.GVA_CONFIG.Insurance.SignProgram, global.GVA_CONFIG.Insurance.KeyFile, global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+"encrypt.pdf", global.GVA_CONFIG.Insurance.TempDir+"letter"+fileName+"encryptSigned.pdf", global.GVA_CONFIG.Insurance.StampFile, global.GVA_CONFIG.Insurance.LegalFile).Run()
 	if err != nil {
 		return
 	}

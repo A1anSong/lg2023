@@ -9,6 +9,7 @@ type Insurance struct {
 	TempDir       string  `mapstructure:"temp-dir" json:"temp-dir" yaml:"temp-dir"`
 	KeyFile       string  `mapstructure:"key-file" json:"key-file" yaml:"key-file"`
 	StampFile     string  `mapstructure:"stamp-file" json:"stamp-file" yaml:"stamp-file"`
+	LegalFile     string  `mapstructure:"legal-file" json:"legal-file" yaml:"legal-file"`
 	SignProgram   string  `mapstructure:"sign-program" json:"sign-program" yaml:"sign-program"`
 	APIDomain     string  `mapstructure:"api-domain" json:"api-domain" yaml:"api-domain"`
 	JRAPIDomain   string  `mapstructure:"jr-api-domain" json:"jr-api-domain" yaml:"jr-api-domain"`
