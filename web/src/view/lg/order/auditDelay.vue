@@ -438,13 +438,13 @@ const checkAuthorityAll = () => {
       break
   }
   if (type === '') {
-    searchInfo.value = { employeeNo: userInfo.ID }
+    searchInfo.value.employeeNo = userInfo.ID
     return
   }
   const waitUse = authority.toString().split(',')
   const flag = waitUse.some(item => item === userInfo.authorityId.toString())
   if (!flag) {
-    searchInfo.value = { employeeNo: userInfo.ID }
+    searchInfo.value.employeeNo = userInfo.ID
   }
 }
 
