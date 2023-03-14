@@ -8,17 +8,15 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrrequest"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrresponse"
+	sysModel "github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"strconv"
-	"sync"
 	"time"
 )
 
 type JRAPIService struct {
 }
-
-var payLock sync.Mutex
 
 func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resApply jrresponse.JRAPIApply, err error) {
 	if reApply.OrderNo == nil ||
@@ -50,8 +48,7 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 		return
 	}
 	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
-		if !errors.Is(tx.Where("order_no = ? AND apply_no = ?", reApply.OrderNo, reApply.ApplyNo).
-			First(&lg.Apply{}).Error, gorm.ErrRecordNotFound) {
+		if !errors.Is(tx.Where("order_no = ? AND apply_no = ?", reApply.OrderNo, reApply.ApplyNo).First(&lg.Apply{}).Error, gorm.ErrRecordNotFound) {
 			return errors.New("相同订单和开函申请已经存在")
 		}
 
@@ -60,6 +57,14 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 			OrderNo:    reApply.OrderNo,
 			IsRepushed: &isRepushed,
 		}
+
+		var employee sysModel.SysUser
+		if reApply.ApplicantAuthCode != nil {
+			if !errors.Is(tx.Where("employee_no = ?", reApply.ApplicantAuthCode).First(&employee).Error, gorm.ErrRecordNotFound) {
+				order.EmployeeID = &employee.ID
+			}
+		}
+
 		if err = tx.Create(&order).Error; err != nil {
 			return errors.New("创建订单失败")
 		}

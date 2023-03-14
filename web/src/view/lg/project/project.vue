@@ -101,28 +101,28 @@
         />
       </div>
     </div>
-    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="弹窗操作">
+    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="项目录入">
       <el-form ref="elFormRef" :model="formData" label-position="right" :rules="rule" label-width="120px">
         <el-form-item label="项目名称:" prop="projectName">
-          <el-input v-model="formData.projectName" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.projectName" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="项目编号:" prop="projectNo">
-          <el-input v-model="formData.projectNo" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.projectNo" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="项目金额:" prop="projectAmount">
           <el-input-number v-model="formData.projectAmount" style="width:100%" :precision="2" :clearable="true" placeholder="请输入" :controls="false" />
         </el-form-item>
         <el-form-item label="招标人名称:" prop="tendereeName">
-          <el-input v-model="formData.tendereeName" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.tendereeName" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="招标人地址:" prop="tendereeAddress">
-          <el-input v-model="formData.tendereeAddress" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.tendereeAddress" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="招标人电话:" prop="agentTel">
-          <el-input v-model="formData.tendereeTel" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.tendereeTel" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="招标代理电话:" prop="agentTel">
-          <el-input v-model="formData.agentTel" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.agentTel" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="担保金额:" prop="tenderDeposit">
           <el-input-number v-model="formData.tenderDeposit" style="width:100%" :precision="2" :clearable="true" placeholder="请输入" :controls="false" />
@@ -146,10 +146,10 @@
           />
         </el-form-item>
         <el-form-item label="所属市:" prop="projectCity">
-          <el-input v-model="formData.projectCity" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.projectCity" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="所属县:" prop="projectCounty">
-          <el-input v-model="formData.projectCounty" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.projectCounty" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="保函有效期:" prop="projectDay">
           <el-input v-model.number="formData.projectDay" :clearable="true" placeholder="请输入" />
@@ -164,10 +164,10 @@
           />
         </el-form-item>
         <el-form-item label="项目类型:" prop="projectType">
-          <el-input v-model="formData.projectType" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.projectType" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="项目类别:" prop="projectType">
-          <el-input v-model="formData.projectCategory" :clearable="true" placeholder="请输入" />
+          <el-input v-model.trim="formData.projectCategory" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="项目模板:" prop="templateID">
           <el-select v-model="formData.templateID" clearable placeholder="请输入" style="width: 100%">
