@@ -193,7 +193,7 @@
         />
       </div>
     </div>
-    <el-dialog v-model="dialogDetailVisble" title="详情">
+    <el-dialog v-model="dialogDetailVisible" title="详情">
       <el-descriptions style="margin: 10px;" title="订单信息" size="small" :column="1" border>
         <el-descriptions-item label="申请编号">{{ orderDetailData.apply.applyNo }}</el-descriptions-item>
         <el-descriptions-item label="产品类型">{{
@@ -313,7 +313,7 @@
         </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
-    <el-dialog v-model="dialogAttachVisble" title="附件">
+    <el-dialog v-model="dialogAttachVisible" title="附件">
       <el-descriptions style="margin: 10px;" size="small" :column="1" border>
         <el-descriptions-item
           v-for="attachInfo in JSON.parse(attachInfoData)"
@@ -334,7 +334,7 @@ import {
   downloadExcel
 } from '@/api/lg/order'
 
-import { computed, ref } from 'vue'
+import { ref, computed } from 'vue'
 
 import { date } from '@/utils/lg/date'
 import { auditStatus, auditType } from '@/utils/lg/auditStatus'
@@ -569,17 +569,17 @@ getTableData()
 
 // ============== 表格控制部分结束 ===============
 
-const dialogDetailVisble = ref(false)
-const dialogAttachVisble = ref(false)
+const dialogDetailVisible = ref(false)
+const dialogAttachVisible = ref(false)
 
 const openDetailDialog = (order) => {
   orderDetailData.value = order
-  dialogDetailVisble.value = true
+  dialogDetailVisible.value = true
 }
 
 const openAttachDialog = (attachInfo) => {
   attachInfoData.value = attachInfo
-  dialogAttachVisble.value = true
+  dialogAttachVisible.value = true
 }
 
 // 导出excel
