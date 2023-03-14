@@ -988,6 +988,11 @@ func (orderService *OrderService) RePush(order lg.Order) (err error) {
 				return errors.New("交易中心响应失败")
 			}
 		}
+		isRepushed := true
+		order.IsRepushed = &isRepushed
+		if err = tx.Save(&order).Error; err != nil {
+			return err
+		}
 
 		return nil
 	})
