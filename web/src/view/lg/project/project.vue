@@ -41,6 +41,7 @@
         :data="tableData"
         row-key="ID"
         @selection-change="handleSelectionChange"
+        height="800"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column align="left" label="日期" width="180">

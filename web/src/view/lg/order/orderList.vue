@@ -88,6 +88,7 @@
         table-layout="fixed"
         empty-text="无数据"
         scrollbar-always-on
+        height="800"
       >
         <el-table-column align="center" label="订单编号" prop="orderNo" width="120px" />
         <el-table-column align="center" label="产品类型" width="80px">

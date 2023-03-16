@@ -86,6 +86,7 @@
         table-layout="fixed"
         empty-text="无数据"
         scrollbar-always-on
+        height="800"
       >
         <el-table-column v-auth="btnAuth.operation" align="center" label="操作" min-width="200" fixed="left">
           <template #default="scope">
