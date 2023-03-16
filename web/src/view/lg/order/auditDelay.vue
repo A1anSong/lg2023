@@ -5,6 +5,9 @@
         <el-form-item label="申请编号">
           <el-input v-model="searchInfo.applyNo" placeholder="搜索条件" clearable />
         </el-form-item>
+        <el-form-item label="标段编号">
+          <el-input v-model="searchInfo.projectNo" placeholder="搜索条件" clearable />
+        </el-form-item>
         <el-form-item label="标段名称">
           <el-input v-model="searchInfo.projectName" placeholder="搜索条件" clearable />
         </el-form-item>
@@ -68,6 +71,9 @@
         </el-form-item>
         <el-form-item label="担保期限" clearable>
           <el-input v-model.number="searchInfo.insureDay" placeholder="搜索条件" clearable />
+        </el-form-item>
+        <el-form-item v-auth:="btnAuth.all" label="工号">
+          <el-input v-model="searchInfo.authCode" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>

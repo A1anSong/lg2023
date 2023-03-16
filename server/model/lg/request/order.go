@@ -9,6 +9,7 @@ import (
 type OrderSearch struct {
 	lg.Order
 	ApplyNo         *string     `json:"applyNo" form:"applyNo"`
+	ProjectNo       *string     `json:"projectNo" form:"projectNo"`
 	ProjectName     *string     `json:"projectName" form:"projectName"`
 	InsureName      *string     `json:"insureName" form:"insureName"`
 	ElogTemplateId  *string     `json:"elogTemplateId" form:"elogTemplateId"`
@@ -25,5 +26,6 @@ type OrderSearch struct {
 	IsPayed         *bool       `json:"isPayed" form:"isPayed"`
 	NoRevoke        *bool       `json:"noRevoke" form:"noRevoke"`
 	EmployeeNo      *uint       `json:"employeeNo" form:"employeeNo"`
+	AuthCode        *string     `json:"authCode" form:"authCode"`
 	request.PageInfo
 }

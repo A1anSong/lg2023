@@ -72,6 +72,12 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	if info.ApplyNo != nil {
 		db = db.Where("lg_apply.apply_no = ?", info.ApplyNo)
 	}
+	if info.ProjectNo != nil {
+		db = db.Where("lg_apply.project_no = ?", info.ProjectNo)
+	}
+	if info.AuthCode != nil {
+		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
+	}
 	if info.ProjectName != nil {
 		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
 	}
@@ -1030,6 +1036,12 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.ApplyNo != nil {
 		db = db.Where("lg_apply.apply_no = ?", info.ApplyNo)
+	}
+	if info.ProjectNo != nil {
+		db = db.Where("lg_apply.project_no = ?", info.ProjectNo)
+	}
+	if info.AuthCode != nil {
+		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
 	}
 	if info.ProjectName != nil {
 		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
