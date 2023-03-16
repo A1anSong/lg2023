@@ -101,7 +101,7 @@
         />
       </div>
     </div>
-    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="项目录入">
+    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="项目录入" :close-on-click-modal="false">
       <el-form ref="elFormRef" :model="formData" label-position="right" :rules="rule" label-width="120px">
         <el-form-item label="项目名称:" prop="projectName">
           <el-input v-model.trim="formData.projectName" :clearable="true" placeholder="请输入" />

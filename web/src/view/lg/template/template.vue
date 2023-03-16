@@ -68,7 +68,7 @@
         />
       </div>
     </div>
-    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="弹窗操作">
+    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="新增模板" :close-on-click-modal="false">
       <el-form ref="elFormRef" :model="formData" label-position="right" :rules="rule" label-width="80px">
         <el-form-item label="模板名称:" prop="templateName">
           <el-input v-model="formData.templateName" :clearable="true" placeholder="请输入" />

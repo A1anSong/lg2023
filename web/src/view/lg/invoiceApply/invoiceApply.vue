@@ -112,7 +112,7 @@
         </div>
       </template>
     </el-dialog>
-    <el-dialog v-model="dialogDetailVisble" title="详情">
+    <el-dialog v-model="dialogDetailVisble" title="详情" :close-on-click-modal="false">
       <el-descriptions style="margin: 10px;" size="small" :column="1" border>
         <el-descriptions-item label="申请编号">{{ invoiceApplyData.applyNo }}</el-descriptions-item>
         <el-descriptions-item label="开票总金额">{{ invoiceApplyData.invoiceTotalAmount }}</el-descriptions-item>

@@ -217,7 +217,7 @@
         />
       </div>
     </div>
-    <el-dialog v-model="dialogDetailVisible" title="详情">
+    <el-dialog v-model="dialogDetailVisible" title="详情" :close-on-click-modal="false">
       <el-descriptions style="margin: 10px;" title="订单信息" size="small" :column="1" border>
         <el-descriptions-item label="申请编号">{{ orderDetailData.apply.applyNo }}</el-descriptions-item>
         <el-descriptions-item label="产品类型">{{
@@ -337,7 +337,7 @@
         </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
-    <el-dialog v-model="dialogAttachVisible" title="附件">
+    <el-dialog v-model="dialogAttachVisible" title="附件" :close-on-click-modal="false">
       <el-descriptions style="margin: 10px;" size="small" :column="1" border>
         <el-descriptions-item
           v-for="attachInfo in JSON.parse(attachInfoData)"
