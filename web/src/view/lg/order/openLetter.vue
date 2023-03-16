@@ -62,7 +62,7 @@
         <el-form-item label="担保期限" clearable>
           <el-input v-model.number="searchInfo.insureDay" placeholder="搜索条件" clearable />
         </el-form-item>
-        <el-form-item v-auth:="btnAuth.all" label="工号">
+        <el-form-item v-auth="btnAuth.all" label="工号">
           <el-input v-model="searchInfo.authCode" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item>

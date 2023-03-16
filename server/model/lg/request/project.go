@@ -8,7 +8,8 @@ import (
 
 type ProjectSearch struct {
 	lg.Project
-	StartCreatedAt *time.Time `json:"startCreatedAt" form:"startCreatedAt"`
-	EndCreatedAt   *time.Time `json:"endCreatedAt" form:"endCreatedAt"`
+	StartCreatedAt *time.Time  `json:"startCreatedAt" form:"startCreatedAt"`
+	EndCreatedAt   *time.Time  `json:"endCreatedAt" form:"endCreatedAt"`
+	OpenTime       []time.Time `json:"openTime" form:"openTime"`
 	request.PageInfo
 }

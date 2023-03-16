@@ -46,8 +46,26 @@ func (projectService *ProjectService) GetProjectInfoList(info lgReq.ProjectSearc
 	db := global.GVA_DB.Model(&lg.Project{})
 	var projects []lg.Project
 	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
-		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	if info.ProjectNo != nil {
+		db = db.Where("project_no = ?", info.ProjectNo)
+	}
+	if info.ProjectName != nil {
+		db = db.Where("project_name = ?", info.ProjectName)
+	}
+	if info.OpenTime != nil {
+		db = db.Where("project_open_time BETWEEN ? AND ?", info.OpenTime[0], info.OpenTime[0])
+	}
+	if info.ProjectCity != nil {
+		db = db.Where("project_city = ?", info.ProjectCity)
+	}
+	if info.ProjectCounty != nil {
+		db = db.Where("project_county = ?", info.ProjectCounty)
+	}
+	if info.TemplateID != nil {
+		db = db.Where("template_id = ?", info.TemplateID)
+	}
+	if info.IsEnable != nil {
+		db = db.Where("is_enable = ?", info.IsEnable)
 	}
 	err = db.Count(&total).Error
 	if err != nil {
