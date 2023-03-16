@@ -56,8 +56,11 @@ func (invoiceApplyService *InvoiceApplyService) GetInvoiceApplyInfoList(info lgR
 	db := global.GVA_DB.Model(&lg.InvoiceApply{})
 	var invoiceApplys []lg.InvoiceApply
 	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
-		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
+	if info.InvoiceTile != nil {
+		db = db.Where("invoice_tile = ?", info.InvoiceTile)
+	}
+	if info.ApplyTime != nil {
+		db = db.Where("created_at BETWEEN ? AND ?", info.ApplyTime[0], info.ApplyTime[1])
 	}
 	err = db.Count(&total).Error
 	if err != nil {
