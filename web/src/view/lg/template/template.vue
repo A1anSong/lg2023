@@ -1,31 +1,8 @@
 <template>
   <div>
-    <!--    <div class="gva-search-box">-->
-    <!--      <el-form :inline="true" :model="searchInfo" class="demo-form-inline">-->
-    <!--        <el-form-item label="创建时间">-->
-    <!--          <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始时间" />-->
-    <!--          —-->
-    <!--          <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束时间" />-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item>-->
-    <!--          <el-button size="small" type="primary" icon="search" @click="onSubmit">查询</el-button>-->
-    <!--          <el-button size="small" icon="refresh" @click="onReset">重置</el-button>-->
-    <!--        </el-form-item>-->
-    <!--      </el-form>-->
-    <!--    </div>-->
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button size="small" type="primary" icon="plus" @click="openDialog">新增</el-button>
-        <!--              <el-popover v-model:visible="deleteVisible" placement="top" width="160">-->
-        <!--                <p>确定要删除吗？</p>-->
-        <!--                <div style="text-align: right; margin-top: 8px;">-->
-        <!--                  <el-button size="small" type="primary" link @click="deleteVisible = false">取消</el-button>-->
-        <!--                  <el-button size="small" type="primary" @click="onDelete">确定</el-button>-->
-        <!--                </div>-->
-        <!--                <template #reference>-->
-        <!--                  <el-button icon="delete" size="small" style="margin-left: 10px;" :disabled="!multipleSelection.length" @click="deleteVisible = true">删除</el-button>-->
-        <!--                </template>-->
-        <!--              </el-popover>-->
+        <el-button type="success" icon="plus" @click="openDialog">新增</el-button>
       </div>
       <el-table
         ref="multipleTable"
@@ -36,24 +13,11 @@
         @selection-change="handleSelectionChange"
         height="800"
       >
-        <!--        <el-table-column type="selection" width="55" />-->
-        <!--        <el-table-column align="left" label="日期" width="180">-->
-        <!--          <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>-->
-        <!--        </el-table-column>-->
         <el-table-column align="left" label="模板名称" prop="templateName" min-width="120px" />
-        <el-table-column align="left" label="按钮组" width="160px" fixed="right">
+        <el-table-column align="center" label="操作" width="200" fixed="right">
           <template #default="scope">
-            <!--            <el-button-->
-            <!--              type="primary"-->
-            <!--              link-->
-            <!--              icon="edit"-->
-            <!--              size="small"-->
-            <!--              class="table-button"-->
-            <!--              @click="updateTemplateFunc(scope.row)"-->
-            <!--            >变更-->
-            <!--            </el-button>-->
-            <el-button type="primary" link icon="download" size="small" @click="downloadTemplateFile(scope.row.templateFile)">下载</el-button>
-            <el-button type="primary" link icon="delete" size="small" @click="deleteRow(scope.row)">删除</el-button>
+            <el-button type="primary" icon="download" @click="downloadTemplateFile(scope.row.templateFile)">下载</el-button>
+            <el-button type="danger" icon="delete" @click="deleteRow(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -124,8 +88,6 @@ import {
   getTemplateList
 } from '@/api/lg/template'
 
-// 全量引入格式化工具 请按需保留
-import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import { useUserStore } from '@/pinia/modules/user'
