@@ -3,8 +3,8 @@
     <warning-bar title="此页面显示的是开函失败订单" />
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
-        <el-form-item label="申请编号">
-          <el-input v-model="searchInfo.applyNo" placeholder="搜索条件" clearable />
+        <el-form-item label="订单编号">
+          <el-input v-model="searchInfo.orderNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="标段编号">
           <el-input v-model="searchInfo.projectNo" placeholder="搜索条件" clearable />

@@ -69,28 +69,25 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.ApplyNo != nil {
-		db = db.Where("lg_apply.apply_no = ?", info.ApplyNo)
+	if info.OrderNo != nil && *info.OrderNo != "" {
+		db = db.Where("lg_order.order_no = ?", info.OrderNo)
 	}
-	if info.ProjectNo != nil {
+	if info.ProjectNo != nil && *info.ProjectNo != "" {
 		db = db.Where("lg_apply.project_no = ?", info.ProjectNo)
 	}
-	if info.AuthCode != nil {
-		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
-	}
-	if info.ProjectName != nil {
+	if info.ProjectName != nil && *info.ProjectName != "" {
 		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
 	}
-	if info.InsureName != nil {
+	if info.InsureName != nil && *info.InsureName != "" {
 		db = db.Where("lg_apply.insure_name = ?", info.InsureName)
 	}
-	if info.ElogTemplateId != nil {
+	if info.ElogTemplateId != nil && *info.ElogTemplateId != 0 {
 		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
 	}
-	if info.ElogNo != nil {
+	if info.ElogNo != nil && *info.ElogNo != "" {
 		db = db.Where("lg_letter.elog_no = ?", info.ElogNo)
 	}
-	if info.OrderStatus != nil {
+	if info.OrderStatus != nil && *info.OrderStatus != "" {
 		if *info.OrderStatus == "已撤" {
 			db = db.Where("lg_order.revoke_id is not null")
 		}
@@ -127,7 +124,8 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 			db = db.Where("lg_order.letter_id is null")
 		}
 	}
-	if info.AuditStatus != nil {
+	if info.AuditStatus != nil && *info.AuditStatus != 0 {
+		fmt.Println(*info.AuditStatus)
 		db = db.Where("lg_apply.audit_status = ?", info.AuditStatus)
 	}
 	if info.OpenBeginDate != nil {
@@ -139,8 +137,11 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	if info.LetterCreatedAt != nil {
 		db = db.Where("lg_letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
 	}
-	if info.InsureDay != nil {
+	if info.InsureDay != nil && *info.InsureDay != 0 {
 		db = db.Where("lg_letter.insure_day = ?", info.InsureDay)
+	}
+	if info.AuthCode != nil && *info.AuthCode != "" {
+		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
 	}
 	if info.AuditDelay != nil {
 		db = db.Where("lg_order.delay_id is not null")
@@ -1034,28 +1035,25 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.ApplyNo != nil {
-		db = db.Where("lg_apply.apply_no = ?", info.ApplyNo)
+	if info.OrderNo != nil && *info.OrderNo != "" {
+		db = db.Where("lg_order.order_no = ?", info.OrderNo)
 	}
-	if info.ProjectNo != nil {
+	if info.ProjectNo != nil && *info.ProjectNo != "" {
 		db = db.Where("lg_apply.project_no = ?", info.ProjectNo)
 	}
-	if info.AuthCode != nil {
-		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
-	}
-	if info.ProjectName != nil {
+	if info.ProjectName != nil && *info.ProjectName != "" {
 		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
 	}
-	if info.InsureName != nil {
+	if info.InsureName != nil && *info.InsureName != "" {
 		db = db.Where("lg_apply.insure_name = ?", info.InsureName)
 	}
-	if info.ElogTemplateId != nil {
+	if info.ElogTemplateId != nil && *info.ElogTemplateId != 0 {
 		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
 	}
-	if info.ElogNo != nil {
+	if info.ElogNo != nil && *info.ElogNo != "" {
 		db = db.Where("lg_letter.elog_no = ?", info.ElogNo)
 	}
-	if info.OrderStatus != nil {
+	if info.OrderStatus != nil && *info.OrderStatus != "" {
 		if *info.OrderStatus == "已撤" {
 			db = db.Where("lg_order.revoke_id is not null")
 		}
@@ -1092,7 +1090,7 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 			db = db.Where("lg_order.letter_id is null")
 		}
 	}
-	if info.AuditStatus != nil {
+	if info.AuditStatus != nil && *info.AuditStatus != 0 {
 		db = db.Where("lg_apply.audit_status = ?", info.AuditStatus)
 	}
 	if info.OpenBeginDate != nil {
@@ -1104,8 +1102,11 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	if info.LetterCreatedAt != nil {
 		db = db.Where("lg_letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
 	}
-	if info.InsureDay != nil {
+	if info.InsureDay != nil && *info.InsureDay != 0 {
 		db = db.Where("lg_letter.insure_day = ?", info.InsureDay)
+	}
+	if info.AuthCode != nil && *info.AuthCode != "" {
+		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
 	}
 	if info.AuditDelay != nil {
 		db = db.Where("lg_order.delay_id is not null")

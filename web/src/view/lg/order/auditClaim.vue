@@ -3,8 +3,8 @@
     <warning-bar title="注意：交易中理赔接口会一直返回失败（无论受理成功），理赔请尽量走人工流程" />
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
-        <el-form-item label="申请编号">
-          <el-input v-model="searchInfo.applyNo" placeholder="搜索条件" clearable />
+        <el-form-item label="订单编号">
+          <el-input v-model="searchInfo.orderNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="标段编号">
           <el-input v-model="searchInfo.projectNo" placeholder="搜索条件" clearable />

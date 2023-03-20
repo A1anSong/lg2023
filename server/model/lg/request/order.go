@@ -8,11 +8,10 @@ import (
 
 type OrderSearch struct {
 	lg.Order
-	ApplyNo         *string     `json:"applyNo" form:"applyNo"`
 	ProjectNo       *string     `json:"projectNo" form:"projectNo"`
 	ProjectName     *string     `json:"projectName" form:"projectName"`
 	InsureName      *string     `json:"insureName" form:"insureName"`
-	ElogTemplateId  *string     `json:"elogTemplateId" form:"elogTemplateId"`
+	ElogTemplateId  *uint       `json:"elogTemplateId" form:"elogTemplateId"`
 	ElogNo          *string     `json:"elogNo" form:"elogNo"`
 	OrderStatus     *string     `json:"orderStatus" form:"orderStatus"`
 	AuditStatus     *int        `json:"auditStatus" form:"auditStatus"`
