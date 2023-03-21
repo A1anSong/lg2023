@@ -8,7 +8,7 @@
       <el-divider direction="vertical" />
       <span>Copyright</span>
       <span>
-        <a href="https://git.a1ansong.com/A1an">南昌赣腾</a>
+        <a href="https://git.a1ansong.com/A1an">玉清融担</a>
       </span>
     </div>
   </div>

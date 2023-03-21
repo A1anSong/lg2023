@@ -3,7 +3,7 @@
  */
 
 const config = {
-  appName: '南昌赣腾',
+  appName: '玉清融担',
   appLogo: 'https://www.gin-vue-admin.com/img/logo.png',
   showViteLogo: true
 }
