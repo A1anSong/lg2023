@@ -48,9 +48,16 @@
         <el-table-column align="center" label="开票时间" prop="invoice.invoiceTime" width="100px" />
         <el-table-column align="center" label="查看" :min-width="100" fixed="right">
           <template #default="scope">
+            <el-tag
+              v-if="scope.row.invoice.invoiceDownloadUrl == null"
+              type="warning"
+              effect="dark"
+              size="large"
+            >未更新发票
+            </el-tag>
             <el-button
-              v-if="scope.row.invoice != null && scope.row.invoice.invoiceDownloadUrl != null"
-              type="info"
+              v-if="scope.row.invoice.invoiceDownloadUrl != null"
+              type="primary"
               icon="list"
               @click="downloadInvoiceFunc(scope.row)"
             >发票
