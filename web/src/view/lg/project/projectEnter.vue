@@ -23,7 +23,7 @@
           <el-input v-model="searchInfo.projectCounty" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="保函模板">
-          <el-select v-model="searchInfo.templateID" clearable placeholder="请输入">
+          <el-select v-model="searchInfo.templateID" clearable placeholder="选择条件">
             <el-option
               v-for="template in templateData"
               :key="template.ID"
@@ -33,7 +33,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="上架状态">
-          <el-select v-model="searchInfo.isEnable" clearable placeholder="请输入">
+          <el-select v-model="searchInfo.isEnable" clearable placeholder="选择条件">
             <el-option
               label="已上架"
               value="true"
@@ -87,14 +87,14 @@
         <el-table-column align="center" label="标段名称" prop="projectName" min-width="300px" />
         <el-table-column align="center" label="标段编号" prop="projectNo" min-width="160px" />
         <el-table-column align="center" label="标段金额" min-width="120px">
-          <template #default="scope">{{ amount(scope.row.projectAmount) }}</template>
+          <template #default="scope">{{ scope.row.projectAmount == null ? "" : amount(scope.row.projectAmount) }}</template>
         </el-table-column>
         <el-table-column align="center" label="招标人名称" prop="tendereeName" min-width="280px" />
         <el-table-column align="center" label="招标人地址" prop="tendereeAddress" min-width="300px" />
         <el-table-column align="center" label="招标人电话" prop="tendereeTel" min-width="120px" />
         <el-table-column align="center" label="招标代理电话" prop="agentTel" min-width="120px" />
         <el-table-column align="center" label="担保金额" min-width="120px">
-          <template #default="scope">{{ amount(scope.row.tenderDeposit) }}</template>
+          <template #default="scope">{{ scope.row.tenderDeposit == null ? "" : amount(scope.row.tenderDeposit) }}</template>
         </el-table-column>
         <el-table-column align="center" label="开标时间" width="100px">
           <template #default="scope">{{ date(scope.row.projectOpenTime) }}</template>
@@ -112,18 +112,6 @@
         </el-table-column>
         <el-table-column align="center" label="项目类型" prop="projectType" min-width="120px" />
         <el-table-column align="center" label="项目类别" prop="projectCategory" min-width="120px" />
-        <el-table-column align="center" label="上架状态" min-width="120px">
-          <template #default="scope">
-            <el-switch
-              v-model="scope.row.isEnable"
-              inline-prompt
-              active-text="是"
-              inactive-text="否"
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-              @change="changeProjectEnable($event, scope.row)"
-            />
-          </template>
-        </el-table-column>
         <el-table-column align="center" label="操作" min-width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -158,7 +146,7 @@
         <el-form-item label="项目名称:" prop="projectName">
           <el-input v-model.trim="formData.projectName" :clearable="true" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="项目编号:" prop="projectNo">
+        <el-form-item label="标段编号:" prop="projectNo">
           <el-input v-model.trim="formData.projectNo" :clearable="true" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="项目金额:" prop="projectAmount">
@@ -234,8 +222,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button size="small" @click="closeDialog">取 消</el-button>
-          <el-button size="small" type="primary" @click="enterDialog">确 定</el-button>
+          <el-button @click="closeDialog">取 消</el-button>
+          <el-button type="primary" @click="enterDialog">确 定</el-button>
         </div>
       </template>
     </el-dialog>
@@ -249,9 +237,7 @@ import {
   deleteProjectByIds,
   updateProject,
   findProject,
-  getProjectList,
-  bindProject,
-  unbindProject
+  getProjectList
 } from '@/api/lg/project'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -487,32 +473,6 @@ const enterDialog = async() => {
       await getTableData()
     }
   })
-}
-
-const changeProjectEnable = async(val, row) => {
-  if (val === true) {
-    const res = await bindProject(row)
-    if (res.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '绑定成功'
-      })
-      await getTableData()
-    } else {
-      row.isEnable = false
-    }
-  } else {
-    const res = await unbindProject(row)
-    if (res.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '解绑成功'
-      })
-      await getTableData()
-    } else {
-      row.isEnable = true
-    }
-  }
 }
 </script>
 
