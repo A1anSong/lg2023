@@ -6,16 +6,22 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg"
 	lgReq "github.com/flipped-aurora/gin-vue-admin/server/model/lg/request"
+	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
+	"io"
+	"mime/multipart"
+	"os"
+	"path"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type ProjectService struct {
 }
 
 func (projectService *ProjectService) CreateProject(project lg.Project) (err error) {
-	fmt.Println(project.ID)
 	err = global.GVA_DB.Create(&project).Error
-	fmt.Println(project.ID)
 	return err
 }
 
@@ -124,4 +130,124 @@ func (projectService *ProjectService) UnbindProject(project lg.Project) (err err
 		return nil
 	})
 	return err
+}
+
+func (projectService *ProjectService) ImportExcel(file *multipart.FileHeader) (err error) {
+	basePath := "./tmp/"
+	fileSuffix := path.Ext(file.Filename)
+	fileNameOnly := strings.TrimSuffix(file.Filename, fileSuffix)
+	timestampString := strconv.FormatInt(time.Now().Unix(), 10)
+	var fileName string
+	fileName = fileNameOnly + timestampString + fileSuffix
+	out, err := os.Create(basePath + fileName)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = os.Remove(basePath + fileName)
+	}()
+	defer func(out *os.File) {
+		_ = out.Close()
+	}(out)
+	fileOut, err := file.Open()
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(out, fileOut)
+	if err != nil {
+		return err
+	}
+
+	f, err := excelize.OpenFile(basePath + fileName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	rows, err := f.GetRows("Sheet1")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		for i, row := range rows {
+			if i == 0 {
+				continue
+			}
+			loc, _ := time.LoadLocation("Asia/Shanghai")
+			publishTimeStr := ""
+			if row[2] != "" {
+				publishTime, err := time.ParseInLocation("2006年1月2日", row[2], loc)
+				if err != nil {
+					return err
+				}
+				publishTimeStr = publishTime.Format("2006-01-02 15:04:05")
+			}
+			openTime, err := time.ParseInLocation("2006年1月2日 15:04:05", row[3]+" "+row[4], loc)
+			if err != nil {
+				return err
+			}
+			openTimeStr := openTime.Format("2006-01-02 15:04:05")
+			endDateStr := ""
+			if row[5] != "" {
+				endDate, err := time.ParseInLocation("2006年1月2日", row[5], loc)
+				if err != nil {
+					return err
+				}
+				endDateStr = endDate.Format("2006-01-02 15:04:05")
+			}
+			projectDay, err := strconv.ParseInt(row[14], 10, 64)
+			if err != nil {
+				return err
+			}
+			projectAmountInRow, err := strconv.ParseFloat(row[15], 64)
+			if err != nil {
+				return err
+			}
+			projectAmount := projectAmountInRow * 10000
+			tenderDepositInRow, err := strconv.ParseFloat(row[16], 64)
+			if err != nil {
+				return err
+			}
+			tenderDeposit := tenderDepositInRow * 10000
+			_, tendereeFile, err := f.GetCellHyperLink("Sheet1", fmt.Sprintf("R%d", i+1))
+			isEnable := false
+			project := lg.Project{
+				ProjectName:        &row[0],
+				ProjectNo:          &row[1],
+				ProjectAmount:      &projectAmount,
+				TendereeName:       &row[10],
+				TendereeAddress:    &row[11],
+				TendereeTel:        &row[12],
+				TendereeFile:       &tendereeFile,
+				AgentTel:           &row[13],
+				TenderDeposit:      &tenderDeposit,
+				ProjectOpenTime:    &openTimeStr,
+				ProjectPublishTime: &publishTimeStr,
+				ProjectCity:        &row[6],
+				ProjectCounty:      &row[7],
+				ProjectDay:         &projectDay,
+				TenderEndDate:      &endDateStr,
+				ProjectType:        &row[8],
+				ProjectCategory:    &row[9],
+				IsEnable:           &isEnable,
+			}
+			err = global.GVA_DB.Create(&project).Error
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return
+	}
+
+	return nil
 }

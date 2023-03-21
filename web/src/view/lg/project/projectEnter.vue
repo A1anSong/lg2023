@@ -1,5 +1,6 @@
 <template>
   <div>
+    <warning-bar title="注意：使用上传文件时相同标段编号的数据将不予录入，如需更新项目信息请点击<变更>按钮" />
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
         <el-form-item label="标段编号">
@@ -70,6 +71,20 @@
             </el-button>
           </template>
         </el-popover>
+        <el-button style="margin-left: auto" type="info" icon="download" @click="downloadExcelTemplate()">下载录入模板</el-button>
+        <el-upload
+          style="margin-left: 12px"
+          :action="`${path}/project/importExcel`"
+          :before-upload="checkFile"
+          :headers="{ 'x-token': userStore.token }"
+          :on-error="uploadError"
+          :on-success="uploadSuccess"
+        >
+          <el-button type="primary" icon="upload-filled">上传录入文件</el-button>
+          <template #file>
+            <div />
+          </template>
+        </el-upload>
       </div>
       <el-table
         style="width: 100%"
@@ -112,6 +127,7 @@
         </el-table-column>
         <el-table-column align="center" label="项目类型" prop="projectType" min-width="120px" />
         <el-table-column align="center" label="项目类别" prop="projectCategory" min-width="120px" />
+        <el-table-column align="center" label="招标文件" prop="tendereeFile" min-width="120px" />
         <el-table-column align="center" label="操作" min-width="200" fixed="right">
           <template #default="scope">
             <el-button
@@ -209,6 +225,9 @@
         <el-form-item label="项目类别:" prop="projectType">
           <el-input v-model.trim="formData.projectCategory" :clearable="true" placeholder="请输入" />
         </el-form-item>
+        <el-form-item label="招标文件:" prop="tendereeFile">
+          <el-input v-model.trim="formData.tendereeFile" :clearable="true" placeholder="请输入" />
+        </el-form-item>
         <el-form-item label="项目模板:" prop="templateID">
           <el-select v-model="formData.templateID" clearable placeholder="请输入" style="width: 100%">
             <el-option
@@ -237,7 +256,8 @@ import {
   deleteProjectByIds,
   updateProject,
   findProject,
-  getProjectList
+  getProjectList,
+  downloadTemplate
 } from '@/api/lg/project'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -246,6 +266,13 @@ import { ref, reactive } from 'vue'
 import { date } from '@/utils/lg/date'
 import { amount } from '@/utils/lg/amount'
 import { getTemplateList } from '@/api/lg/template'
+import WarningBar from '@/components/warningBar/warningBar.vue'
+
+import { useUserStore } from '@/pinia/modules/user'
+
+const path = ref(import.meta.env.VITE_BASE_API)
+
+const userStore = useUserStore()
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
@@ -265,6 +292,7 @@ const formData = ref({
   tenderEndDate: null,
   projectType: null,
   projectCategory: null,
+  tendereeFile: null,
   templateID: null,
   isEnable: false,
 })
@@ -444,6 +472,7 @@ const closeDialog = () => {
     tenderEndDate: null,
     projectType: null,
     projectCategory: null,
+    tendereeFile: null,
     templateID: null,
     isEnable: false,
   }
@@ -472,6 +501,37 @@ const enterDialog = async() => {
       closeDialog()
       await getTableData()
     }
+  })
+}
+
+const downloadExcelTemplate = () => {
+  downloadTemplate('录入模板.xlsx')
+}
+
+const checkFile = (file) => {
+  const isXLSX = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  const isLt16M = file.size / 1024 / 1024 < 16
+  if (!isXLSX) {
+    ElMessage.error('上传文件只能是 xlsx 格式!')
+  }
+  if (!isLt16M) {
+    ElMessage.error('文件大小不能超过 16MB，请重新上传')
+  }
+  return isXLSX && isLt16M
+}
+
+const uploadSuccess = (res, uploadFile) => {
+  ElMessage({
+    type: 'success',
+    message: '录入成功'
+  })
+  getTableData()
+}
+
+const uploadError = () => {
+  ElMessage({
+    type: 'error',
+    message: '上传失败'
   })
 }
 </script>

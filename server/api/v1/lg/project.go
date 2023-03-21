@@ -9,6 +9,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"os"
 )
 
 type ProjectApi struct {
@@ -138,5 +139,39 @@ func (projectApi *ProjectApi) UnbindProject(c *gin.Context) {
 		response.FailWithMessage("解绑失败", c)
 	} else {
 		response.OkWithMessage("解绑成功", c)
+	}
+}
+
+func (projectApi *ProjectApi) DownloadTemplate(c *gin.Context) {
+	fileName := c.Query("fileName")
+	filePath := "./resource/project_template/" + fileName
+	fi, err := os.Stat(filePath)
+	if err != nil {
+		global.GVA_LOG.Error("文件不存在!", zap.Error(err))
+		response.FailWithMessage("文件不存在", c)
+		return
+	}
+	if fi.IsDir() {
+		global.GVA_LOG.Error("不支持下载文件夹!", zap.Error(err))
+		response.FailWithMessage("不支持下载文件夹", c)
+		return
+	}
+	c.Writer.Header().Add("success", "true")
+	c.File(filePath)
+}
+
+func (projectApi *ProjectApi) ImportExcel(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		global.GVA_LOG.Error("接收文件失败!", zap.Error(err))
+		response.FailWithMessage("接收文件失败", c)
+		return
+	}
+	if err := projectService.ImportExcel(file); err != nil {
+		global.GVA_LOG.Error("录入失败!", zap.Error(err))
+		response.FailWithMessage("录入失败", c)
+		return
+	} else {
+		response.OkWithMessage("录入成功", c)
 	}
 }

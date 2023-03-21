@@ -75,6 +75,9 @@ func (fileService *FileService) UploadFile(file *multipart.FileHeader) (fileName
 		_ = out.Close()
 	}(out)
 	fileOut, err := file.Open()
+	if err != nil {
+		return "", err
+	}
 	_, err = io.Copy(out, fileOut)
 	if err != nil {
 		return "", err

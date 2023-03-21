@@ -90,6 +90,7 @@
         </el-table-column>
         <el-table-column align="center" label="项目类型" prop="projectType" min-width="120px" />
         <el-table-column align="center" label="项目类别" prop="projectCategory" min-width="120px" />
+        <el-table-column align="center" label="招标文件" prop="tendereeFile" min-width="120px" />
         <el-table-column align="center" label="操作" min-width="100" fixed="right">
           <template #default="scope">
             <el-switch

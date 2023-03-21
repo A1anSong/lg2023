@@ -10,6 +10,7 @@ type Project struct {
 	TendereeName       *string   `json:"tendereeName" form:"tendereeName" gorm:"type:varchar(256);"`
 	TendereeAddress    *string   `json:"tendereeAddress" form:"tendereeAddress" gorm:"type:varchar(256);"`
 	TendereeTel        *string   `json:"tendereeTel" form:"tendereeTel" gorm:"type:varchar(64);"`
+	TendereeFile       *string   `json:"tendereeFile" form:"tendereeFile" gorm:"type:varchar(512)"`
 	AgentTel           *string   `json:"agentTel" form:"agentTel" gorm:"type:varchar(64)"`
 	TenderDeposit      *float64  `json:"tenderDeposit" form:"tenderDeposit"`
 	ProjectOpenTime    *string   `json:"projectOpenTime" form:"projectOpenTime" gorm:"type:varchar(19);"`

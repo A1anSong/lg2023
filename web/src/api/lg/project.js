@@ -1,4 +1,5 @@
 import service from '@/utils/request'
+import { ElMessage } from 'element-plus'
 
 export const createProject = (data) => {
   return service({
@@ -62,4 +63,40 @@ export const unbindProject = (data) => {
     method: 'post',
     data
   })
+}
+export const downloadTemplate = (file) => {
+  return service({
+    url: '/project/downloadTemplate',
+    method: 'get',
+    params: {
+      fileName: file
+    },
+    responseType: 'blob'
+  }).then((res) => {
+    handleFileError(res, file)
+  })
+}
+const handleFileError = (res, fileName) => {
+  if (typeof (res.data) !== 'undefined') {
+    if (res.data.type === 'application/json') {
+      const reader = new FileReader()
+      reader.onload = function() {
+        const message = JSON.parse(reader.result).msg
+        ElMessage({
+          showClose: true,
+          message: message,
+          type: 'error'
+        })
+      }
+      reader.readAsText(new Blob([res.data]))
+    }
+  } else {
+    const downloadUrl = window.URL.createObjectURL(new Blob([res]))
+    const a = document.createElement('a')
+    a.style.display = 'none'
+    a.href = downloadUrl
+    a.download = fileName
+    const event = new MouseEvent('click')
+    a.dispatchEvent(event)
+  }
 }
