@@ -270,7 +270,7 @@
         :column="1"
         border
       >
-        <el-descriptions-item label="保函编号" width="50px">{{ orderDetailData.letter.elogNo }}</el-descriptions-item>
+        <el-descriptions-item v-if="authEncryptNo" label="保函编号" width="50px">{{ orderDetailData.letter.elogNo }}</el-descriptions-item>
         <el-descriptions-item label="担保期限（天）">{{ orderDetailData.letter.insureDay }}</el-descriptions-item>
         <el-descriptions-item label="验真码">{{ orderDetailData.letter.validateCode }}</el-descriptions-item>
       </el-descriptions>
@@ -375,6 +375,7 @@ const authDetail = ref(false)
 const authAttach = ref(false)
 const authElog = ref(false)
 const authEncrypt = ref(false)
+const authEncryptNo = ref(false)
 const authCheck = computed(() => {
   return (authDetail.value === true ? 1 : 0) + (authAttach.value === true ? 1 : 0) + (authElog.value === true ? 1 : 0) + (authEncrypt.value === true ? 1 : 0)
 })
@@ -542,6 +543,33 @@ const checkAuthorityEncrypt = () => {
   }
 }
 
+const checkAuthorityEncryptNo = () => {
+  const authority = btnAuth.elogNo
+  let type = ''
+  switch (Object.prototype.toString.call(authority)) {
+    case '[object Array]':
+      type = 'Array'
+      break
+    case '[object String]':
+      type = 'String'
+      break
+    case '[object Number]':
+      type = 'Number'
+      break
+    default:
+      type = ''
+      break
+  }
+  if (type === '') {
+    return
+  }
+  const waitUse = authority.toString().split(',')
+  const flag = waitUse.some(item => item === userInfo.authorityId.toString())
+  if (flag) {
+    authEncryptNo.value = true
+  }
+}
+
 // 查询
 const getTableData = async() => {
   const table = await getOrderList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
@@ -570,6 +598,7 @@ checkAuthorityDetail()
 checkAuthorityAttach()
 checkAuthorityElog()
 checkAuthorityEncrypt()
+checkAuthorityEncryptNo()
 getTemplateData()
 getTableData()
 

@@ -221,48 +221,48 @@
       <el-descriptions style="margin: 10px;" title="订单信息" size="small" :column="1" border>
         <el-descriptions-item label="申请编号">{{ orderDetailData.apply.applyNo }}</el-descriptions-item>
         <el-descriptions-item label="产品类型">{{
-          productType(orderDetailData.apply.productType)
-        }}
+            productType(orderDetailData.apply.productType)
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="标段名称">{{ orderDetailData.apply.projectName }}</el-descriptions-item>
         <el-descriptions-item label="标段编号">{{ orderDetailData.apply.projectNo }}</el-descriptions-item>
         <el-descriptions-item label="担保金额">{{ amount(orderDetailData.apply.tenderDeposit) }}</el-descriptions-item>
         <el-descriptions-item label="保证金缴纳开始时间">{{
-          orderDetailData.apply.depositStartDate
-        }}
+            orderDetailData.apply.depositStartDate
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="保证金缴纳截止时间">{{
-          orderDetailData.apply.depositEndDate
-        }}
+            orderDetailData.apply.depositEndDate
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="开标时间">{{ orderDetailData.apply.openBeginDate }}</el-descriptions-item>
         <el-descriptions-item label="保函格式编号">{{ orderDetailData.apply.elogTemplateNo }}</el-descriptions-item>
         <el-descriptions-item label="保函格式名称">{{ orderDetailData.apply.elogTemplateName }}</el-descriptions-item>
         <el-descriptions-item label="所属市">{{
-          orderDetailData.project != null && orderDetailData.project.projectCity !== undefined ? orderDetailData.project.projectCity : ''
-        }}
+            orderDetailData.project != null && orderDetailData.project.projectCity !== undefined ? orderDetailData.project.projectCity : ''
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="所属县">{{
-          orderDetailData.project != null && orderDetailData.projectCounty !== undefined ? orderDetailData.project.projectCounty : ''
-        }}
+            orderDetailData.project != null && orderDetailData.projectCounty !== undefined ? orderDetailData.project.projectCounty : ''
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="受益人名称">{{ orderDetailData.apply.insuredName }}</el-descriptions-item>
         <el-descriptions-item label="受益人社会信用代码">{{
-          orderDetailData.apply.insuredCreditCode
-        }}
+            orderDetailData.apply.insuredCreditCode
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="受益人地址">
           {{ orderDetailData.apply.insuredAddress != null ? orderDetailData.apply.insuredAddress : '' }}
         </el-descriptions-item>
         <el-descriptions-item label="投保方名称">{{ orderDetailData.apply.insureName }}</el-descriptions-item>
         <el-descriptions-item label="投保方社会信用代码">{{
-          orderDetailData.apply.insureCreditCode
-        }}
+            orderDetailData.apply.insureCreditCode
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="投保方法人姓名">{{ orderDetailData.apply.insureLegalName }}</el-descriptions-item>
         <el-descriptions-item label="投保方法人身份证号">{{
-          orderDetailData.apply.insureLegalIdCard
-        }}
+            orderDetailData.apply.insureLegalIdCard
+          }}
         </el-descriptions-item>
         <el-descriptions-item label="投保方地址">{{ orderDetailData.insureAddress }}</el-descriptions-item>
         <el-descriptions-item label="经办人姓名">{{ orderDetailData.applicantName }}</el-descriptions-item>
@@ -270,68 +270,68 @@
         <el-descriptions-item label="经办人联系电话">{{ orderDetailData.apply.applicantTel }}</el-descriptions-item>
       </el-descriptions>
       <el-descriptions
-        v-if="orderDetailData.pay"
-        style="margin: 10px;"
-        title="支付信息"
-        size="small"
-        :column="1"
-        border
+          v-if="orderDetailData.pay"
+          style="margin: 10px;"
+          title="支付信息"
+          size="small"
+          :column="1"
+          border
       >
         <el-descriptions-item label="支付编号" width="50px">{{ orderDetailData.pay.payNo }}</el-descriptions-item>
         <el-descriptions-item label="支付支付流水号">{{ orderDetailData.pay.payTransNo }}</el-descriptions-item>
       </el-descriptions>
       <el-descriptions
-        v-if="orderStatus(orderDetailData)==='已开'"
-        style="margin: 10px;"
-        title="保函信息"
-        size="small"
-        :column="1"
-        border
+          v-if="orderStatus(orderDetailData)==='已开'"
+          style="margin: 10px;"
+          title="保函信息"
+          size="small"
+          :column="1"
+          border
       >
-        <el-descriptions-item label="保函编号" width="50px">{{ orderDetailData.letter.elogNo }}</el-descriptions-item>
+        <el-descriptions-item v-if="authEncryptNo" label="保函编号" width="50px">{{ orderDetailData.letter.elogNo }}</el-descriptions-item>
         <el-descriptions-item label="担保期限（天）">{{ orderDetailData.letter.insureDay }}</el-descriptions-item>
         <el-descriptions-item label="验真码">{{ orderDetailData.letter.validateCode }}</el-descriptions-item>
       </el-descriptions>
       <el-descriptions
-        v-if="orderStatus(orderDetailData)==='延期'"
-        style="margin: 10px;"
-        title="延期信息"
-        size="small"
-        :column="1"
-        border
+          v-if="orderStatus(orderDetailData)==='延期'"
+          style="margin: 10px;"
+          title="延期信息"
+          size="small"
+          :column="1"
+          border
       >
         <el-descriptions-item label="延期" width="50px">延期信息展示（请将需要显示的信息提交管理员进行更新）
         </el-descriptions-item>
       </el-descriptions>
       <el-descriptions
-        v-if="orderStatus(orderDetailData)==='退函'"
-        style="margin: 10px;"
-        title="退函信息"
-        size="small"
-        :column="1"
-        border
+          v-if="orderStatus(orderDetailData)==='退函'"
+          style="margin: 10px;"
+          title="退函信息"
+          size="small"
+          :column="1"
+          border
       >
         <el-descriptions-item label="退函" width="50px">退函信息展示（请将需要显示的信息提交管理员进行更新）
         </el-descriptions-item>
       </el-descriptions>
       <el-descriptions
-        v-if="orderStatus(orderDetailData)==='理赔'"
-        style="margin: 10px;"
-        title="理赔信息"
-        size="small"
-        :column="1"
-        border
+          v-if="orderStatus(orderDetailData)==='理赔'"
+          style="margin: 10px;"
+          title="理赔信息"
+          size="small"
+          :column="1"
+          border
       >
         <el-descriptions-item label="理赔" width="50px">理赔信息展示（请将需要显示的信息提交管理员进行更新）
         </el-descriptions-item>
       </el-descriptions>
       <el-descriptions
-        v-if="orderStatus(orderDetailData)==='销函'"
-        style="margin: 10px;"
-        title="销函信息"
-        size="small"
-        :column="1"
-        border
+          v-if="orderStatus(orderDetailData)==='销函'"
+          style="margin: 10px;"
+          title="销函信息"
+          size="small"
+          :column="1"
+          border
       >
         <el-descriptions-item label="销函" width="50px">销函信息展示（请将需要显示的信息提交管理员进行更新）
         </el-descriptions-item>
@@ -390,6 +390,7 @@ const authDetail = ref(false)
 const authAttach = ref(false)
 const authElog = ref(false)
 const authEncrypt = ref(false)
+const authEncryptNo = ref(false)
 const authCheck = computed(() => {
   return (authDetail.value === true ? 1 : 0) + (authAttach.value === true ? 1 : 0) + (authElog.value === true ? 1 : 0) + (authEncrypt.value === true ? 1 : 0)
 })
@@ -556,6 +557,33 @@ const checkAuthorityEncrypt = () => {
   }
 }
 
+const checkAuthorityEncryptNo = () => {
+  const authority = btnAuth.elogNo
+  let type = ''
+  switch (Object.prototype.toString.call(authority)) {
+    case '[object Array]':
+      type = 'Array'
+      break
+    case '[object String]':
+      type = 'String'
+      break
+    case '[object Number]':
+      type = 'Number'
+      break
+    default:
+      type = ''
+      break
+  }
+  if (type === '') {
+    return
+  }
+  const waitUse = authority.toString().split(',')
+  const flag = waitUse.some(item => item === userInfo.authorityId.toString())
+  if (flag) {
+    authEncryptNo.value = true
+  }
+}
+
 // 查询
 const getTableData = async() => {
   const table = await getOrderList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
@@ -580,6 +608,7 @@ checkAuthorityDetail()
 checkAuthorityAttach()
 checkAuthorityElog()
 checkAuthorityEncrypt()
+checkAuthorityEncryptNo()
 getTemplateData()
 getTableData()
 
