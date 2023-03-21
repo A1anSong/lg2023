@@ -1,16 +1,23 @@
 package lg
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrclientrequest"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrclientresponse"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrrequest"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi/jrresponse"
 	sysModel "github.com/flipped-aurora/gin-vue-admin/server/model/system"
+	lg2 "github.com/flipped-aurora/gin-vue-admin/server/utils/lg"
+	"github.com/go-resty/resty/v2"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -148,6 +155,7 @@ func (jrAPIService *JRAPIService) PayPush(rePayPush jrrequest.JRAPIPayPush) (res
 		err = errors.New(jrapi.MissingServiceParam.String())
 		return
 	}
+	var order lg.Order
 	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
 		if !errors.Is(tx.Where("order_no = ? AND pay_no = ?", rePayPush.OrderNo, rePayPush.PayNo).
 			First(&lg.Pay{}).Error, gorm.ErrRecordNotFound) {
@@ -157,8 +165,6 @@ func (jrAPIService *JRAPIService) PayPush(rePayPush jrrequest.JRAPIPayPush) (res
 			}
 			return nil
 		}
-
-		var order lg.Order
 		if err = tx.Where("order_no = ?", rePayPush.OrderNo).First(&order).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return errors.New("该订单" + *order.OrderNo + "不存在")
@@ -188,103 +194,9 @@ func (jrAPIService *JRAPIService) PayPush(rePayPush jrrequest.JRAPIPayPush) (res
 
 		return nil
 	})
-	//if err == nil {
-	//	letterErr := global.GVA_DB.Transaction(func(tx *gorm.DB) error {
-	//		var order lg.Order
-	//		if err = tx.Where("order_no = ?", rePayPush.OrderNo).Preload(clause.Associations).Preload("Project.Template").First(&order).Error; err != nil {
-	//			return errors.New("查询该订单" + *rePayPush.OrderNo + "失败")
-	//		}
-	//		var templateFile lg.File
-	//		if err = tx.Model(&lg.File{}).Where("id = ?", *order.Project.Template.TemplateFileID).First(&templateFile).Error; err != nil {
-	//			return errors.New("查询" + *order.OrderNo + "模板失败")
-	//		}
-	//		if err = tx.Where("order_no = ?", rePayPush.OrderNo).Delete(&lg.Letter{}).Error; err != nil {
-	//			return errors.New("删除历史开函数据失败")
-	//		}
-	//		var letter lg.Letter
-	//		var file lg.File
-	//		var encryptFile lg.File
-	//		if letter, file, encryptFile, err = lg2.OpenLetter(order, templateFile); err != nil {
-	//			return errors.New("自动开函" + *order.OrderNo + "流程失败：" + err.Error())
-	//		}
-	//		if err = tx.Create(&file).Error; err != nil {
-	//			return errors.New("创建" + *order.OrderNo + "电子保函文件失败")
-	//		}
-	//		if err = tx.Create(&encryptFile).Error; err != nil {
-	//			return errors.New("创建" + *order.OrderNo + "电子保函密文文件失败")
-	//		}
-	//		letter.ElogFileID = &file.ID
-	//		letter.ElogEncryptFileID = &encryptFile.ID
-	//		if err = tx.Create(&letter).Error; err != nil {
-	//			return errors.New("创建" + *order.OrderNo + "电子保函失败")
-	//		}
-	//		order.LetterID = &letter.ID
-	//		if err = tx.Save(&order).Error; err != nil {
-	//			return errors.New("更新" + *order.OrderNo + "订单失败")
-	//		}
-	//		if global.GVA_CONFIG.Insurance.JRAPIDomain != "" {
-	//			apiPath := "/jrapi/lg/lgResultPush"
-	//			var lgResultPush = jrclientrequest.LgResultPush{
-	//				OrderNo:             *order.OrderNo,
-	//				ElogNo:              *letter.ElogNo,
-	//				InsuranceName:       *letter.InsuranceName,
-	//				InsuranceCreditCode: *letter.InsuranceCreditCode,
-	//				ElogOutDate:         *letter.ElogOutDate,
-	//				ElogUrl:             global.GVA_CONFIG.Insurance.APIDomain + "/letterFileDownload?elog=" + *letter.ElogUrl,
-	//				ElogEncryptUrl:      global.GVA_CONFIG.Insurance.APIDomain + "/letterFileDownload?elog=" + *letter.ElogEncryptUrl + "&type=encrypt",
-	//				TenderDeposit:       *letter.TenderDeposit,
-	//				InsureStartDate:     *letter.InsureStartDate,
-	//				InsureEndDate:       *letter.InsureEndDate,
-	//				InsureDay:           *letter.InsureDay,
-	//				ValidateCode:        *letter.ValidateCode,
-	//			}
-	//			req, err := lg2.GenJRRequest(lgResultPush)
-	//			if err != nil {
-	//				return errors.New("创建" + *order.OrderNo + "出函结果失败")
-	//			}
-	//			var res jrresponse.JRResponse
-	//			client := resty.New()
-	//			resp, err := client.R().
-	//				SetBody(&req).
-	//				SetResult(&res).
-	//				Post(global.GVA_CONFIG.Insurance.JRAPIDomain + apiPath)
-	//			if err != nil {
-	//				return err
-	//			}
-	//			if resp.StatusCode() == http.StatusOK {
-	//				if res.Code != 0 {
-	//					err := errors.New(res.Msg)
-	//					global.GVA_LOG.Error("调用"+apiPath+"失败", zap.Error(err))
-	//					return err
-	//				} else {
-	//					byteEncryptData, err := base64.StdEncoding.DecodeString(res.Data)
-	//					if err != nil {
-	//						return err
-	//					}
-	//					jsonData, err := lg2.Sm4Decrypt(byteEncryptData)
-	//					if err != nil {
-	//						return err
-	//					}
-	//					var resData jrclientresponse.Response
-	//					err = json.Unmarshal([]byte(jsonData), &resData)
-	//					if err != nil {
-	//						return err
-	//					}
-	//					if resData.ReceiveResult != "success" {
-	//						global.GVA_LOG.Error("调用"+apiPath+"结果不为success", zap.Error(err))
-	//						return errors.New("接收结果不为success")
-	//					}
-	//				}
-	//			} else {
-	//				return errors.New("交易中心响应失败")
-	//			}
-	//		}
-	//		return nil
-	//	})
-	//	if letterErr != nil {
-	//		global.GVA_LOG.Error("自动化开函失败!", zap.Error(err))
-	//	}
-	//}
+	if err == nil {
+		go openLetterSync(order)
+	}
 	return
 }
 
@@ -721,4 +633,99 @@ func (jrAPIService *JRAPIService) DelayFileDownload(elog string, encrypt bool) (
 		file = *delay.ElogFile
 	}
 	return
+}
+
+func openLetterSync(order lg.Order) {
+	err := global.GVA_DB.Transaction(func(tx *gorm.DB) (err error) {
+		var templateFile lg.File
+		if err = tx.Model(&lg.File{}).Where("id = ?", *order.Project.Template.TemplateFileID).First(&templateFile).Error; err != nil {
+			return err
+		}
+		if err = tx.Where("order_no = ?", order.OrderNo).Delete(&lg.Letter{}).Error; err != nil {
+			return err
+		}
+		var letter lg.Letter
+		var file lg.File
+		var encryptFile lg.File
+		if letter, file, encryptFile, err = lg2.OpenLetter(order, templateFile); err != nil {
+			return err
+		}
+		if err = tx.Create(&file).Error; err != nil {
+			return err
+		}
+		if err = tx.Create(&encryptFile).Error; err != nil {
+			return err
+		}
+		letter.ElogFileID = &file.ID
+		letter.ElogEncryptFileID = &encryptFile.ID
+		if err = tx.Create(&letter).Error; err != nil {
+			return err
+		}
+		order.LetterID = &letter.ID
+		if err = tx.Save(&order).Error; err != nil {
+			return err
+		}
+		if global.GVA_CONFIG.Insurance.JRAPIDomain != "" {
+			apiPath := "/jrapi/lg/lgResultPush"
+			var lgResultPush = jrclientrequest.LgResultPush{
+				OrderNo:             *letter.OrderNo,
+				ElogNo:              *letter.ElogNo,
+				InsuranceName:       *letter.InsuranceName,
+				InsuranceCreditCode: *letter.InsuranceCreditCode,
+				ElogOutDate:         *letter.ElogOutDate,
+				ElogUrl:             global.GVA_CONFIG.Insurance.APIDomain + "/letterFileDownload?elog=" + *letter.ElogUrl,
+				ElogEncryptUrl:      global.GVA_CONFIG.Insurance.APIDomain + "/letterFileDownload?elog=" + *letter.ElogEncryptUrl + "&type=encrypt",
+				TenderDeposit:       *letter.TenderDeposit,
+				InsureStartDate:     *letter.InsureStartDate,
+				InsureEndDate:       *letter.InsureEndDate,
+				InsureDay:           *letter.InsureDay,
+				ValidateCode:        *letter.ValidateCode,
+			}
+			req, err := lg2.GenJRRequest(lgResultPush)
+			if err != nil {
+				return err
+			}
+			var res jrresponse.JRResponse
+			client := resty.New()
+			resp, err := client.R().
+				SetBody(&req).
+				SetResult(&res).
+				Post(global.GVA_CONFIG.Insurance.JRAPIDomain + apiPath)
+			if err != nil {
+				return err
+			}
+			if resp.StatusCode() == http.StatusOK {
+				if res.Code != 0 {
+					err := errors.New(res.Msg)
+					global.GVA_LOG.Error("调用"+apiPath+"失败", zap.Error(err))
+					return err
+				} else {
+					byteEncryptData, err := base64.StdEncoding.DecodeString(res.Data)
+					if err != nil {
+						return err
+					}
+					jsonData, err := lg2.Sm4Decrypt(byteEncryptData)
+					if err != nil {
+						return err
+					}
+					var resData jrclientresponse.Response
+					err = json.Unmarshal([]byte(jsonData), &resData)
+					if err != nil {
+						return err
+					}
+					if resData.ReceiveResult != "success" {
+						global.GVA_LOG.Error("调用"+apiPath+"结果不为success", zap.Error(err))
+						return errors.New("接收结果不为success")
+					}
+				}
+			} else {
+				return errors.New("交易中心响应失败")
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		global.GVA_LOG.Error("自动化开函失败!", zap.Error(err))
+	}
 }
