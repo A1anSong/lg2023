@@ -1,4 +1,7 @@
 export const date = (date) => {
+  if (date === '') {
+    return ''
+  }
   const dateUTC = new Date(date)
   return dateUTC.getFullYear() +
         '-' + ('0' + (dateUTC.getMonth() + 1)).slice(-2) +
