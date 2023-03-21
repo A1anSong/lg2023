@@ -26,5 +26,6 @@ type OrderSearch struct {
 	NoRevoke        *bool       `json:"noRevoke" form:"noRevoke"`
 	EmployeeNo      *uint       `json:"employeeNo" form:"employeeNo"`
 	AuthCode        *string     `json:"authCode" form:"authCode"`
+	OnlyInvoice     *bool       `json:"onlyInvoice" form:"onlyInvoice"`
 	request.PageInfo
 }

@@ -161,6 +161,9 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	if info.NoRevoke != nil {
 		db = db.Where("lg_order.revoke_id is null")
 	}
+	if info.OnlyInvoice != nil {
+		db = db.Where("lg_order.invoice_id is not null")
+	}
 	err = db.Count(&total).Error
 	if err != nil {
 		return
@@ -1126,7 +1129,9 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	if info.NoRevoke != nil {
 		db = db.Where("lg_order.revoke_id is null")
 	}
-
+	if info.OnlyInvoice != nil {
+		db = db.Where("lg_order.invoice_id is not null")
+	}
 	err = db.Limit(limit).Preload(clause.Associations).Order("lg_order.created_at desc").Offset(offset).Find(&orders).Error
 	if err != nil {
 		return nil, err
