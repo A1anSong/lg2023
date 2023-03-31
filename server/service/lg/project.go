@@ -1,6 +1,7 @@
 package lg
 
 import (
+	"errors"
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
@@ -59,7 +60,7 @@ func (projectService *ProjectService) GetProjectInfoList(info lgReq.ProjectSearc
 		db = db.Where("project_name = ?", info.ProjectName)
 	}
 	if info.OpenTime != nil {
-		db = db.Where("project_open_time BETWEEN ? AND ?", info.OpenTime[0], info.OpenTime[0])
+		db = db.Where("project_open_time BETWEEN ? AND ?", info.OpenTime[0], info.OpenTime[1])
 	}
 	if info.ProjectCity != nil {
 		db = db.Where("project_city = ?", info.ProjectCity)
@@ -78,7 +79,7 @@ func (projectService *ProjectService) GetProjectInfoList(info lgReq.ProjectSearc
 		return
 	}
 
-	err = db.Limit(limit).Order("created_at desc").Offset(offset).Find(&projects).Error
+	err = db.Debug().Limit(limit).Order("created_at desc").Offset(offset).Find(&projects).Error
 	return projects, total, err
 }
 
@@ -184,35 +185,35 @@ func (projectService *ProjectService) ImportExcel(file *multipart.FileHeader) (e
 			if row[2] != "" {
 				publishTime, err := time.ParseInLocation("2006年1月2日", row[2], loc)
 				if err != nil {
-					return err
+					return errors.New("请检查文件第" + strconv.FormatInt(int64(i+1), 10) + "行C列")
 				}
 				publishTimeStr = publishTime.Format("2006-01-02 15:04:05")
 			}
 			openTime, err := time.ParseInLocation("2006年1月2日 15:04:05", row[3]+" "+row[4], loc)
 			if err != nil {
-				return err
+				return errors.New("请检查文件第" + strconv.FormatInt(int64(i+1), 10) + "行D和E列")
 			}
 			openTimeStr := openTime.Format("2006-01-02 15:04:05")
 			endDateStr := ""
 			if row[5] != "" {
 				endDate, err := time.ParseInLocation("2006年1月2日", row[5], loc)
 				if err != nil {
-					return err
+					return errors.New("请检查文件第" + strconv.FormatInt(int64(i+1), 10) + "行F列")
 				}
 				endDateStr = endDate.Format("2006-01-02 15:04:05")
 			}
 			projectDay, err := strconv.ParseInt(row[14], 10, 64)
 			if err != nil {
-				return err
+				return errors.New("请检查文件第" + strconv.FormatInt(int64(i+1), 10) + "行O列")
 			}
 			projectAmountInRow, err := strconv.ParseFloat(row[15], 64)
 			if err != nil {
-				return err
+				return errors.New("请检查文件第" + strconv.FormatInt(int64(i+1), 10) + "行P列")
 			}
 			projectAmount := projectAmountInRow * 10000
 			tenderDepositInRow, err := strconv.ParseFloat(row[16], 64)
 			if err != nil {
-				return err
+				return errors.New("请检查文件第" + strconv.FormatInt(int64(i+1), 10) + "行Q列")
 			}
 			tenderDeposit := tenderDepositInRow * 10000
 			_, tendereeFile, err := f.GetCellHyperLink("Sheet1", fmt.Sprintf("R%d", i+1))
@@ -237,7 +238,11 @@ func (projectService *ProjectService) ImportExcel(file *multipart.FileHeader) (e
 				ProjectCategory:    &row[9],
 				IsEnable:           &isEnable,
 			}
-			err = global.GVA_DB.Create(&project).Error
+			var p lg.Project
+			if !errors.Is(tx.Where("project_no = ?", project.ProjectNo).First(&p).Error, gorm.ErrRecordNotFound) {
+				continue
+			}
+			err = tx.Create(&project).Error
 			if err != nil {
 				return err
 			}
@@ -246,7 +251,7 @@ func (projectService *ProjectService) ImportExcel(file *multipart.FileHeader) (e
 		return nil
 	})
 	if err != nil {
-		return
+		return err
 	}
 
 	return nil

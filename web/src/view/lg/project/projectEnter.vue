@@ -521,10 +521,17 @@ const checkFile = (file) => {
 }
 
 const uploadSuccess = (res, uploadFile) => {
-  ElMessage({
-    type: 'success',
-    message: '录入成功'
-  })
+  if (res.code === 7) {
+    ElMessage({
+      type: 'error',
+      message: res.msg
+    })
+  } else {
+    ElMessage({
+      type: 'success',
+      message: '录入成功'
+    })
+  }
   getTableData()
 }
 

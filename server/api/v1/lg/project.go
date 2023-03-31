@@ -168,8 +168,8 @@ func (projectApi *ProjectApi) ImportExcel(c *gin.Context) {
 		return
 	}
 	if err := projectService.ImportExcel(file); err != nil {
-		global.GVA_LOG.Error("录入失败!", zap.Error(err))
-		response.FailWithMessage("录入失败", c)
+		global.GVA_LOG.Error("录入失败!"+err.Error(), zap.Error(err))
+		response.FailWithMessage("录入失败："+err.Error(), c)
 		return
 	} else {
 		response.OkWithMessage("录入成功", c)
