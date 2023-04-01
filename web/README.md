@@ -1,7 +1,7 @@
 # 开发备注
 `node version v18.14.2`
 
-# qm-plus-vue-page
+# gin-vue-admin web
 
 ## Project setup
 ```
@@ -27,9 +27,6 @@ npm run test
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
 
 整理代码结构
 ``` lua
