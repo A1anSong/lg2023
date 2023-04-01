@@ -165,7 +165,7 @@ func (jrAPIService *JRAPIService) PayPush(rePayPush jrrequest.JRAPIPayPush) (res
 			}
 			return nil
 		}
-		if err = tx.Where("order_no = ?", rePayPush.OrderNo).First(&order).Error; err != nil {
+		if err = tx.Where("order_no = ?", rePayPush.OrderNo).Preload(clause.Associations).Preload("Project.Template").First(&order).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return errors.New("该订单" + *order.OrderNo + "不存在")
 			} else {
