@@ -35,4 +35,4 @@ return {
 ```
 
 # 开发备注
-gva版本 `v2.5.5` @ Commit Hash（SHA）：[7407f7b](https://github.com/flipped-aurora/gin-vue-admin/tree/7407f7be8c2c002f0c6aa700677bd7ae8c089e14)
+gva版本 `v2.5.6` @ Commit Hash（SHA）：[69aa64f](https://github.com/flipped-aurora/gin-vue-admin/tree/69aa64f8000708def3bd2631434c081f83063cc5)
