@@ -333,6 +333,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'OrderList'
+}
+</script>
+
 <script setup>
 import {
   getOrderList,

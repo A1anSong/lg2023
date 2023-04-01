@@ -93,6 +93,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'Department'
+}
+</script>
+
 <script setup>
 import {
   getDepartmentList,
@@ -370,13 +376,6 @@ const editAuthority = (row) => {
   dialogFormVisible.value = true
 }
 
-</script>
-
-<script>
-
-export default {
-  name: 'Authority'
-}
 </script>
 
 <style lang="scss">

@@ -138,6 +138,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'SysState'
+}
+</script>
+
 <script setup>
 import { getSystemState } from '@/api/system'
 import { onUnmounted, ref } from 'vue'

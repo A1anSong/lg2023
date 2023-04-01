@@ -74,7 +74,7 @@
 
 <script>
 export default {
-  name: 'TestTemplate'
+  name: 'Template'
 }
 </script>
 

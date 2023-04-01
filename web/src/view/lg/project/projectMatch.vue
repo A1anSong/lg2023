@@ -123,6 +123,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'ProjectMatch'
+}
+</script>
+
 <script setup>
 import {
   updateProject,

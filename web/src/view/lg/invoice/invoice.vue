@@ -80,6 +80,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'InvoiceList'
+}
+</script>
+
 <script setup>
 import { getOrderList } from '@/api/lg/order'
 

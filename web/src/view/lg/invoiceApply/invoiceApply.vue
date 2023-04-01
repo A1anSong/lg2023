@@ -164,14 +164,14 @@
                 >请求开票
                 </el-button>
                 <el-button
-                  v-if="scope.row.invoice != null && (scope.row.invoice.invoiceDownloadUrl == null || scope.row.invoice.invoiceDownloadUrl == '')"
+                  v-if="scope.row.invoice != null && (scope.row.invoice.invoiceDownloadUrl == null || scope.row.invoice.invoiceDownloadUrl === '')"
                   type="primary"
                   icon="list"
                   @click="queryInvoiceFunc(scope.row)"
                 >查询结果
                 </el-button>
                 <el-button
-                  v-if="scope.row.invoice != null && scope.row.invoice.invoiceDownloadUrl != null && scope.row.invoice.invoiceDownloadUrl != ''"
+                  v-if="scope.row.invoice != null && scope.row.invoice.invoiceDownloadUrl != null && scope.row.invoice.invoiceDownloadUrl !== ''"
                   type="info"
                   icon="list"
                   @click="downloadInvoiceFunc(scope.row)"
@@ -185,6 +185,12 @@
     </el-dialog>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'InvoiceApply'
+}
+</script>
 
 <script setup>
 import {

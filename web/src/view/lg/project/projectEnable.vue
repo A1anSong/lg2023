@@ -119,6 +119,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'ProjectEnable'
+}
+</script>
+
 <script setup>
 import {
   getProjectList,

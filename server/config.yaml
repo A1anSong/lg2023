@@ -139,9 +139,9 @@ mysql:
   path: 42.192.157.151
   port: "3306"
   config: charset=utf8mb4&parseTime=True&loc=Local
-  db-name: lgtest
-  username: lgtest
-  password: tPrNDebxSbNf4dNP
+  db-name: lg
+  username: lg
+  password: mR2WKcrMWtGRS4dj
   prefix: ""
   singular: false
   engine: ""

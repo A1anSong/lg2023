@@ -249,6 +249,12 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'ProjectEnter'
+}
+</script>
+
 <script setup>
 import {
   createProject,

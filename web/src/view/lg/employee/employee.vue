@@ -146,7 +146,7 @@
 
 <script>
 export default {
-  name: 'User',
+  name: 'Employee'
 }
 </script>
 
