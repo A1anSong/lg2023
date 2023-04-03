@@ -1143,7 +1143,7 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	}
 
 	excel := excelize.NewFile()
-	_ = excel.SetSheetRow("Sheet1", "A1", &[]string{"保函文件下载", "交易中心", "保函申请编码", "申请企业", "标段名称", "标段编号", "受益人名称", "担保金额（元）", "保函起始日期", "保函截止日期", "订单状态", "开标时间", "保费金额", "所属市", "所属县", "审核时间", "申请日期", "开函日期", "保函编码", "审核状态", "付款时间", "付款金额", "交易单号"})
+	_ = excel.SetSheetRow("Sheet1", "A1", &[]string{"保函文件下载", "交易中心", "保函申请编码", "申请企业", "标段名称", "标段编号", "受益人名称", "担保金额（元）", "保函起始日期", "保函截止日期", "订单状态", "开标时间", "保费金额", "所属市", "所属县", "审核时间", "申请日期", "开函日期", "保函编码", "审核状态", "付款时间", "付款金额", "交易单号", "工号"})
 	for i, order := range orders {
 		axis := fmt.Sprintf("A%d", i+2)
 		elogAmount, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", *order.Apply.TenderDeposit**order.Apply.ProductRate), 64)
@@ -1184,6 +1184,12 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 			payAmount = 0.0
 			payTransNo = ""
 		}
+		var employeeNo string
+		if order.EmployeeID != nil {
+			employeeNo = *order.Employee.EmployeeNo
+		} else {
+			employeeNo = ""
+		}
 		_ = excel.SetSheetRow("Sheet1", axis, &[]interface{}{
 			elogUrl,
 			"江西云平台",
@@ -1208,6 +1214,7 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 			payTime,
 			payAmount,
 			payTransNo,
+			employeeNo,
 		})
 	}
 	excelBuffer, err := excel.WriteToBuffer()
