@@ -172,3 +172,11 @@ export const getEmployeeList = (data) => {
     data: data
   })
 }
+
+export const getEmployeeListWithNo = (data) => {
+  return service({
+    url: '/user/getEmployeeListWithNo',
+    method: 'post',
+    data: data
+  })
+}

@@ -110,7 +110,7 @@
             >通过
             </el-button>
             <el-button
-              v-if="scope.row.revoke === null &&scope.row.apply.auditStatus===1 && scope.row.project"
+              v-if="scope.row.revoke === null &&scope.row.apply.auditStatus===1"
               type="danger"
               icon="closeBold"
               @click="rejectApplyFunc(scope.row)"
@@ -188,7 +188,7 @@
           </template>
         </el-table-column>
         <el-table-column align="center" label="工号" prop="apply.applicantAuthCode" min-width="120px" />
-        <el-table-column align="center" label="业务员" prop="employeeNo" min-width="120px" />
+        <el-table-column align="center" label="业务员" prop="employee.nickName" min-width="120px" />
         <el-table-column v-if="authCheck !== 0" align="center" label="查看" :min-width="authCheck * 100" fixed="right">
           <template #default="scope">
             <el-button v-auth="btnAuth.detail" type="info" icon="list" @click="openDetailDialog(scope.row)">详情</el-button>

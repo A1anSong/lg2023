@@ -124,7 +124,7 @@ func (orderApi *OrderApi) ApproveApply(c *gin.Context) {
 	}
 	if err := orderService.ApproveApply(order); err != nil {
 		global.GVA_LOG.Error("提交失败!", zap.Error(err))
-		response.FailWithMessage("提交失败", c)
+		response.FailWithMessage("提交失败："+err.Error(), c)
 	} else {
 		response.OkWithMessage("提交成功", c)
 	}
@@ -139,7 +139,7 @@ func (orderApi *OrderApi) RejectApply(c *gin.Context) {
 	}
 	if err := orderService.RejectApply(order); err != nil {
 		global.GVA_LOG.Error("提交失败!", zap.Error(err))
-		response.FailWithMessage("提交失败", c)
+		response.FailWithMessage("提交失败："+err.Error(), c)
 	} else {
 		response.OkWithMessage("提交成功", c)
 	}
@@ -338,5 +338,20 @@ func (orderApi *OrderApi) QueryInvoice(c *gin.Context) {
 		response.FailWithMessage("提交失败", c)
 	} else {
 		response.OkWithMessage("提交成功，等待约一分钟左右可点击查询开票结果", c)
+	}
+}
+
+func (orderApi *OrderApi) AssignOrder(c *gin.Context) {
+	var assign lgReq.AssignOrder
+	err := c.ShouldBindJSON(&assign)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := orderService.AssignOrder(assign); err != nil {
+		global.GVA_LOG.Error("提交失败!", zap.Error(err))
+		response.FailWithMessage("提交失败："+err.Error(), c)
+	} else {
+		response.OkWithMessage("提交成功", c)
 	}
 }

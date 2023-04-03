@@ -271,7 +271,12 @@ func (orderService *OrderService) RejectApply(order lg.Order) (err error) {
 		order.Apply.AuditStatus = &auditStatus
 		order.Apply.AuditOpinion = &auditOpinion
 		order.Apply.AuditDate = &auditDate
-		realAmount := math.Trunc(*order.Project.TenderDeposit*global.GVA_CONFIG.Insurance.ElogRate*1e2+0.5) * 1e-2
+		var realAmount float64
+		if order.ProjectID != nil {
+			realAmount = math.Trunc(*order.Project.TenderDeposit*global.GVA_CONFIG.Insurance.ElogRate*1e2+0.5) * 1e-2
+		} else {
+			realAmount = math.Trunc(*order.Apply.TenderDeposit*global.GVA_CONFIG.Insurance.ElogRate*1e2+0.5) * 1e-2
+		}
 		if realAmount < global.GVA_CONFIG.Insurance.ElogMinAmount {
 			order.Apply.RealElogAmount = &global.GVA_CONFIG.Insurance.ElogMinAmount
 		} else {
@@ -1142,36 +1147,26 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	for i, order := range orders {
 		axis := fmt.Sprintf("A%d", i+2)
 		elogAmount, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", *order.Apply.TenderDeposit**order.Apply.ProductRate), 64)
-		var elogUrl string
-		var insureStartDate string
-		var insureEndDate string
-		var letterOpenDate string
-		var elogNo string
+		elogUrl := ""
+		insureStartDate := ""
+		insureEndDate := ""
+		letterOpenDate := ""
+		elogNo := ""
 		if order.LetterID != nil {
 			elogUrl = global.GVA_CONFIG.Insurance.APIDomain + "letterFileDownload?elog=" + *order.Letter.ElogUrl
 			insureStartDate = *order.Letter.InsureStartDate
 			insureEndDate = *order.Letter.InsureEndDate
 			letterOpenDate = order.Letter.CreatedAt.Format("2006-01-02 15:04:05")
 			elogNo = *order.Letter.ElogNo
-		} else {
-			elogUrl = ""
-			insureStartDate = ""
-			insureEndDate = ""
-			letterOpenDate = ""
-			elogNo = ""
 		}
-		var projectCity string
-		var projectCounty string
+		projectCity := ""
+		projectCounty := ""
 		if order.ProjectID != nil {
 			if order.Project.ProjectCity != nil {
 				projectCity = *order.Project.ProjectCity
-			} else {
-				projectCity = ""
 			}
 			if order.Project.ProjectCounty != nil {
 				projectCounty = *order.Project.ProjectCounty
-			} else {
-				projectCounty = ""
 			}
 		} else {
 			projectCity = ""
@@ -1403,4 +1398,19 @@ func (orderService *OrderService) QueryInvoice(reqInvoice nnrequest.NNQueryInvoi
 	}
 	reqInvoice.Order.Invoice.InvoiceDownloadUrl = &resultRequestInvoice.Result[0].PdfUrl
 	return global.GVA_DB.Save(&reqInvoice.Order.Invoice).Error
+}
+
+func (orderService *OrderService) AssignOrder(assign lgReq.AssignOrder) (err error) {
+	var order lg.Order
+	err = global.GVA_DB.Where("order_no = ?", assign.OrderNo).First(&order).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) { // 判断人员编号是否已经存在
+		return errors.New("该订单编号不存在")
+	} else {
+		return err
+	}
+	if order.EmployeeID != nil {
+		return errors.New("该订单已经分配")
+	} else {
+		return global.GVA_DB.Model(&order).Where("id = ?", order.ID).Update("employee_id", assign.EmployeeId).Error
+	}
 }

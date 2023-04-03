@@ -15,7 +15,7 @@ type SysAuthority struct {
 	Children        []SysAuthority  `json:"children" gorm:"-"`
 	SysBaseMenus    []SysBaseMenu   `json:"menus" gorm:"many2many:sys_authority_menus;"`
 	Users           []SysUser       `json:"-" gorm:"many2many:sys_user_authority;"`
-	DefaultRouter   string          `json:"defaultRouter" gorm:"comment:默认菜单;default:dash"` // 默认菜单(默认dashboard)
+	DefaultRouter   string          `json:"defaultRouter" gorm:"comment:默认菜单;default:Dash"` // 默认菜单(默认dashboard)
 }
 
 func (SysAuthority) TableName() string {

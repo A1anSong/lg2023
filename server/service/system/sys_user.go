@@ -271,3 +271,19 @@ func (userService *UserService) GetEmployeeInfoList(info request.PageInfo) (list
 	err = db.Limit(limit).Offset(offset).Preload("Authorities").Preload("Authority").Order("created_at desc").Find(&userList).Error
 	return userList, total, err
 }
+
+func (userService *UserService) GetEmployeeListWithNo(info request.PageInfo) (list interface{}, total int64, err error) {
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	db := global.GVA_DB.Model(&system.SysUser{})
+	var userList []system.SysUser
+	db = db.Where("id > 2")
+	db = db.Where("employee_no is not null")
+	db = db.Where("employee_no != ''")
+	err = db.Count(&total).Error
+	if err != nil {
+		return
+	}
+	err = db.Limit(limit).Offset(offset).Order("created_at desc").Find(&userList).Error
+	return userList, total, err
+}
