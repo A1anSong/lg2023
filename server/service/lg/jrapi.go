@@ -17,6 +17,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -75,71 +76,97 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 		if err = tx.Create(&order).Error; err != nil {
 			return errors.New("创建订单失败")
 		}
-		var auditStatus int64 = 1
+		// 匹配项目，进入自动化流程
+		auditStatus := int64(1)
 		auditOpinion := "待受理"
 		auditDate := time.Now().Format("2006-01-02 15:04:05")
-		attachInfo, _ := json.Marshal(reApply.AttachInfo)
-		attachInfoString := string(attachInfo)
-		productType, _ := strconv.ParseInt(*reApply.ProductType, 10, 64)
-		apply := &lg.Apply{
-			OrderID:           &order.ID,
-			OrderNo:           reApply.OrderNo,
-			ApplyNo:           reApply.ApplyNo,
-			ProductNo:         reApply.ProductNo,
-			ProductType:       &productType,
-			ProductRate:       reApply.ProductRate,
-			ElogAmount:        reApply.ElogAmount,
-			ProjectGuid:       reApply.ProjectGuid,
-			ProjectName:       reApply.ProjectName,
-			ProjectNo:         reApply.ProjectNo,
-			TenderDeposit:     reApply.TenderDeposit,
-			DepositStartDate:  reApply.DepositStartDate,
-			DepositEndDate:    reApply.DepositEndDate,
-			OpenBeginDate:     reApply.OpenBeginDate,
-			ElogTemplateNo:    reApply.ElogTemplateNo,
-			ElogTemplateName:  reApply.ElogTemplateName,
-			InsuredName:       reApply.InsuredName,
-			InsuredCreditCode: reApply.InsuredCreditCode,
-			InsuredAddress:    reApply.InsuredAddress,
-			InsureName:        reApply.InsureName,
-			InsureCreditCode:  reApply.InsureCreditCode,
-			InsureLegalName:   reApply.InsureLegalName,
-			InsureLegalIdCard: reApply.InsureLegalIdCard,
-			InsureAddress:     reApply.InsureAddress,
-			ApplicantName:     reApply.ApplicantName,
-			ApplicantIdCard:   reApply.ApplicantIdCard,
-			ApplicantTel:      reApply.ApplicantTel,
-			ApplicantAuthCode: reApply.ApplicantAuthCode,
-			AttachInfo:        &attachInfoString,
-			AuditStatus:       &auditStatus,
-			AuditOpinion:      &auditOpinion,
-			AuditDate:         &auditDate,
-		}
-		if err = tx.Create(&apply).Error; err != nil {
-			return errors.New("创建申请失败")
-		}
-		order.ApplyID = &apply.ID
-		if err = tx.Save(&order).Error; err != nil {
-			return errors.New("更新订单失败")
-		}
+		realElogAmount := math.Trunc(*reApply.TenderDeposit*global.GVA_CONFIG.Insurance.ElogRate*1e2+0.5) * 1e-2
+		realElogRate := global.GVA_CONFIG.Insurance.ElogRate
+		tenderDeposit := *reApply.TenderDeposit
+		insuranceName := global.GVA_CONFIG.Insurance.Name
+		insuranceCreditCode := global.GVA_CONFIG.Insurance.CreditCode
+		resApply.OrderNo = reApply.OrderNo
+		resApply.ApplyNo = reApply.ApplyNo
+		var apply lg.Apply
 		var project lg.Project
-		err = tx.Model(&lg.Project{}).Where("project_no = ? AND is_enable = TRUE", apply.ProjectNo).First(&project).Error
+		err = tx.Model(&lg.Project{}).Where("project_no = ? AND is_enable = TRUE", reApply.ProjectNo).First(&project).Error
 		if err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				return errors.New("连接项目数据库失败")
+			} else {
+				auditStatus = int64(3)
+				auditOpinion = "没有匹配项目"
+				resApply.AuditStatus = &auditStatus
+				resApply.AuditOpinion = &auditOpinion
+				resApply.AuditDate = &auditDate
 			}
 		} else {
 			order.ProjectID = &project.ID
 			if err = tx.Save(&order).Error; err != nil {
 				return errors.New("更新订单项目失败")
 			}
+			if *project.IsAutoMatic {
+				auditStatus = int64(2)
+				auditOpinion = "受理成功"
+				realElogAmount = math.Trunc(*project.TenderDeposit*global.GVA_CONFIG.Insurance.ElogRate*1e2+0.5) * 1e-2
+				tenderDeposit = *project.TenderDeposit
+				resApply.AuditStatus = &auditStatus
+				resApply.AuditOpinion = &auditOpinion
+				resApply.AuditDate = &auditDate
+				resApply.RealElogAmount = &realElogAmount
+				resApply.RealElogRate = &realElogRate
+				resApply.TenderDeposit = &tenderDeposit
+				resApply.InsuranceName = &insuranceName
+				resApply.InsuranceCreditCode = &insuranceCreditCode
+				apply.RealElogAmount = &realElogAmount
+				apply.RealElogRate = &realElogRate
+				apply.InsuranceName = &insuranceName
+				apply.InsuranceCreditCode = &insuranceCreditCode
+			} else {
+				resApply.AuditStatus = &auditStatus
+				resApply.AuditOpinion = &auditOpinion
+				resApply.AuditDate = &auditDate
+			}
 		}
-		resApply = jrresponse.JRAPIApply{
-			OrderNo:      reApply.OrderNo,
-			ApplyNo:      reApply.ApplyNo,
-			AuditStatus:  &auditStatus,
-			AuditOpinion: &auditOpinion,
-			AuditDate:    &auditDate,
+		attachInfo, _ := json.Marshal(reApply.AttachInfo)
+		attachInfoString := string(attachInfo)
+		productType, _ := strconv.ParseInt(*reApply.ProductType, 10, 64)
+		apply.OrderID = &order.ID
+		apply.ProductNo = reApply.ProductNo
+		apply.ProductType = &productType
+		apply.ProductRate = reApply.ProductRate
+		apply.ElogAmount = reApply.ElogAmount
+		apply.ProjectGuid = reApply.ProjectGuid
+		apply.ProjectName = reApply.ProjectName
+		apply.ProjectNo = reApply.ProjectNo
+		apply.TenderDeposit = reApply.TenderDeposit
+		apply.DepositStartDate = reApply.DepositStartDate
+		apply.DepositEndDate = reApply.DepositEndDate
+		apply.OpenBeginDate = reApply.OpenBeginDate
+		apply.ElogTemplateNo = reApply.ElogTemplateNo
+		apply.ElogTemplateName = reApply.ElogTemplateName
+		apply.InsuredName = reApply.InsuredName
+		apply.InsuredCreditCode = reApply.InsuredCreditCode
+		apply.InsuredAddress = reApply.InsuredAddress
+		apply.InsureName = reApply.InsureName
+		apply.InsureCreditCode = reApply.InsureCreditCode
+		apply.InsureLegalName = reApply.InsureLegalName
+		apply.InsureLegalIdCard = reApply.InsureLegalIdCard
+		apply.InsureAddress = reApply.InsureAddress
+		apply.ApplicantName = reApply.ApplicantName
+		apply.ApplicantIdCard = reApply.ApplicantIdCard
+		apply.ApplicantTel = reApply.ApplicantTel
+		apply.ApplicantAuthCode = reApply.ApplicantAuthCode
+		apply.AttachInfo = &attachInfoString
+		apply.AuditStatus = &auditStatus
+		apply.AuditOpinion = &auditOpinion
+		apply.AuditDate = &auditDate
+		if err = tx.Create(&apply).Error; err != nil {
+			return errors.New("创建申请失败")
+		}
+		order.ApplyID = &apply.ID
+		if err = tx.Save(&order).Error; err != nil {
+			return errors.New("更新订单失败")
 		}
 		return nil
 	})
