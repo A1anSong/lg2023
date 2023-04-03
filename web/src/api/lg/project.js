@@ -64,6 +64,23 @@ export const unbindProject = (data) => {
     data
   })
 }
+
+export const autoMaticProject = (data) => {
+  return service({
+    url: '/project/autoMaticProject',
+    method: 'post',
+    data
+  })
+}
+
+export const unAutoMaticProject = (data) => {
+  return service({
+    url: '/project/unAutoMaticProject',
+    method: 'post',
+    data
+  })
+}
+
 export const downloadTemplate = (file) => {
   return service({
     url: '/project/downloadTemplate',

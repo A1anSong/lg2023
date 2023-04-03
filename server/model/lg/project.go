@@ -24,6 +24,7 @@ type Project struct {
 	TemplateID         *uint     `json:"templateID" form:"templateID"`
 	Template           *Template `json:"template" form:"template"`
 	IsEnable           *bool     `json:"isEnable" form:"isEnable"`
+	IsAutoMatic        *bool     `json:"isAutoMatic" form:"isAutoMatic"`
 }
 
 func (Project) TableName() string {

@@ -121,7 +121,7 @@ func (projectApi *ProjectApi) BindProject(c *gin.Context) {
 	}
 	if err := projectService.BindProject(project); err != nil {
 		global.GVA_LOG.Error("绑定失败!", zap.Error(err))
-		response.FailWithMessage("绑定失败", c)
+		response.FailWithMessage("绑定失败："+err.Error(), c)
 	} else {
 		response.OkWithMessage("绑定成功", c)
 	}
@@ -136,7 +136,37 @@ func (projectApi *ProjectApi) UnbindProject(c *gin.Context) {
 	}
 	if err := projectService.UnbindProject(project); err != nil {
 		global.GVA_LOG.Error("解绑失败!", zap.Error(err))
-		response.FailWithMessage("解绑失败", c)
+		response.FailWithMessage("解绑失败："+err.Error(), c)
+	} else {
+		response.OkWithMessage("解绑成功", c)
+	}
+}
+
+func (projectApi *ProjectApi) AutoMaticProject(c *gin.Context) {
+	var project lg.Project
+	err := c.ShouldBindJSON(&project)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := projectService.AutoMaticProject(project); err != nil {
+		global.GVA_LOG.Error("绑定失败!", zap.Error(err))
+		response.FailWithMessage("绑定失败："+err.Error(), c)
+	} else {
+		response.OkWithMessage("绑定成功", c)
+	}
+}
+
+func (projectApi *ProjectApi) UnAutoMaticProject(c *gin.Context) {
+	var project lg.Project
+	err := c.ShouldBindJSON(&project)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := projectService.UnAutoMaticProject(project); err != nil {
+		global.GVA_LOG.Error("解绑失败!", zap.Error(err))
+		response.FailWithMessage("解绑失败："+err.Error(), c)
 	} else {
 		response.OkWithMessage("解绑成功", c)
 	}

@@ -91,7 +91,7 @@
         <el-table-column align="center" label="项目类型" prop="projectType" min-width="120px" />
         <el-table-column align="center" label="项目类别" prop="projectCategory" min-width="120px" />
         <el-table-column align="center" label="招标文件" prop="tendereeFile" min-width="120px" />
-        <el-table-column align="center" label="操作" min-width="100" fixed="right">
+        <el-table-column align="center" label="上架状态" min-width="100" fixed="right">
           <template #default="scope">
             <el-switch
               v-model="scope.row.isEnable"
@@ -100,6 +100,18 @@
               inactive-text="否"
               style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
               @change="changeProjectEnable($event, scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="自动审批" min-width="100" fixed="right">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.isAutoMatic"
+              inline-prompt
+              active-text="是"
+              inactive-text="否"
+              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+              @change="changeProjectAutoMatic($event, scope.row)"
             />
           </template>
         </el-table-column>
@@ -127,9 +139,9 @@ export default {
 
 <script setup>
 import {
-  getProjectList,
-  bindProject,
-  unbindProject
+    getProjectList,
+    bindProject,
+    unbindProject, autoMaticProject, unAutoMaticProject
 } from '@/api/lg/project'
 
 import { ElMessage } from 'element-plus'
@@ -214,6 +226,32 @@ const changeProjectEnable = async(val, row) => {
       ElMessage({
         type: 'success',
         message: '解绑成功'
+      })
+      await getTableData()
+    } else {
+      row.isEnable = true
+    }
+  }
+}
+
+const changeProjectAutoMatic = async(val, row) => {
+  if (val === true) {
+    const res = await autoMaticProject(row)
+    if (res.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: '设置自动化成功'
+      })
+      await getTableData()
+    } else {
+      row.isEnable = false
+    }
+  } else {
+    const res = await unAutoMaticProject(row)
+    if (res.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: '取消自动化成功'
       })
       await getTableData()
     } else {

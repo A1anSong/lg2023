@@ -22,6 +22,10 @@ type ProjectService struct {
 }
 
 func (projectService *ProjectService) CreateProject(project lg.Project) (err error) {
+	isEnable := false
+	isAutoMatic := false
+	project.IsEnable = &isEnable
+	project.IsAutoMatic = &isAutoMatic
 	err = global.GVA_DB.Create(&project).Error
 	return err
 }
@@ -84,6 +88,9 @@ func (projectService *ProjectService) GetProjectInfoList(info lgReq.ProjectSearc
 }
 
 func (projectService *ProjectService) BindProject(project lg.Project) (err error) {
+	if project.TemplateID == nil {
+		return errors.New("请先选择模板")
+	}
 	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
 		var orders []lg.Order
 		err = tx.Model(&lg.Order{}).Joins("Apply").Where("Apply.project_no = ?", project.ProjectNo).Find(&orders).Error
@@ -130,6 +137,16 @@ func (projectService *ProjectService) UnbindProject(project lg.Project) (err err
 		}
 		return nil
 	})
+	return err
+}
+
+func (projectService *ProjectService) AutoMaticProject(project lg.Project) (err error) {
+	err = global.GVA_DB.Model(&project).Update("is_auto_matic", true).Error
+	return err
+}
+
+func (projectService *ProjectService) UnAutoMaticProject(project lg.Project) (err error) {
+	err = global.GVA_DB.Model(&project).Update("is_auto_matic", false).Error
 	return err
 }
 
@@ -218,6 +235,7 @@ func (projectService *ProjectService) ImportExcel(file *multipart.FileHeader) (e
 			tenderDeposit := tenderDepositInRow * 10000
 			_, tendereeFile, err := f.GetCellHyperLink("Sheet1", fmt.Sprintf("R%d", i+1))
 			isEnable := false
+			isAutoMatic := false
 			project := lg.Project{
 				ProjectName:        &row[0],
 				ProjectNo:          &row[1],
@@ -237,6 +255,7 @@ func (projectService *ProjectService) ImportExcel(file *multipart.FileHeader) (e
 				ProjectType:        &row[8],
 				ProjectCategory:    &row[9],
 				IsEnable:           &isEnable,
+				IsAutoMatic:        &isAutoMatic,
 			}
 			var p lg.Project
 			if !errors.Is(tx.Where("project_no = ?", project.ProjectNo).First(&p).Error, gorm.ErrRecordNotFound) {
