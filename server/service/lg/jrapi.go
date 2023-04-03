@@ -109,6 +109,9 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 				auditStatus = int64(2)
 				auditOpinion = "受理成功"
 				realElogAmount = math.Trunc(*project.TenderDeposit*global.GVA_CONFIG.Insurance.ElogRate*1e2+0.5) * 1e-2
+				if realElogAmount < global.GVA_CONFIG.Insurance.ElogMinAmount {
+					realElogAmount = global.GVA_CONFIG.Insurance.ElogMinAmount
+				}
 				tenderDeposit = *project.TenderDeposit
 				resApply.AuditStatus = &auditStatus
 				resApply.AuditOpinion = &auditOpinion
