@@ -16,7 +16,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
+          <el-button type="primary" icon="share" @click="onSubmit">认领</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -33,6 +33,8 @@ export default {
 import { ref } from 'vue'
 
 import { getEmployeeListWithNo } from '@/api/user'
+import { assignOrder } from '@/api/lg/order'
+import { ElMessage } from 'element-plus'
 
 // =========== 表格控制部分 ===========
 const orderNo = ref('')
@@ -41,7 +43,13 @@ const employeeData = ref([])
 
 // 搜索
 const onSubmit = () => {
-  console.log('searchInfo', searchInfo)
+  const res = assignOrder({ orderNo: orderNo.value, employeeId: employeeID.value })
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '认领成功'
+    })
+  }
 }
 
 // 获取模板列表

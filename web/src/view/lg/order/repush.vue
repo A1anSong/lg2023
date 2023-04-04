@@ -108,6 +108,9 @@
           </template>
         </el-table-column>
         <el-table-column align="center" label="订单编号" prop="orderNo" width="120px" />
+        <el-table-column align="center" label="申请时间" width="100px">
+          <template #default="scope">{{ date(scope.row.apply.CreatedAt) }}</template>
+        </el-table-column>
         <el-table-column align="center" label="产品类型" width="80px">
           <template #default="scope">{{ productType(scope.row.apply.productType) }}</template>
         </el-table-column>
@@ -121,9 +124,6 @@
         <el-table-column align="center" label="所属市" prop="project.projectCity" min-width="120px" />
         <el-table-column align="center" label="保函格式名称" prop="project.template.templateName" min-width="120px" />
         <el-table-column align="center" label="申请企业" prop="apply.insureName" min-width="280px" />
-        <el-table-column align="center" label="申请时间" width="100px">
-          <template #default="scope">{{ date(scope.row.apply.CreatedAt) }}</template>
-        </el-table-column>
         <el-table-column align="center" label="审核时间" width="100px">
           <template #default="scope">{{ date(scope.row.apply.auditDate) }}</template>
         </el-table-column>

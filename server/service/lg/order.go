@@ -1410,10 +1410,12 @@ func (orderService *OrderService) QueryInvoice(reqInvoice nnrequest.NNQueryInvoi
 func (orderService *OrderService) AssignOrder(assign lgReq.AssignOrder) (err error) {
 	var order lg.Order
 	err = global.GVA_DB.Where("order_no = ?", assign.OrderNo).First(&order).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) { // 判断人员编号是否已经存在
-		return errors.New("该订单编号不存在")
-	} else {
-		return err
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) { // 判断人员编号是否已经存在
+			return errors.New("该订单编号不存在")
+		} else {
+			return err
+		}
 	}
 	if order.EmployeeID != nil {
 		return errors.New("该订单已经分配")
