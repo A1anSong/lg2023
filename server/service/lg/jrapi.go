@@ -134,6 +134,8 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 		attachInfo, _ := json.Marshal(reApply.AttachInfo)
 		attachInfoString := string(attachInfo)
 		productType, _ := strconv.ParseInt(*reApply.ProductType, 10, 64)
+		apply.OrderNo = reApply.OrderNo
+		apply.ApplyNo = reApply.ApplyNo
 		apply.OrderID = &order.ID
 		apply.ProductNo = reApply.ProductNo
 		apply.ProductType = &productType
