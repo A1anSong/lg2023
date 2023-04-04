@@ -42,8 +42,8 @@ const employeeID = ref('')
 const employeeData = ref([])
 
 // 搜索
-const onSubmit = () => {
-  const res = assignOrder({ orderNo: orderNo.value, employeeId: employeeID.value })
+const onSubmit = async() => {
+  const res = await assignOrder({ orderNo: orderNo.value, employeeId: employeeID.value })
   if (res.code === 0) {
     ElMessage({
       type: 'success',
@@ -54,9 +54,9 @@ const onSubmit = () => {
 
 // 获取模板列表
 const getEmployeeData = async() => {
-  const employee = await getEmployeeListWithNo({ page: 1, pageSize: 999 })
-  if (employee.code === 0) {
-    employeeData.value = employee.data.list
+  const res = await getEmployeeListWithNo({ page: 1, pageSize: 999 })
+  if (res.code === 0) {
+    employeeData.value = res.data.list
   }
 }
 

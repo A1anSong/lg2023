@@ -15,6 +15,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nn/nnresponse"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nonmigrate"
 	lgReq "github.com/flipped-aurora/gin-vue-admin/server/model/lg/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	lg2 "github.com/flipped-aurora/gin-vue-admin/server/utils/lg"
 	"github.com/go-resty/resty/v2"
 	"github.com/xuri/excelize/v2"
@@ -1408,8 +1409,13 @@ func (orderService *OrderService) QueryInvoice(reqInvoice nnrequest.NNQueryInvoi
 }
 
 func (orderService *OrderService) AssignOrder(assign lgReq.AssignOrder) (err error) {
+	var employee system.SysUser
+	err = global.GVA_DB.Where("id = ?", assign.EmployeeId).First(&employee).Error
+	if err != nil {
+		return errors.New("查询该人员失败")
+	}
 	var order lg.Order
-	err = global.GVA_DB.Where("order_no = ?", assign.OrderNo).First(&order).Error
+	err = global.GVA_DB.Where("order_no = ?", assign.OrderNo).Preload(clause.Associations).First(&order).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) { // 判断人员编号是否已经存在
 			return errors.New("该订单编号不存在")
@@ -1420,6 +1426,8 @@ func (orderService *OrderService) AssignOrder(assign lgReq.AssignOrder) (err err
 	if order.EmployeeID != nil {
 		return errors.New("该订单已经分配")
 	} else {
-		return global.GVA_DB.Model(&order).Where("id = ?", order.ID).Update("employee_id", assign.EmployeeId).Error
+		order.EmployeeID = &assign.EmployeeId
+		order.Apply.ApplicantAuthCode = employee.EmployeeNo
+		return global.GVA_DB.Save(&order).Error
 	}
 }
