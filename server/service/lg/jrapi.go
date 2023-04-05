@@ -95,7 +95,7 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 				return errors.New("连接项目数据库失败")
 			} else {
 				auditStatus = int64(3)
-				auditOpinion = "没有匹配项目"
+				auditOpinion = "未匹配该项目"
 				resApply.AuditStatus = &auditStatus
 				resApply.AuditOpinion = &auditOpinion
 				resApply.AuditDate = &auditDate
@@ -436,6 +436,8 @@ func (jrAPIService *JRAPIService) ApplyRefund(reApplyRefund jrrequest.JRAPIApply
 		}
 		attachInfo, _ := json.Marshal(reApplyRefund.AttachInfo)
 		attachInfoString := string(attachInfo)
+		auditStatus := int64(1)
+		auditOpinion := "待受理"
 		refund := &lg.Refund{
 			OrderID:          &order.ID,
 			OrderNo:          reApplyRefund.OrderNo,
@@ -448,6 +450,8 @@ func (jrAPIService *JRAPIService) ApplyRefund(reApplyRefund jrrequest.JRAPIApply
 			ApplicantTel:     reApplyRefund.ApplicantTel,
 			Reason:           reApplyRefund.Reason,
 			AttachInfo:       &attachInfoString,
+			AuditStatus:      &auditStatus,
+			AuditOpinion:     &auditOpinion,
 		}
 		if err = tx.Create(&refund).Error; err != nil {
 			return errors.New("创建" + *order.OrderNo + "退函申请失败")
