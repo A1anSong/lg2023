@@ -62,9 +62,11 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 		}
 
 		isRepushed := false
+		isOfflineRefund := false
 		order := &lg.Order{
-			OrderNo:    reApply.OrderNo,
-			IsRepushed: &isRepushed,
+			OrderNo:         reApply.OrderNo,
+			IsRepushed:      &isRepushed,
+			IsOfflineRefund: &isOfflineRefund,
 		}
 
 		var employee sysModel.SysUser
