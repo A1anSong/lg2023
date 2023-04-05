@@ -54,23 +54,6 @@
     <div class="gva-table-box">
       <div class="gva-btn-list">
         <el-button type="success" icon="plus" @click="openDialog">新增</el-button>
-        <el-popover v-model:visible="deleteVisible" placement="top" width="160">
-          <p>确定要删除吗？</p>
-          <div style="text-align: right; margin-top: 8px;">
-            <el-button type="primary" link @click="deleteVisible = false">取消</el-button>
-            <el-button type="primary" @click="onDelete">确定</el-button>
-          </div>
-          <template #reference>
-            <el-button
-              type="danger"
-              icon="delete"
-              style="margin-left: 10px;"
-              :disabled="!multipleSelection.length"
-              @click="deleteVisible = true"
-            >删除
-            </el-button>
-          </template>
-        </el-popover>
         <el-button style="margin-left: auto" type="info" icon="download" @click="downloadExcelTemplate()">下载录入模板</el-button>
         <el-upload
           style="margin-left: 12px"
@@ -96,9 +79,7 @@
         empty-text="无数据"
         scrollbar-always-on
         height="800"
-        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" min-width="55" />
         <el-table-column align="center" label="标段名称" prop="projectName" min-width="300px" />
         <el-table-column align="center" label="标段编号" prop="projectNo" min-width="160px" />
         <el-table-column align="center" label="标段金额" min-width="120px">
@@ -128,19 +109,13 @@
         <el-table-column align="center" label="项目类型" prop="projectType" min-width="120px" />
         <el-table-column align="center" label="项目类别" prop="projectCategory" min-width="120px" />
         <el-table-column align="center" label="招标文件" prop="tendereeFile" min-width="120px" />
-        <el-table-column align="center" label="操作" min-width="200" fixed="right">
+        <el-table-column align="center" label="操作" min-width="100" fixed="right">
           <template #default="scope">
             <el-button
               type="warning"
               icon="edit"
               @click="updateProjectFunc(scope.row)"
             >变更
-            </el-button>
-            <el-button
-              type="danger"
-              icon="delete"
-              @click="deleteRow(scope.row)"
-            >删除
             </el-button>
           </template>
         </el-table-column>
@@ -258,15 +233,13 @@ export default {
 <script setup>
 import {
   createProject,
-  deleteProject,
-  deleteProjectByIds,
   updateProject,
   findProject,
   getProjectList,
   downloadTemplate
 } from '@/api/lg/project'
 
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
 
 import { date } from '@/utils/lg/date'
@@ -365,62 +338,6 @@ getTableData()
 
 // ============== 表格控制部分结束 ===============
 
-// 获取需要的字典 可能为空 按需保留
-const setOptions = async() => {
-}
-
-// 获取需要的字典 可能为空 按需保留
-setOptions()
-
-// 多选数据
-const multipleSelection = ref([])
-// 多选
-const handleSelectionChange = (val) => {
-  multipleSelection.value = val
-}
-
-// 删除行
-const deleteRow = (row) => {
-  ElMessageBox.confirm('确定要删除吗?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    deleteProjectFunc(row)
-  })
-}
-
-// 批量删除控制标记
-const deleteVisible = ref(false)
-
-// 多选删除
-const onDelete = async() => {
-  const ids = []
-  if (multipleSelection.value.length === 0) {
-    ElMessage({
-      type: 'warning',
-      message: '请选择要删除的数据'
-    })
-    return
-  }
-  multipleSelection.value &&
-  multipleSelection.value.map(item => {
-    ids.push(item.ID)
-  })
-  const res = await deleteProjectByIds({ ids })
-  if (res.code === 0) {
-    ElMessage({
-      type: 'success',
-      message: '删除成功'
-    })
-    if (tableData.value.length === ids.length && page.value > 1) {
-      page.value--
-    }
-    deleteVisible.value = false
-    await getTableData()
-  }
-}
-
 // 行为控制标记（弹窗内部需要增还是改）
 const type = ref('')
 
@@ -431,21 +348,6 @@ const updateProjectFunc = async(row) => {
   if (res.code === 0) {
     formData.value = res.data.reproject
     dialogFormVisible.value = true
-  }
-}
-
-// 删除行
-const deleteProjectFunc = async(row) => {
-  const res = await deleteProject({ ID: row.ID })
-  if (res.code === 0) {
-    ElMessage({
-      type: 'success',
-      message: '删除成功'
-    })
-    if (tableData.value.length === 1 && page.value > 1) {
-      page.value--
-    }
-    await getTableData()
   }
 }
 

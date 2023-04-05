@@ -2,6 +2,7 @@ package initialize
 
 import (
 	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/lg"
 
 	"github.com/robfig/cron/v3"
 
@@ -29,5 +30,21 @@ func Timer() {
 				}
 			}(global.GVA_CONFIG.Timer.Detail[i])
 		}
+	}
+	_, err := global.GVA_Timer.AddTaskByFunc("testOneMinute", "* * * * *", func() {
+		fmt.Println("每分钟一次")
+	})
+	if err != nil {
+		fmt.Println("add timer error:", err)
+	}
+	_, err = global.GVA_Timer.AddTaskByFunc("testFiveMinute", "*/5 * * * *", func() {
+		fmt.Println("每五分钟一次")
+	})
+	if err != nil {
+		fmt.Println("add timer error:", err)
+	}
+	_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticUnEnableProject", "0 * * * *", lg.AutoMaticUnEnableProject)
+	if err != nil {
+		fmt.Println("设置每小时自动下架项目失败", err)
 	}
 }
