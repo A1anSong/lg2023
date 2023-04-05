@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/jrapi"
@@ -672,6 +673,7 @@ func (jrAPIService *JRAPIService) DelayFileDownload(elog string, encrypt bool) (
 }
 
 func openLetterSync(order lg.Order) {
+	var letter lg.Letter
 	err := global.GVA_DB.Transaction(func(tx *gorm.DB) (err error) {
 		var templateFile lg.File
 		if err = tx.Model(&lg.File{}).Where("id = ?", *order.Project.Template.TemplateFileID).First(&templateFile).Error; err != nil {
@@ -680,7 +682,6 @@ func openLetterSync(order lg.Order) {
 		if err = tx.Where("order_no = ?", order.OrderNo).Delete(&lg.Letter{}).Error; err != nil {
 			return err
 		}
-		var letter lg.Letter
 		var file lg.File
 		var encryptFile lg.File
 		if letter, file, encryptFile, err = lg2.OpenLetter(order, templateFile); err != nil {
@@ -701,6 +702,12 @@ func openLetterSync(order lg.Order) {
 		if err = tx.Save(&order).Error; err != nil {
 			return err
 		}
+
+		return nil
+	})
+	if err != nil {
+		global.GVA_LOG.Error("自动化开函失败!", zap.Error(err))
+	} else {
 		if global.GVA_CONFIG.Insurance.JRAPIDomain != "" {
 			apiPath := "/jrapi/lg/lgResultPush"
 			var lgResultPush = jrclientrequest.LgResultPush{
@@ -719,49 +726,46 @@ func openLetterSync(order lg.Order) {
 			}
 			req, err := lg2.GenJRRequest(lgResultPush)
 			if err != nil {
-				return err
+				fmt.Println(err)
 			}
 			var res jrresponse.JRResponse
 			client := resty.New()
-			resp, err := client.R().
-				SetBody(&req).
-				SetResult(&res).
-				Post(global.GVA_CONFIG.Insurance.JRAPIDomain + apiPath)
-			if err != nil {
-				return err
-			}
-			if resp.StatusCode() == http.StatusOK {
-				if res.Code != 0 {
-					err := errors.New(res.Msg)
-					global.GVA_LOG.Error("调用"+apiPath+"失败", zap.Error(err))
-					return err
-				} else {
-					byteEncryptData, err := base64.StdEncoding.DecodeString(res.Data)
-					if err != nil {
-						return err
-					}
-					jsonData, err := lg2.Sm4Decrypt(byteEncryptData)
-					if err != nil {
-						return err
-					}
-					var resData jrclientresponse.Response
-					err = json.Unmarshal([]byte(jsonData), &resData)
-					if err != nil {
-						return err
-					}
-					if resData.ReceiveResult != "success" {
-						global.GVA_LOG.Error("调用"+apiPath+"结果不为success", zap.Error(err))
-						return errors.New("接收结果不为success")
+			for jrResponse := false; !jrResponse; {
+				resp, err := client.R().
+					SetBody(&req).
+					SetResult(&res).
+					Post(global.GVA_CONFIG.Insurance.JRAPIDomain + apiPath)
+				if err != nil {
+					fmt.Println(err)
+				}
+				if resp.StatusCode() == http.StatusOK {
+					if res.Code != 0 {
+						err := errors.New(res.Msg)
+						global.GVA_LOG.Error("调用"+apiPath+"失败", zap.Error(err))
+						fmt.Println(err)
+					} else {
+						byteEncryptData, err := base64.StdEncoding.DecodeString(res.Data)
+						if err != nil {
+							fmt.Println(err)
+						}
+						jsonData, err := lg2.Sm4Decrypt(byteEncryptData)
+						if err != nil {
+							fmt.Println(err)
+						}
+						var resData jrclientresponse.Response
+						err = json.Unmarshal([]byte(jsonData), &resData)
+						if err != nil {
+							fmt.Println(err)
+						}
+						if resData.ReceiveResult != "success" {
+							global.GVA_LOG.Error("调用"+apiPath+"结果不为success", zap.Error(err))
+							fmt.Println(errors.New("接收结果不为success"))
+						} else {
+							jrResponse = true
+						}
 					}
 				}
-			} else {
-				return errors.New("交易中心响应失败")
 			}
 		}
-
-		return nil
-	})
-	if err != nil {
-		global.GVA_LOG.Error("自动化开函失败!", zap.Error(err))
 	}
 }
