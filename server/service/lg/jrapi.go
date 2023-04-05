@@ -92,7 +92,7 @@ func (jrAPIService *JRAPIService) ApplyOrder(reApply jrrequest.JRAPIApply) (resA
 		resApply.ApplyNo = reApply.ApplyNo
 		var apply lg.Apply
 		var project lg.Project
-		err = tx.Model(&lg.Project{}).Where("project_no = ? AND is_enable = TRUE", reApply.ProjectNo).First(&project).Error
+		err = tx.Model(&lg.Project{}).Where("project_no = ? AND is_enable = TRUE", reApply.ProjectNo).Order("created_at desc").First(&project).Error
 		if err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				return errors.New("连接项目数据库失败")

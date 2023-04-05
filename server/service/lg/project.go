@@ -116,27 +116,7 @@ func (projectService *ProjectService) BindProject(project lg.Project) (err error
 }
 
 func (projectService *ProjectService) UnbindProject(project lg.Project) (err error) {
-	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
-		var orders []lg.Order
-		err = tx.Model(&lg.Order{}).Joins("Apply").Where("Apply.project_no = ?", project.ProjectNo).Find(&orders).Error
-		if err != nil {
-			return err
-		}
-		if len(orders) > 0 {
-			for i := range orders {
-				orders[i].ProjectID = nil
-			}
-			err = tx.Save(&orders).Error
-			if err != nil {
-				return err
-			}
-		}
-		err = tx.Save(&project).Error
-		if err != nil {
-			return err
-		}
-		return nil
-	})
+	err = global.GVA_DB.Save(&project).Error
 	return err
 }
 
