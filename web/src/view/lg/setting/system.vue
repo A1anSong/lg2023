@@ -96,9 +96,6 @@
           <el-form-item label="AccessToken">
             <el-input v-model="config.insurance['nn-acccess-token']" :disabled="true" />
           </el-form-item>
-          <el-form-item label="Token请求时间">
-            <el-date-picker v-model="config.insurance['nn-token-time']" type="datetime" value-format="x" :disabled="true" />
-          </el-form-item>
         </el-collapse-item>
       </el-collapse>
     </el-form>

@@ -28,5 +28,4 @@ type Insurance struct {
 	NNPayee       string  `mapstructure:"nn-payee" json:"nn-payee" yaml:"nn-payee"`
 	NNClerk       string  `mapstructure:"nn-clerk" json:"nn-clerk" yaml:"nn-clerk"`
 	NNAccessToken string  `mapstructure:"nn-acccess-token" json:"nn-acccess-token" yaml:"nn-acccess-token"`
-	NNTokenTime   int64   `mapstructure:"nn-token-time" json:"nn-token-time" yaml:"nn-token-time"`
 }

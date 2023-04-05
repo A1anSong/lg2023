@@ -247,7 +247,7 @@ func (menuService *MenuService) GetDepartmentMenuTree() (menus []system.SysBaseM
 func (menuService *MenuService) getDepartmentMenuTreeMap() (treeMap map[string][]system.SysBaseMenu, err error) {
 	var allMenus []system.SysBaseMenu
 	treeMap = make(map[string][]system.SysBaseMenu)
-	err = global.GVA_DB.Where("id > 29").Order("sort").Preload("MenuBtn").Preload("Parameters").Find(&allMenus).Error
+	err = global.GVA_DB.Where("id > 29 OR path = 'person'").Order("sort").Preload("MenuBtn").Preload("Parameters").Find(&allMenus).Error
 	for _, v := range allMenus {
 		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
 	}

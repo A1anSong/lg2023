@@ -112,7 +112,6 @@ insurance:
   nn-payee: 游丹
   nn-clerk: 游丹
   nn-acccess-token: fa35aa5f2feb821e9c02c00jk1ctdhbs
-  nn-token-time: 1678817857034
 jwt:
   signing-key: 6384fe2c-e99f-48f3-a770-0db405f68ef8
   expires-time: 7d
