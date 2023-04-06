@@ -257,5 +257,5 @@ func (projectService *ProjectService) ImportExcel(file *multipart.FileHeader) (e
 }
 
 func AutoMaticUnEnableProject() {
-	global.GVA_DB.Model(&lg.Project{}).Where("tender_end_date is NOT NULL AND tender_end_date != '' AND tender_end_date < ?", time.Now().Format("2006-01-02 15:04:05")).Update("is_enable", false)
+	global.GVA_DB.Model(&lg.Project{}).Where("project_open_time is NOT NULL AND project_open_time != '' AND project_open_time < ?", time.Now().Format("2006-01-02 15:04:05")).Update("is_enable", false)
 }
