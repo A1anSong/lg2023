@@ -51,6 +51,10 @@
       </el-form>
     </div>
     <div class="gva-table-box">
+      <div class="gva-btn-list">
+        <el-button type="success" icon="check" :disabled="!multipleSelection.length" @click="onEnable">一键上架</el-button>
+        <el-button type="success" icon="cpu" :disabled="!multipleSelection.length" @click="onAutoMatic">一键自动审批</el-button>
+      </div>
       <el-table
         style="width: 100%"
         :data="tableData"
@@ -61,7 +65,9 @@
         empty-text="无数据"
         scrollbar-always-on
         height="800"
+        @selection-change="handleSelectionChange"
       >
+        <el-table-column type="selection" width="55" />
         <el-table-column align="center" label="标段名称" prop="projectName" min-width="300px" />
         <el-table-column align="center" label="标段编号" prop="projectNo" min-width="160px" />
         <el-table-column align="center" label="标段金额" min-width="120px">
@@ -139,9 +145,13 @@ export default {
 
 <script setup>
 import {
-    getProjectList,
-    bindProject,
-    unbindProject, autoMaticProject, unAutoMaticProject
+  getProjectList,
+  bindProject,
+  unbindProject,
+  autoMaticProject,
+  unAutoMaticProject,
+  enableProjectByIds,
+  autoMaticProjectByIds
 } from '@/api/lg/project'
 
 import { ElMessage } from 'element-plus'
@@ -208,6 +218,13 @@ getTableData()
 
 // ============== 表格控制部分结束 ===============
 
+// 多选数据
+const multipleSelection = ref([])
+// 多选
+const handleSelectionChange = (val) => {
+  multipleSelection.value = val
+}
+
 const changeProjectEnable = async(val, row) => {
   if (val === true) {
     const res = await bindProject(row)
@@ -257,6 +274,54 @@ const changeProjectAutoMatic = async(val, row) => {
     } else {
       row.isEnable = true
     }
+  }
+}
+
+const onEnable = async() => {
+  const ids = []
+  if (multipleSelection.value.length === 0) {
+    ElMessage({
+      type: 'warning',
+      message: '请选择要上架的数据'
+    })
+    return
+  }
+  multipleSelection.value &&
+    multipleSelection.value.map(item => {
+      ids.push(item.ID)
+    })
+  const res = await enableProjectByIds({ ids })
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '上架成功'
+    })
+    deleteVisible.value = false
+    await getTableData()
+  }
+}
+
+const onAutoMatic = async() => {
+  const ids = []
+  if (multipleSelection.value.length === 0) {
+    ElMessage({
+      type: 'warning',
+      message: '请选择要自动审批的数据'
+    })
+    return
+  }
+  multipleSelection.value &&
+    multipleSelection.value.map(item => {
+      ids.push(item.ID)
+    })
+  const res = await autoMaticProjectByIds({ ids })
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '开启自动审批成功'
+    })
+    deleteVisible.value = false
+    await getTableData()
   }
 }
 </script>

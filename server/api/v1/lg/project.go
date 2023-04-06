@@ -62,6 +62,36 @@ func (projectApi *ProjectApi) DeleteProjectByIds(c *gin.Context) {
 	}
 }
 
+func (projectApi *ProjectApi) EnableProjectByIds(c *gin.Context) {
+	var IDS request.IdsReq
+	err := c.ShouldBindJSON(&IDS)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := projectService.EnableProjectByIds(IDS); err != nil {
+		global.GVA_LOG.Error("批量上架失败!", zap.Error(err))
+		response.FailWithMessage("批量上架失败", c)
+	} else {
+		response.OkWithMessage("批量上架成功", c)
+	}
+}
+
+func (projectApi *ProjectApi) AutoMaticProjectByIds(c *gin.Context) {
+	var IDS request.IdsReq
+	err := c.ShouldBindJSON(&IDS)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := projectService.AutoMaticProjectByIds(IDS); err != nil {
+		global.GVA_LOG.Error("批量自动审批失败!", zap.Error(err))
+		response.FailWithMessage("批量自动审批失败", c)
+	} else {
+		response.OkWithMessage("批量自动审批成功", c)
+	}
+}
+
 func (projectApi *ProjectApi) UpdateProject(c *gin.Context) {
 	var project lg.Project
 	err := c.ShouldBindJSON(&project)

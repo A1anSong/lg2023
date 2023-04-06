@@ -33,6 +33,22 @@ export const updateProject = (data) => {
   })
 }
 
+export const enableProjectByIds = (data) => {
+  return service({
+    url: '/project/enableProjectByIds',
+    method: 'put',
+    data
+  })
+}
+
+export const autoMaticProjectByIds = (data) => {
+  return service({
+    url: '/project/autoMaticProjectByIds',
+    method: 'put',
+    data
+  })
+}
+
 export const findProject = (params) => {
   return service({
     url: '/project/findProject',

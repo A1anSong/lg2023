@@ -40,6 +40,17 @@ func (projectService *ProjectService) DeleteProjectByIds(ids request.IdsReq) (er
 	return err
 }
 
+func (projectService *ProjectService) EnableProjectByIds(ids request.IdsReq) (err error) {
+	err = global.GVA_DB.Model(&lg.Project{}).Where("id in ?", ids.Ids).Update("is_enable", true).Error
+	return err
+}
+
+func (projectService *ProjectService) AutoMaticProjectByIds(ids request.IdsReq) (err error) {
+	// 把ID在ids中的项目的is_auto_matic字段设置为true
+	err = global.GVA_DB.Model(&lg.Project{}).Where("id in ?", ids.Ids).Update("is_auto_matic", true).Error
+	return err
+}
+
 func (projectService *ProjectService) UpdateProject(project lg.Project) (err error) {
 	err = global.GVA_DB.Save(&project).Error
 	return err
