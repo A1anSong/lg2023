@@ -52,7 +52,7 @@
                 <el-tooltip
                   class="item"
                   effect="light"
-                  content="北京反转极光科技有限公司-技术部-前端事业群"
+                  content="江西匠和人力资源有限公司-技术部-全栈事业群"
                   placement="top"
                 >
                   <li>
