@@ -71,22 +71,22 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.OrderNo != nil && *info.OrderNo != "" {
-		db = db.Where("lg_order.order_no = ?", info.OrderNo)
+		db = db.Where("lg_order.order_no like ?", "%"+*info.OrderNo+"%")
 	}
 	if info.ProjectNo != nil && *info.ProjectNo != "" {
-		db = db.Where("lg_apply.project_no = ?", info.ProjectNo)
+		db = db.Where("lg_apply.project_no like ?", "%"+*info.ProjectNo+"%")
 	}
 	if info.ProjectName != nil && *info.ProjectName != "" {
-		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
+		db = db.Where("lg_apply.project_name like ?", "%"+*info.ProjectName+"%")
 	}
 	if info.InsureName != nil && *info.InsureName != "" {
-		db = db.Where("lg_apply.insure_name = ?", info.InsureName)
+		db = db.Where("lg_apply.insure_name like ?", "%"+*info.InsureName+"%")
 	}
 	if info.ElogTemplateId != nil && *info.ElogTemplateId != 0 {
 		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
 	}
 	if info.ElogNo != nil && *info.ElogNo != "" {
-		db = db.Where("lg_letter.elog_no = ?", info.ElogNo)
+		db = db.Where("lg_letter.elog_no like ?", "%"+*info.ElogNo+"%")
 	}
 	if info.OrderStatus != nil && *info.OrderStatus != "" {
 		if *info.OrderStatus == "已撤" {
@@ -1059,22 +1059,22 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.OrderNo != nil && *info.OrderNo != "" {
-		db = db.Where("lg_order.order_no = ?", info.OrderNo)
+		db = db.Where("lg_order.order_no like ?", "%"+*info.OrderNo+"%")
 	}
 	if info.ProjectNo != nil && *info.ProjectNo != "" {
-		db = db.Where("lg_apply.project_no = ?", info.ProjectNo)
+		db = db.Where("lg_apply.project_no like ?", "%"+*info.ProjectNo+"%")
 	}
 	if info.ProjectName != nil && *info.ProjectName != "" {
-		db = db.Where("lg_apply.project_name = ?", info.ProjectName)
+		db = db.Where("lg_apply.project_name like ?", "%"+*info.ProjectName+"%")
 	}
 	if info.InsureName != nil && *info.InsureName != "" {
-		db = db.Where("lg_apply.insure_name = ?", info.InsureName)
+		db = db.Where("lg_apply.insure_name like ?", "%"+*info.InsureName+"%")
 	}
 	if info.ElogTemplateId != nil && *info.ElogTemplateId != 0 {
 		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
 	}
 	if info.ElogNo != nil && *info.ElogNo != "" {
-		db = db.Where("lg_letter.elog_no = ?", info.ElogNo)
+		db = db.Where("lg_letter.elog_no like ?", "%"+*info.ElogNo+"%")
 	}
 	if info.OrderStatus != nil && *info.OrderStatus != "" {
 		if *info.OrderStatus == "已撤" {

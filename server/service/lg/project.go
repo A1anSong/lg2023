@@ -69,19 +69,19 @@ func (projectService *ProjectService) GetProjectInfoList(info lgReq.ProjectSearc
 	var projects []lg.Project
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.ProjectNo != nil {
-		db = db.Where("project_no = ?", info.ProjectNo)
+		db = db.Where("project_no like ?", "%"+*info.ProjectNo+"%")
 	}
 	if info.ProjectName != nil {
-		db = db.Where("project_name = ?", info.ProjectName)
+		db = db.Where("project_name like ?", "%"+*info.ProjectName+"%")
 	}
 	if info.OpenTime != nil {
 		db = db.Where("project_open_time BETWEEN ? AND ?", info.OpenTime[0], info.OpenTime[1])
 	}
 	if info.ProjectCity != nil {
-		db = db.Where("project_city = ?", info.ProjectCity)
+		db = db.Where("project_city like ?", "%"+*info.ProjectCity+"%")
 	}
 	if info.ProjectCounty != nil {
-		db = db.Where("project_county = ?", info.ProjectCounty)
+		db = db.Where("project_county like ?", "%"+*info.ProjectCounty+"%")
 	}
 	if info.TemplateID != nil {
 		db = db.Where("template_id = ?", info.TemplateID)
