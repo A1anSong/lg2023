@@ -35,9 +35,7 @@ func Timer() {
 	if err != nil {
 		fmt.Println("设置每五分钟查询开票结果失败：", err)
 	}
-	_, err = global.GVA_Timer.AddTaskByFunc("testFiveMinute", "*/15 * * * *", func() {
-		fmt.Println("每十五分钟一次")
-	})
+	_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticAuditInvoiceApply", "*/15 * * * *", lg.AutoMaticAuditInvoiceApply)
 	if err != nil {
 		fmt.Println("设置每十五分钟发票申请审查失败：", err)
 	}

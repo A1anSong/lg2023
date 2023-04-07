@@ -928,7 +928,47 @@ func (orderService *OrderService) OpenLetter(order lg.Order) (err error) {
 			}
 		}
 	}
+	return err
+}
+
+func (orderService *OrderService) RePush(order lg.Order) (err error) {
+	var letter lg.Letter
+	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		var templateFile lg.File
+		if err = tx.Model(&lg.File{}).Where("id = ?", *order.Project.Template.TemplateFileID).First(&templateFile).Error; err != nil {
+			return err
+		}
+		if err = tx.Where("order_no = ?", order.OrderNo).Delete(&lg.Letter{}).Error; err != nil {
+			return err
+		}
+		var file lg.File
+		var encryptFile lg.File
+		if letter, file, encryptFile, err = lg2.OpenLetter(order, templateFile); err != nil {
+			return err
+		}
+		if err = tx.Create(&file).Error; err != nil {
+			return err
+		}
+		if err = tx.Create(&encryptFile).Error; err != nil {
+			return err
+		}
+		letter.ElogFileID = &file.ID
+		letter.ElogEncryptFileID = &encryptFile.ID
+		if err = tx.Create(&letter).Error; err != nil {
+			return err
+		}
+		order.LetterID = &letter.ID
+		isRepushed := true
+		order.IsRepushed = &isRepushed
+		if err = tx.Save(&order).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
+		return err
+	} else {
 		if global.GVA_CONFIG.Insurance.JRAPIDomain != "" {
 			apiPath := "/jrapi/lg/lgResultPush"
 			var lgResultPush = jrclientrequest.LgResultPush{
@@ -989,44 +1029,6 @@ func (orderService *OrderService) OpenLetter(order lg.Order) (err error) {
 			}
 		}
 	}
-	return err
-}
-
-func (orderService *OrderService) RePush(order lg.Order) (err error) {
-	var letter lg.Letter
-	err = global.GVA_DB.Transaction(func(tx *gorm.DB) error {
-		var templateFile lg.File
-		if err = tx.Model(&lg.File{}).Where("id = ?", *order.Project.Template.TemplateFileID).First(&templateFile).Error; err != nil {
-			return err
-		}
-		if err = tx.Where("order_no = ?", order.OrderNo).Delete(&lg.Letter{}).Error; err != nil {
-			return err
-		}
-		var file lg.File
-		var encryptFile lg.File
-		if letter, file, encryptFile, err = lg2.OpenLetter(order, templateFile); err != nil {
-			return err
-		}
-		if err = tx.Create(&file).Error; err != nil {
-			return err
-		}
-		if err = tx.Create(&encryptFile).Error; err != nil {
-			return err
-		}
-		letter.ElogFileID = &file.ID
-		letter.ElogEncryptFileID = &encryptFile.ID
-		if err = tx.Create(&letter).Error; err != nil {
-			return err
-		}
-		order.LetterID = &letter.ID
-		isRepushed := true
-		order.IsRepushed = &isRepushed
-		if err = tx.Save(&order).Error; err != nil {
-			return err
-		}
-
-		return nil
-	})
 	return err
 }
 
