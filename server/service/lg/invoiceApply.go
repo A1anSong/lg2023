@@ -288,6 +288,14 @@ func AuditInvoiceApply(invoiceApply lg.InvoiceApply) {
 				return
 			}
 		}
+		for _, order := range orders {
+			projectOpenTime, _ := time.Parse("2006-01-02 15:04:05", *order.Project.ProjectOpenTime)
+			if *order.Project.ProjectOpenTime > time.Now().Format("2006-01-02") {
+				if time.Now().Sub(projectOpenTime).Hours() < 72 {
+					return
+				}
+			}
+		}
 		isAllInvoiceReady := true
 		for _, order := range orders {
 			if order.LetterID == nil {
