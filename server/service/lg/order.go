@@ -1445,3 +1445,13 @@ func (orderService *OrderService) AssignOrder(assign lgReq.AssignOrder) (err err
 		return global.GVA_DB.Save(&order).Error
 	}
 }
+
+func (orderService *OrderService) MarkOfflineRefund(order lg.Order) (err error) {
+	err = global.GVA_DB.Model(&lg.Order{}).Where("order_no = ?", order.OrderNo).Update("is_offline_refund", true).Error
+	return err
+}
+
+func (orderService *OrderService) UnmarkOfflineRefund(order lg.Order) (err error) {
+	err = global.GVA_DB.Model(&lg.Order{}).Where("order_no = ?", order.OrderNo).Update("is_offline_refund", false).Error
+	return err
+}

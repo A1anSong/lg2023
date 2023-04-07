@@ -31,16 +31,18 @@ func Timer() {
 			}(global.GVA_CONFIG.Timer.Detail[i])
 		}
 	}
-	_, err := global.GVA_Timer.AddTaskByFunc("AutoMaticQueryInvoiceResult", "* * * * *", lg.AutoMaticQueryInvoiceResult)
-	if err != nil {
-		fmt.Println("设置每1分钟查询开票结果失败：", err)
-	}
-	_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticAuditInvoiceApply", "*/15 * * * *", lg.AutoMaticAuditInvoiceApply)
-	if err != nil {
-		fmt.Println("设置每十五分钟发票申请审查失败：", err)
-	}
-	_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticUnEnableProject", "0 * * * *", lg.AutoMaticUnEnableProject)
-	if err != nil {
-		fmt.Println("设置每小时自动下架项目失败：", err)
+	if global.GVA_CONFIG.Mysql.Path == "127.0.0.1" {
+		_, err := global.GVA_Timer.AddTaskByFunc("AutoMaticQueryInvoiceResult", "* * * * *", lg.AutoMaticQueryInvoiceResult)
+		if err != nil {
+			fmt.Println("设置每1分钟查询开票结果失败：", err)
+		}
+		_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticAuditInvoiceApply", "*/15 * * * *", lg.AutoMaticAuditInvoiceApply)
+		if err != nil {
+			fmt.Println("设置每十五分钟发票申请审查失败：", err)
+		}
+		_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticUnEnableProject", "0 * * * *", lg.AutoMaticUnEnableProject)
+		if err != nil {
+			fmt.Println("设置每小时自动下架项目失败：", err)
+		}
 	}
 }

@@ -37,5 +37,7 @@ func (s *OrderRouter) InitOrderRouter(Router *gin.RouterGroup) {
 		orderRouterWithoutRecord.GET("getOrderStatisticData", orderApi.GetOrderStatisticData) // 获取Order统计数据
 		orderRouterWithoutRecord.GET("exportExcel", orderApi.ExportExcel)                     // 导出Order数据到excel
 		orderRouterWithoutRecord.GET("findOrderByNos", orderApi.FindOrderByNos)               // 根据OrderNo获取Order
+		orderRouterWithoutRecord.POST("markOfflineRefund", orderApi.MarkOfflineRefund)        // 绑定项目
+		orderRouterWithoutRecord.POST("unmarkOfflineRefund", orderApi.UnmarkOfflineRefund)    // 解绑项目
 	}
 }

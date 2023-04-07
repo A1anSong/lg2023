@@ -203,3 +203,19 @@ export const assignOrder = (data) => {
     data
   })
 }
+
+export const markOfflineRefund = (data) => {
+  return service({
+    url: '/order/markOfflineRefund',
+    method: 'post',
+    data
+  })
+}
+
+export const unmarkOfflineRefund = (data) => {
+  return service({
+    url: '/order/unmarkOfflineRefund',
+    method: 'post',
+    data
+  })
+}

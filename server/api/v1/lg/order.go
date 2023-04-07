@@ -355,3 +355,33 @@ func (orderApi *OrderApi) AssignOrder(c *gin.Context) {
 		response.OkWithMessage("提交成功", c)
 	}
 }
+
+func (orderApi *OrderApi) MarkOfflineRefund(c *gin.Context) {
+	var order lg.Order
+	err := c.ShouldBindJSON(&order)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := orderService.MarkOfflineRefund(order); err != nil {
+		global.GVA_LOG.Error("标记失败!", zap.Error(err))
+		response.FailWithMessage("标记失败："+err.Error(), c)
+	} else {
+		response.OkWithMessage("绑定成功", c)
+	}
+}
+
+func (orderApi *OrderApi) UnmarkOfflineRefund(c *gin.Context) {
+	var order lg.Order
+	err := c.ShouldBindJSON(&order)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := orderService.UnmarkOfflineRefund(order); err != nil {
+		global.GVA_LOG.Error("标记失败!", zap.Error(err))
+		response.FailWithMessage("标记失败："+err.Error(), c)
+	} else {
+		response.OkWithMessage("标记成功", c)
+	}
+}
