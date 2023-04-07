@@ -10,6 +10,6 @@ type InvoiceApplySearch struct {
 	lg.InvoiceApply
 	StartCreatedAt *time.Time  `json:"startCreatedAt" form:"startCreatedAt"`
 	EndCreatedAt   *time.Time  `json:"endCreatedAt" form:"endCreatedAt"`
-	ApplyTime      []time.Time `json:"applyTime" form:"applyTime"`
+	ApplyTime      []time.Time `json:"applyTime" form:"applyTime[]"`
 	request.PageInfo
 }

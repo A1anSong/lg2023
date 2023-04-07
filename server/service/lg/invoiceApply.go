@@ -61,7 +61,7 @@ func (invoiceApplyService *InvoiceApplyService) GetInvoiceApplyInfoList(info lgR
 	var invoiceApplys []lg.InvoiceApply
 	// 如果有条件搜索 下方会自动创建搜索语句
 	if info.InvoiceTile != nil {
-		db = db.Where("invoice_tile = ?", info.InvoiceTile)
+		db = db.Where("invoice_tile like ?", "%"+*info.InvoiceTile+"%")
 	}
 	if info.ApplyTime != nil {
 		db = db.Where("created_at BETWEEN ? AND ?", info.ApplyTime[0], info.ApplyTime[1])
