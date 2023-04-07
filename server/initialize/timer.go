@@ -31,9 +31,9 @@ func Timer() {
 			}(global.GVA_CONFIG.Timer.Detail[i])
 		}
 	}
-	_, err := global.GVA_Timer.AddTaskByFunc("AutoMaticQueryInvoiceResult", "*/5 * * * *", lg.AutoMaticQueryInvoiceResult)
+	_, err := global.GVA_Timer.AddTaskByFunc("AutoMaticQueryInvoiceResult", "* * * * *", lg.AutoMaticQueryInvoiceResult)
 	if err != nil {
-		fmt.Println("设置每五分钟查询开票结果失败：", err)
+		fmt.Println("设置每1分钟查询开票结果失败：", err)
 	}
 	_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticAuditInvoiceApply", "*/15 * * * *", lg.AutoMaticAuditInvoiceApply)
 	if err != nil {

@@ -274,6 +274,7 @@ func AuditInvoiceApply(invoiceApply lg.InvoiceApply) {
 	}
 	var ordersString []string
 	var orders []lg.Order
+	loc, _ := time.LoadLocation("Asia/Shanghai")
 	if len(orderList) > 0 {
 		for _, order := range orderList {
 			ordersString = append(ordersString, *order.OrderNo)
@@ -282,25 +283,30 @@ func AuditInvoiceApply(invoiceApply lg.InvoiceApply) {
 		if err != nil {
 			return
 		}
+		// 判断是否有线下退款
 		for _, order := range orders {
 			if *order.IsOfflineRefund == true {
 				go AuditRejectInvoiceApply(invoiceApply, "订单"+*order.OrderNo+"已经线下退款")
 				return
 			}
 		}
+		// 判断项目开标时间距今是否已经超过3天
 		for _, order := range orders {
-			projectOpenTime, _ := time.Parse("2006-01-02 15:04:05", *order.Project.ProjectOpenTime)
-			if *order.Project.ProjectOpenTime > time.Now().Format("2006-01-02") {
-				if time.Now().Sub(projectOpenTime).Hours() < 72 {
-					return
-				}
+			projectOpenTime, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.ProjectOpenTime, loc)
+			if time.Now().Sub(projectOpenTime).Hours() < 72 {
+				return
 			}
 		}
+		//判断是否所有订单都已经开票
 		isAllInvoiceReady := true
 		for _, order := range orders {
-			if order.LetterID == nil {
+			if order.InvoiceID == nil {
 				go RequestInvoice(order, invoiceApply)
 				isAllInvoiceReady = false
+			} else {
+				if order.Invoice.InvoiceDownloadUrl == nil || *order.Invoice.InvoiceDownloadUrl == "" {
+					isAllInvoiceReady = false
+				}
 			}
 		}
 		if isAllInvoiceReady {

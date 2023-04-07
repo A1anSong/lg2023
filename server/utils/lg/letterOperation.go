@@ -48,7 +48,8 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	insuranceZipCode := global.GVA_CONFIG.Insurance.ZipCode
 	insuranceTel := global.GVA_CONFIG.Insurance.Tel
 	year, month, day := currentTime.Date()
-	tenderEndDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.TenderEndDate, time.Local)
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	tenderEndDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.TenderEndDate, loc)
 	insureEndDate := tenderEndDate.AddDate(0, 0, int(*order.Project.ProjectDay))
 	insureEndDateYear, insureEndDateMonth, insureEndDateDay := insureEndDate.Date()
 	insureDay := *order.Project.ProjectDay
@@ -59,9 +60,9 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	} else {
 		projectCategory = ""
 	}
-	projectOpenDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.ProjectOpenTime, time.Local)
+	projectOpenDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.ProjectOpenTime, loc)
 	projectOpenDateYear, projectOpenDateMonth, projectOpenDateDay := projectOpenDate.Date()
-	projectPublishDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.ProjectPublishTime, time.Local)
+	projectPublishDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.ProjectPublishTime, loc)
 	publishDateYear, publishDateMonth, publishDateDay := projectPublishDate.Date()
 	var validateUrl string
 	validateUrl = global.GVA_CONFIG.Insurance.APIDomain + "/elogValidate?elogNo=" + elogNo
