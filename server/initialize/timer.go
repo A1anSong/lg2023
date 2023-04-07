@@ -31,20 +31,18 @@ func Timer() {
 			}(global.GVA_CONFIG.Timer.Detail[i])
 		}
 	}
-	_, err := global.GVA_Timer.AddTaskByFunc("testOneMinute", "* * * * *", func() {
-		fmt.Println("每分钟一次")
-	})
+	_, err := global.GVA_Timer.AddTaskByFunc("AutoMaticQueryInvoiceResult", "*/5 * * * *", lg.AutoMaticQueryInvoiceResult)
 	if err != nil {
-		fmt.Println("add timer error:", err)
+		fmt.Println("设置每五分钟查询开票结果失败：", err)
 	}
-	_, err = global.GVA_Timer.AddTaskByFunc("testFiveMinute", "*/5 * * * *", func() {
-		fmt.Println("每五分钟一次")
+	_, err = global.GVA_Timer.AddTaskByFunc("testFiveMinute", "*/15 * * * *", func() {
+		fmt.Println("每十五分钟一次")
 	})
 	if err != nil {
-		fmt.Println("add timer error:", err)
+		fmt.Println("设置每十五分钟发票申请审查失败：", err)
 	}
 	_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticUnEnableProject", "0 * * * *", lg.AutoMaticUnEnableProject)
 	if err != nil {
-		fmt.Println("设置每小时自动下架项目失败", err)
+		fmt.Println("设置每小时自动下架项目失败：", err)
 	}
 }
