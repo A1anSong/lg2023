@@ -62,109 +62,9 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Model(&lg.Order{})
-	db.Joins("left join lg_apply on lg_apply.id = lg_order.apply_id").
-		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").
-		Joins("left join lg_delay on lg_delay.id = lg_order.delay_id").
-		Joins("left join lg_letter on lg_letter.id = lg_order.letter_id").
-		Joins("left join lg_project on lg_project.id = lg_order.project_id").
-		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.OrderNo != nil && *info.OrderNo != "" {
-		db = db.Where("lg_order.order_no like ?", "%"+*info.OrderNo+"%")
-	}
-	if info.ProjectNo != nil && *info.ProjectNo != "" {
-		db = db.Where("lg_apply.project_no like ?", "%"+*info.ProjectNo+"%")
-	}
-	if info.ProjectName != nil && *info.ProjectName != "" {
-		db = db.Where("lg_apply.project_name like ?", "%"+*info.ProjectName+"%")
-	}
-	if info.InsureName != nil && *info.InsureName != "" {
-		db = db.Where("lg_apply.insure_name like ?", "%"+*info.InsureName+"%")
-	}
-	if info.ElogTemplateId != nil && *info.ElogTemplateId != 0 {
-		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
-	}
-	if info.ElogNo != nil && *info.ElogNo != "" {
-		db = db.Where("lg_letter.elog_no like ?", "%"+*info.ElogNo+"%")
-	}
-	if info.OrderStatus != nil && *info.OrderStatus != "" {
-		if *info.OrderStatus == "已撤" {
-			db = db.Where("lg_order.revoke_id is not null")
-		}
-		if *info.OrderStatus == "销函" {
-			db = db.Where("lg_order.logout_id is not null")
-		}
-		if *info.OrderStatus == "理赔" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is not null AND lg_claim.audit_status = 2")
-		}
-		if *info.OrderStatus == "退函" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is not null AND lg_refund.audit_status = 2")
-		}
-		if *info.OrderStatus == "延期" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is not null AND lg_delay.audit_status = 2")
-		}
-		if *info.OrderStatus == "已开" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is null")
-			db = db.Where("lg_order.letter_id is not null")
-		}
-		if *info.OrderStatus == "未开" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is null")
-			db = db.Where("lg_order.letter_id is null")
-		}
-	}
-	if info.AuditStatus != nil && *info.AuditStatus != 0 {
-		fmt.Println(*info.AuditStatus)
-		db = db.Where("lg_apply.audit_status = ?", info.AuditStatus)
-	}
-	if info.OpenBeginDate != nil {
-		db = db.Where("lg_apply.open_begin_date BETWEEN ? AND ?", info.OpenBeginDate[0], info.OpenBeginDate[1])
-	}
-	if info.ApplyCreatedAt != nil {
-		db = db.Where("lg_apply.created_at BETWEEN ? AND ?", info.ApplyCreatedAt[0], info.ApplyCreatedAt[1])
-	}
-	if info.LetterCreatedAt != nil {
-		db = db.Where("lg_letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
-	}
-	if info.InsureDay != nil && *info.InsureDay != 0 {
-		db = db.Where("lg_letter.insure_day = ?", info.InsureDay)
-	}
-	if info.AuthCode != nil && *info.AuthCode != "" {
-		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
-	}
-	if info.AuditDelay != nil {
-		db = db.Where("lg_order.delay_id is not null")
-	}
-	if info.AuditRefund != nil {
-		db = db.Where("lg_order.refund_id is not null")
-	}
-	if info.AuditClaim != nil {
-		db = db.Where("lg_order.claim_id is not null")
-	}
-	if info.IsPayed != nil {
-		db = db.Where("lg_order.pay_id is not null")
-	}
-	if info.EmployeeNo != nil {
-		db = db.Where("lg_order.employee_id = ?", info.EmployeeNo)
-	}
-	if info.NoRevoke != nil {
-		db = db.Where("lg_order.revoke_id is null")
-	}
-	if info.OnlyInvoice != nil {
-		db = db.Where("lg_order.invoice_id is not null")
-	}
+	db = dbFilter(db, info)
 	err = db.Count(&total).Error
 	if err != nil {
 		return
@@ -1050,108 +950,9 @@ func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData
 	offset := info.PageSize * (info.Page - 1)
 	// 创建db
 	db := global.GVA_DB.Model(&lg.Order{})
-	db.Joins("left join lg_apply on lg_apply.id = lg_order.apply_id").
-		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").
-		Joins("left join lg_delay on lg_delay.id = lg_order.delay_id").
-		Joins("left join lg_letter on lg_letter.id = lg_order.letter_id").
-		Joins("left join lg_project on lg_project.id = lg_order.project_id").
-		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	var orders []lg.Order
 	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.OrderNo != nil && *info.OrderNo != "" {
-		db = db.Where("lg_order.order_no like ?", "%"+*info.OrderNo+"%")
-	}
-	if info.ProjectNo != nil && *info.ProjectNo != "" {
-		db = db.Where("lg_apply.project_no like ?", "%"+*info.ProjectNo+"%")
-	}
-	if info.ProjectName != nil && *info.ProjectName != "" {
-		db = db.Where("lg_apply.project_name like ?", "%"+*info.ProjectName+"%")
-	}
-	if info.InsureName != nil && *info.InsureName != "" {
-		db = db.Where("lg_apply.insure_name like ?", "%"+*info.InsureName+"%")
-	}
-	if info.ElogTemplateId != nil && *info.ElogTemplateId != 0 {
-		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
-	}
-	if info.ElogNo != nil && *info.ElogNo != "" {
-		db = db.Where("lg_letter.elog_no like ?", "%"+*info.ElogNo+"%")
-	}
-	if info.OrderStatus != nil && *info.OrderStatus != "" {
-		if *info.OrderStatus == "已撤" {
-			db = db.Where("lg_order.revoke_id is not null")
-		}
-		if *info.OrderStatus == "销函" {
-			db = db.Where("lg_order.logout_id is not null")
-		}
-		if *info.OrderStatus == "理赔" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is not null AND lg_claim.audit_status = 2")
-		}
-		if *info.OrderStatus == "退函" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is not null AND lg_refund.audit_status = 2")
-		}
-		if *info.OrderStatus == "延期" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is not null AND lg_delay.audit_status = 2")
-		}
-		if *info.OrderStatus == "已开" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is null")
-			db = db.Where("lg_order.letter_id is not null")
-		}
-		if *info.OrderStatus == "未开" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is null")
-			db = db.Where("lg_order.letter_id is null")
-		}
-	}
-	if info.AuditStatus != nil && *info.AuditStatus != 0 {
-		db = db.Where("lg_apply.audit_status = ?", info.AuditStatus)
-	}
-	if info.OpenBeginDate != nil {
-		db = db.Where("lg_apply.open_begin_date BETWEEN ? AND ?", info.OpenBeginDate[0], info.OpenBeginDate[1])
-	}
-	if info.ApplyCreatedAt != nil {
-		db = db.Where("lg_apply.created_at BETWEEN ? AND ?", info.ApplyCreatedAt[0], info.ApplyCreatedAt[1])
-	}
-	if info.LetterCreatedAt != nil {
-		db = db.Where("lg_letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
-	}
-	if info.InsureDay != nil && *info.InsureDay != 0 {
-		db = db.Where("lg_letter.insure_day = ?", info.InsureDay)
-	}
-	if info.AuthCode != nil && *info.AuthCode != "" {
-		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
-	}
-	if info.AuditDelay != nil {
-		db = db.Where("lg_order.delay_id is not null")
-	}
-	if info.AuditRefund != nil {
-		db = db.Where("lg_order.refund_id is not null")
-	}
-	if info.AuditClaim != nil {
-		db = db.Where("lg_order.claim_id is not null")
-	}
-	if info.IsPayed != nil {
-		db = db.Where("lg_order.pay_id is not null")
-	}
-	if info.EmployeeNo != nil {
-		db = db.Where("lg_order.employee_id = ?", info.EmployeeNo)
-	}
-	if info.NoRevoke != nil {
-		db = db.Where("lg_order.revoke_id is null")
-	}
-	if info.OnlyInvoice != nil {
-		db = db.Where("lg_order.invoice_id is not null")
-	}
+	db = dbFilter(db, info)
 	err = db.Limit(limit).Preload(clause.Associations).Order("lg_order.created_at desc").Offset(offset).Find(&orders).Error
 	if err != nil {
 		return nil, err
@@ -1340,7 +1141,7 @@ func (orderService *OrderService) RequestInvoice(reqInvoice nnrequest.NNRequestI
 	}
 	invoiceForm := "B1"
 	invoicePoint, _ := strconv.ParseFloat(fmt.Sprintf("%.6f", global.GVA_CONFIG.Insurance.NNTaxRate*100), 64)
-	invoiceContent := "发票内容"
+	invoiceContent := ""
 	type Result struct {
 		InvoiceSerialNum string `json:"invoiceSerialNum"`
 	}
@@ -1454,4 +1255,119 @@ func (orderService *OrderService) MarkOfflineRefund(order lg.Order) (err error) 
 func (orderService *OrderService) UnmarkOfflineRefund(order lg.Order) (err error) {
 	err = global.GVA_DB.Model(&lg.Order{}).Where("order_no = ?", order.OrderNo).Update("is_offline_refund", false).Error
 	return err
+}
+
+func dbFilter(db *gorm.DB, info lgReq.OrderSearch) (newDB *gorm.DB) {
+	db.Joins("left join lg_apply on lg_apply.id = lg_order.apply_id").
+		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").
+		Joins("left join lg_delay on lg_delay.id = lg_order.delay_id").
+		Joins("left join lg_letter on lg_letter.id = lg_order.letter_id").
+		Joins("left join lg_project on lg_project.id = lg_order.project_id").
+		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id").
+		Joins("left join lg_invoice on lg_invoice.id = lg_order.invoice_id")
+	if info.OrderNo != nil && *info.OrderNo != "" {
+		db = db.Where("lg_order.order_no like ?", "%"+*info.OrderNo+"%")
+	}
+	if info.ProjectNo != nil && *info.ProjectNo != "" {
+		db = db.Where("lg_apply.project_no like ?", "%"+*info.ProjectNo+"%")
+	}
+	if info.ProjectName != nil && *info.ProjectName != "" {
+		db = db.Where("lg_apply.project_name like ?", "%"+*info.ProjectName+"%")
+	}
+	if info.InsureName != nil && *info.InsureName != "" {
+		db = db.Where("lg_apply.insure_name like ?", "%"+*info.InsureName+"%")
+	}
+	if info.ElogTemplateId != nil && *info.ElogTemplateId != 0 {
+		db = db.Where("lg_project.template_id = ?", info.ElogTemplateId)
+	}
+	if info.ElogNo != nil && *info.ElogNo != "" {
+		db = db.Where("lg_letter.elog_no like ?", "%"+*info.ElogNo+"%")
+	}
+	if info.OrderStatus != nil && *info.OrderStatus != "" {
+		if *info.OrderStatus == "已撤" {
+			db = db.Where("lg_order.revoke_id is not null")
+		}
+		if *info.OrderStatus == "销函" {
+			db = db.Where("lg_order.logout_id is not null")
+		}
+		if *info.OrderStatus == "理赔" {
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is not null AND lg_claim.audit_status = 2")
+		}
+		if *info.OrderStatus == "退函" {
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is not null AND lg_refund.audit_status = 2")
+		}
+		if *info.OrderStatus == "延期" {
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is not null AND lg_delay.audit_status = 2")
+		}
+		if *info.OrderStatus == "已开" {
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is null")
+			db = db.Where("lg_order.letter_id is not null")
+		}
+		if *info.OrderStatus == "未开" {
+			db = db.Where("lg_order.logout_id is null")
+			db = db.Where("lg_order.claim_id is null")
+			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_order.delay_id is null")
+			db = db.Where("lg_order.letter_id is null")
+		}
+	}
+	if info.AuditStatus != nil && *info.AuditStatus != 0 {
+		fmt.Println(*info.AuditStatus)
+		db = db.Where("lg_apply.audit_status = ?", info.AuditStatus)
+	}
+	if info.OpenBeginDate != nil {
+		db = db.Where("lg_apply.open_begin_date BETWEEN ? AND ?", info.OpenBeginDate[0], info.OpenBeginDate[1])
+	}
+	if info.ApplyCreatedAt != nil {
+		db = db.Where("lg_apply.created_at BETWEEN ? AND ?", info.ApplyCreatedAt[0], info.ApplyCreatedAt[1])
+	}
+	if info.LetterCreatedAt != nil {
+		db = db.Where("lg_letter.created_at BETWEEN ? AND ?", info.LetterCreatedAt[0], info.LetterCreatedAt[1])
+	}
+	if info.InsureDay != nil && *info.InsureDay != 0 {
+		db = db.Where("lg_letter.insure_day = ?", info.InsureDay)
+	}
+	if info.AuthCode != nil && *info.AuthCode != "" {
+		db = db.Where("lg_apply.applicant_auth_code = ?", info.AuthCode)
+	}
+	if info.AuditDelay != nil {
+		db = db.Where("lg_order.delay_id is not null")
+	}
+	if info.AuditRefund != nil {
+		db = db.Where("lg_order.refund_id is not null")
+	}
+	if info.AuditClaim != nil {
+		db = db.Where("lg_order.claim_id is not null")
+	}
+	if info.IsPayed != nil {
+		db = db.Where("lg_order.pay_id is not null")
+	}
+	if info.EmployeeNo != nil {
+		db = db.Where("lg_order.employee_id = ?", info.EmployeeNo)
+	}
+	if info.NoRevoke != nil {
+		db = db.Where("lg_order.revoke_id is null")
+	}
+	if info.OnlyInvoice != nil {
+		db = db.Where("lg_order.invoice_id is not null")
+	}
+	if info.InvoiceTime != nil {
+		db = db.Where("lg_invoice.invoice_time BETWEEN ? AND ?", info.InvoiceTime[0], info.InvoiceTime[1])
+	}
+	if info.InvoiceTile != nil {
+		db = db.Where("lg_invoice.invoice_tile like ?", "%"+*info.InvoiceTile+"%")
+	}
+	if info.InvoiceTaxNo != nil {
+		db = db.Where("lg_invoice.tax_no like ?", "%"+*info.InvoiceTaxNo+"%")
+	}
+	return db
 }

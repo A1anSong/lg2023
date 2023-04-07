@@ -474,7 +474,7 @@ func RequestInvoice(order lg.Order, invoiceApply lg.InvoiceApply) {
 	}
 	invoiceForm := "B1"
 	invoicePoint, _ := strconv.ParseFloat(fmt.Sprintf("%.6f", global.GVA_CONFIG.Insurance.NNTaxRate*100), 64)
-	invoiceContent := "发票内容"
+	invoiceContent := ""
 	type Result struct {
 		InvoiceSerialNum string `json:"invoiceSerialNum"`
 	}

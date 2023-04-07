@@ -5,6 +5,20 @@
         <el-form-item label="订单编号">
           <el-input v-model="searchInfo.orderNo" placeholder="搜索条件" clearable />
         </el-form-item>
+        <el-form-item label="开票时间">
+          <el-date-picker
+            v-model="searchInfo.invoiceTime"
+            type="daterange"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+          />
+        </el-form-item>
+        <el-form-item label="发票抬头">
+          <el-input v-model="searchInfo.invoiceTile" placeholder="搜索条件" clearable />
+        </el-form-item>
+        <el-form-item label="税号">
+          <el-input v-model="searchInfo.invoiceTaxNo" placeholder="搜索条件" clearable />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button icon="refresh" @click="onReset">重置</el-button>
@@ -12,6 +26,9 @@
       </el-form>
     </div>
     <div class="gva-table-box">
+      <div class="gva-btn-list">
+        <el-button type="success" icon="document" @click="exportExcel">导出excel</el-button>
+      </div>
       <el-table
         style="width: 100%"
         :data="tableData"
@@ -24,28 +41,28 @@
         height="800"
       >
         <el-table-column align="center" label="订单编号" prop="orderNo" width="120px" />
-        <el-table-column align="center" label="发票编号" prop="invoice.invoiceNo" width="120px" />
+        <el-table-column align="center" label="开票时间" prop="invoice.invoiceTime" width="100px" />
+        <el-table-column align="center" label="发票编号" prop="invoice.invoiceNo" width="180px" />
         <el-table-column align="center" label="发票类型" width="120px">
           <template #default="scope">{{ invoiceType(scope.row.invoice.invoiceType) }}</template>
         </el-table-column>
-        <el-table-column align="center" label="开票方式" width="120px">
+        <el-table-column align="center" label="开票方式" width="80px">
           <template #default="scope">{{ invoiceForm(scope.row.invoice.invoiceForm) }}</template>
         </el-table-column>
-        <el-table-column align="center" label="发票金额" min-width="120px">
+        <el-table-column align="center" label="发票金额" min-width="80px">
           <template #default="scope">{{ amount(scope.row.invoice.invoiceAmount) }}</template>
         </el-table-column>
-        <el-table-column align="center" label="发票抬头类型" width="120px">
+        <el-table-column align="center" label="抬头类型" width="120px">
           <template #default="scope">{{ invoiceTileType(scope.row.invoice.invoiceTileType) }}</template>
         </el-table-column>
-        <el-table-column align="center" label="发票抬头" prop="invoice.InvoiceTile" width="120px" />
-        <el-table-column align="center" label="税号" prop="invoice.TaxNo" width="120px" />
-        <el-table-column align="center" label="开户银行" prop="invoice.BankName" width="120px" />
-        <el-table-column align="center" label="银行账号" prop="invoice.BankNo" width="120px" />
-        <el-table-column align="center" label="企业地址" prop="invoice.CompanyAddress" width="120px" />
-        <el-table-column align="center" label="企业电话" prop="invoice.CompanyTel" width="120px" />
-        <el-table-column align="center" label="发票备注" prop="invoice.Remarks" width="120px" />
+        <el-table-column align="center" label="发票抬头" prop="invoice.invoiceTile" width="300px" />
+        <el-table-column align="center" label="税号" prop="invoice.taxNo" width="180px" />
+        <el-table-column align="center" label="开户银行" prop="invoice.bankName" width="200px" />
+        <el-table-column align="center" label="银行账号" prop="invoice.bankNo" width="200px" />
+        <el-table-column align="center" label="企业地址" prop="invoice.companyAddress" width="300px" />
+        <el-table-column align="center" label="企业电话" prop="invoice.companyTel" width="120px" />
+        <el-table-column align="center" label="发票备注" prop="invoice.remarks" width="280px" />
         <el-table-column align="center" label="发票内容" prop="invoice.invoiceContent" width="120px" />
-        <el-table-column align="center" label="开票时间" prop="invoice.invoiceTime" width="100px" />
         <el-table-column align="center" label="查看" :min-width="100" fixed="right">
           <template #default="scope">
             <el-tag

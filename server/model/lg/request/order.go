@@ -27,5 +27,8 @@ type OrderSearch struct {
 	EmployeeNo      *uint       `json:"employeeNo" form:"employeeNo"`
 	AuthCode        *string     `json:"authCode" form:"authCode"`
 	OnlyInvoice     *bool       `json:"onlyInvoice" form:"onlyInvoice"`
+	InvoiceTime     []time.Time `json:"invoiceTime" form:"invoiceTime[]"`
+	InvoiceTile     *string     `json:"invoiceTile" form:"invoiceTile"`
+	InvoiceTaxNo    *string     `json:"invoiceTaxNo" form:"invoiceTaxNo"`
 	request.PageInfo
 }
