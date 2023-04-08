@@ -385,3 +385,20 @@ func (orderApi *OrderApi) UnmarkOfflineRefund(c *gin.Context) {
 		response.OkWithMessage("标记成功", c)
 	}
 }
+
+func (orderApi *OrderApi) ExportInvoiceExcel(c *gin.Context) {
+	var pageInfo lgReq.OrderSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if excel, err := orderService.ExportInvoiceExcel(pageInfo); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		c.Writer.Header().Add("success", "true")
+		c.Header("Content-Disposition", "attachment; filename="+strconv.Itoa(int(time.Now().Unix()))+".xlsx") // 用来指定下载下来的文件名
+		c.Data(http.StatusOK, "application/octet-stream", excel)
+	}
+}

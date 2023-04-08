@@ -1257,6 +1257,79 @@ func (orderService *OrderService) UnmarkOfflineRefund(order lg.Order) (err error
 	return err
 }
 
+func (orderService *OrderService) ExportInvoiceExcel(info lgReq.OrderSearch) (excelData []byte, err error) {
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	// 创建db
+	db := global.GVA_DB.Model(&lg.Order{})
+	var orders []lg.Order
+	// 如果有条件搜索 下方会自动创建搜索语句
+	db = dbFilter(db, info)
+	err = db.Limit(limit).Preload(clause.Associations).Order("lg_order.created_at desc").Offset(offset).Find(&orders).Error
+	if err != nil {
+		return nil, err
+	}
+
+	excel := excelize.NewFile()
+	_ = excel.SetSheetRow("Sheet1", "A1", &[]string{"订单编号", "开票时间", "发票编号", "发票金额", "发票抬头", "税号", "开户银行", "银行账号", "企业地址", "企业电话", "发票备注", "发票内容", "发票下载地址"})
+	for i, order := range orders {
+		axis := fmt.Sprintf("A%d", i+2)
+		taxNo := ""
+		if order.Invoice.TaxNo != nil {
+			taxNo = *order.Invoice.TaxNo
+		}
+		bankName := ""
+		if order.Invoice.BankName != nil {
+			bankName = *order.Invoice.BankName
+		}
+		bankNo := ""
+		if order.Invoice.BankNo != nil {
+			bankNo = *order.Invoice.BankNo
+		}
+		companyAddress := ""
+		if order.Invoice.CompanyAddress != nil {
+			companyAddress = *order.Invoice.CompanyAddress
+		}
+		companyTel := ""
+		if order.Invoice.CompanyTel != nil {
+			companyTel = *order.Invoice.CompanyTel
+		}
+		invoiceRemark := ""
+		if order.Invoice.InvoiceRemark != nil {
+			invoiceRemark = *order.Invoice.InvoiceRemark
+		}
+		invoiceContent := ""
+		if order.Invoice.InvoiceContent != nil {
+			invoiceContent = *order.Invoice.InvoiceContent
+		}
+		invoiceDownloadUrl := ""
+		if order.Invoice.InvoiceDownloadUrl != nil {
+			invoiceDownloadUrl = *order.Invoice.InvoiceDownloadUrl
+		}
+		_ = excel.SetSheetRow("Sheet1", axis, &[]interface{}{
+			*order.OrderNo,
+			*order.Invoice.InvoiceTime,
+			*order.Invoice.InvoiceNo,
+			*order.Invoice.InvoiceAmount,
+			*order.Invoice.InvoiceTile,
+			taxNo,
+			bankName,
+			bankNo,
+			companyAddress,
+			companyTel,
+			invoiceRemark,
+			invoiceContent,
+			invoiceDownloadUrl,
+		})
+	}
+	excelBuffer, err := excel.WriteToBuffer()
+	if err != nil {
+		return nil, err
+	}
+	excelData = excelBuffer.Bytes()
+	return
+}
+
 func dbFilter(db *gorm.DB, info lgReq.OrderSearch) (newDB *gorm.DB) {
 	db.Joins("left join lg_apply on lg_apply.id = lg_order.apply_id").
 		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").

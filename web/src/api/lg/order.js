@@ -219,3 +219,14 @@ export const unmarkOfflineRefund = (data) => {
     data
   })
 }
+
+export const downloadInvoiceExcel = (params) => {
+  return service({
+    url: '/order/exportInvoiceExcel',
+    method: 'get',
+    params: params,
+    responseType: 'blob'
+  }).then((res) => {
+    handleExcelError(res)
+  })
+}

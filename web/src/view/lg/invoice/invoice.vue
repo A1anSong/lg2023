@@ -61,7 +61,7 @@
         <el-table-column align="center" label="银行账号" prop="invoice.bankNo" width="200px" />
         <el-table-column align="center" label="企业地址" prop="invoice.companyAddress" width="300px" />
         <el-table-column align="center" label="企业电话" prop="invoice.companyTel" width="120px" />
-        <el-table-column align="center" label="发票备注" prop="invoice.remarks" width="280px" />
+        <el-table-column align="center" label="发票备注" prop="invoice.invoiceRemarks" width="280px" />
         <el-table-column align="center" label="发票内容" prop="invoice.invoiceContent" width="120px" />
         <el-table-column align="center" label="查看" :min-width="100" fixed="right">
           <template #default="scope">
@@ -104,7 +104,7 @@ export default {
 </script>
 
 <script setup>
-import { getOrderList } from '@/api/lg/order'
+import { downloadInvoiceExcel, getOrderList } from '@/api/lg/order'
 
 // 全量引入格式化工具 请按需保留
 import { ref } from 'vue'
@@ -164,6 +164,11 @@ const downloadInvoiceFunc = async(order) => {
   if (order.invoice != null && order.invoice.invoiceDownloadUrl != null) {
     window.open(order.invoice.invoiceDownloadUrl)
   }
+}
+
+// 导出excel
+const exportExcel = async() => {
+  await downloadInvoiceExcel({ page: 1, pageSize: 9999, ...searchInfo.value })
 }
 </script>
 

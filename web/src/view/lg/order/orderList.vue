@@ -176,7 +176,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-card shadow="always" style="float: left">
+      <el-card v-auth="btnAuth.all" shadow="always" style="float: left">
         累计成功(未理赔，未退函)担保金额为
         <span style="color: red">{{
           statisticData.totalGuaranteeAmount.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
