@@ -44,3 +44,9 @@ func (s *OrderRouter) InitOrderRouter(Router *gin.RouterGroup) {
 		orderRouterWithoutRecord.GET("exportInvoiceExcel", orderApi.ExportInvoiceExcel)             // 导出Invoice数据到excel
 	}
 }
+
+func (s *OrderRouter) InitPublicOrderRouter(Router *gin.RouterGroup) {
+	orderRouterWithoutRecord := Router.Group("order")
+	var orderApi = v1.ApiGroupApp.LgApiGroup.OrderApi
+	orderRouterWithoutRecord.POST("elogValidate", orderApi.ElogValidate) // 保函鉴真
+}

@@ -30,6 +30,9 @@
           </el-form-item>
         </el-collapse-item>
         <el-collapse-item title="开函配置" name="2">
+          <el-form-item label="域名地址">
+            <el-input v-model="config.insurance['host-domain']" />
+          </el-form-item>
           <el-form-item label="保函编号前缀">
             <el-input v-model="config.insurance['elog-prefix']" />
           </el-form-item>

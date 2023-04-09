@@ -50,7 +50,7 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	insuranceTel := global.GVA_CONFIG.Insurance.Tel
 	year, month, day := currentTime.Date()
 	loc, _ := time.LoadLocation("Asia/Shanghai")
-	tenderEndDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.TenderEndDate, loc)
+	tenderEndDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.ProjectOpenTime, loc)
 	insureEndDate := tenderEndDate.AddDate(0, 0, int(*order.Project.ProjectDay))
 	insureEndDateYear, insureEndDateMonth, insureEndDateDay := insureEndDate.Date()
 	insureDay := *order.Project.ProjectDay
@@ -76,11 +76,8 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	validateCode := urlString[12:20]
 
 	var validateUrl string
-	validateUrl = global.GVA_CONFIG.Insurance.APIDomain + "/elogValidate?elogNo=" + elogNo + "&validateCode=" + validateCode
+	validateUrl = global.GVA_CONFIG.Insurance.HostDomain + "/elogValidate?elogNo=" + elogNo + "&validateCode=" + validateCode
 	insureAddress := *order.Apply.InsureAddress
-	if order.Delay != nil {
-		validateUrl = validateUrl + "&type=delay"
-	}
 
 	letterReader, _ := docx.ReadDocxFile(global.GVA_CONFIG.Insurance.TempDir + fileName + ".docx")
 	letterDocx := letterReader.Editable()

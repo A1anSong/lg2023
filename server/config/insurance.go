@@ -8,6 +8,7 @@ type Insurance struct {
 	Tel           string  `mapstructure:"tel" json:"tel" yaml:"tel"`
 	BankName      string  `mapstructure:"bankName" json:"bankName" yaml:"bankName"`
 	BankNo        string  `mapstructure:"bankNo" json:"bankNo" yaml:"bankNo"`
+	HostDomain    string  `mapstructure:"host-domain" json:"host-domain" yaml:"host-domain"`
 	ElogPrefix    string  `mapstructure:"elog-prefix" json:"elog-prefix" yaml:"elog-prefix"`
 	TempDir       string  `mapstructure:"temp-dir" json:"temp-dir" yaml:"temp-dir"`
 	LogoFile      string  `mapstructure:"logo-file" json:"logo-file" yaml:"logo-file"`

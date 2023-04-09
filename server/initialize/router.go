@@ -54,6 +54,7 @@ func Routers() *gin.Engine {
 	}
 	{
 		jrapiRouter.InitJRAPIRouter(PublicGroup)
+		lgRouter.InitPublicOrderRouter(PublicGroup)
 	}
 	PrivateGroup := Router.Group(global.GVA_CONFIG.System.RouterPrefix)
 	//PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())

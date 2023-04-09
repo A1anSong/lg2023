@@ -246,3 +246,11 @@ export const downloadInvoiceExcel = (params) => {
     handleExcelError(res)
   })
 }
+
+export const elogValidate = (data) => {
+  return service({
+    url: '/order/elogValidate',
+    method: 'post',
+    data
+  })
+}

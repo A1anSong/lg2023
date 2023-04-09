@@ -15,6 +15,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nn/nnresponse"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nonmigrate"
 	lgReq "github.com/flipped-aurora/gin-vue-admin/server/model/lg/request"
+	lgRes "github.com/flipped-aurora/gin-vue-admin/server/model/lg/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	lg2 "github.com/flipped-aurora/gin-vue-admin/server/utils/lg"
 	"github.com/go-resty/resty/v2"
@@ -1532,4 +1533,52 @@ func dbFilter(db *gorm.DB, info lgReq.OrderSearch) (newDB *gorm.DB) {
 		db = db.Where("lg_invoice.tax_no like ?", "%"+*info.InvoiceTaxNo+"%")
 	}
 	return db
+}
+
+func (orderService *OrderService) ElogValidate(elogValidate lgReq.ElogValidate) (elogValidateMessage lgRes.ElogValidateMessage, err error) {
+	var order lg.Order
+	status := ""
+	message := ""
+	subMessage := ""
+	validateCode := ""
+	db := global.GVA_DB.Model(&lg.Order{})
+	db = db.Joins("left join lg_letter on lg_letter.id = lg_order.letter_id")
+	db = db.Where("lg_letter.elog_no = ?", elogValidate.ElogNo)
+	err = db.Preload(clause.Associations).First(&order).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			status = "error"
+			elogValidateMessage.Status = &status
+			return elogValidateMessage, nil
+		} else {
+			return
+		}
+	}
+	if order.Delay != nil && order.Delay.ValidateCode != nil {
+		validateCode = *order.Delay.ValidateCode
+	} else {
+		validateCode = *order.Letter.ValidateCode
+	}
+	if *elogValidate.ValidateCode == validateCode {
+		status = "success"
+		message = "保函编号" + *elogValidate.ElogNo + "鉴定为真"
+		subMessage = "此保函为 " +
+			global.GVA_CONFIG.Insurance.Name + " 为 " +
+			*order.Apply.InsureName + " 担保保函，保函金额为 " +
+			fmt.Sprintf("%.2f", *order.Project.TenderDeposit) + " 元，保函有效期为 " +
+			carbon.FromStdTime(order.Letter.CreatedAt).Layout("2006年01月02日") + " 至 " +
+			carbon.Parse(*order.Project.ProjectOpenTime).AddDays(int(*order.Project.ProjectDay)).Layout("2006年01月02日") + " 。"
+		elogValidateMessage.Status = &status
+		elogValidateMessage.Message = &message
+		elogValidateMessage.SubMessage = &subMessage
+		return elogValidateMessage, nil
+	} else {
+		status = "error"
+		message = "保函编号" + *elogValidate.ElogNo + "鉴定失败"
+		subMessage = "请确认该保函是否已重推或已延期或退保，如有疑问请联系 " + global.GVA_CONFIG.Insurance.Name + " , 电话 " + global.GVA_CONFIG.Insurance.Tel + " 。"
+		elogValidateMessage.Status = &status
+		elogValidateMessage.Message = &message
+		elogValidateMessage.SubMessage = &subMessage
+		return elogValidateMessage, nil
+	}
 }

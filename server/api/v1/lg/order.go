@@ -442,3 +442,20 @@ func (orderApi *OrderApi) ExportInvoiceExcel(c *gin.Context) {
 		c.Data(http.StatusOK, "application/octet-stream", excel)
 	}
 }
+
+func (orderApi *OrderApi) ElogValidate(c *gin.Context) {
+	var elogValidate lgReq.ElogValidate
+	err := c.ShouldBindJSON(&elogValidate)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if elogValidateMessage, err := orderService.ElogValidate(elogValidate); err != nil {
+		global.GVA_LOG.Error("鉴真失败!", zap.Error(err))
+		response.FailWithMessage("鉴真失败："+err.Error(), c)
+	} else {
+		response.OkWithDetailed(gin.H{
+			"elogValidateMessage": elogValidateMessage,
+		}, "鉴真成功", c)
+	}
+}
