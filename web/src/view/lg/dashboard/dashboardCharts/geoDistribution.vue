@@ -2,7 +2,7 @@
   <el-card shadow="hover">
     <template #header>
       <div class="card-header">
-        <span>分布图</span>
+        <span>分布图（本周）</span>
       </div>
     </template>
     <div>

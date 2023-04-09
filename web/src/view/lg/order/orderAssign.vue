@@ -3,7 +3,7 @@
     <div class="gva-search-box">
       <el-form :inline="true" class="demo-form-inline">
         <el-form-item label="订单编号">
-          <el-input v-model="orderNo" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="orderNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="选择人员">
           <el-select v-model="employeeID" placeholder="选择条件" clearable>

@@ -984,6 +984,7 @@ func (orderService *OrderService) GetEmployeeStatisticData(info lgReq.OrderSearc
 	db = db.Where("lg_order.pay_id is not null")
 	db = db.Where("lg_order.claim_id is null")
 	db = db.Where("lg_order.refund_id is null")
+	db = db.Where("lg_order.created_at >= ?", carbon.Now(carbon.Shanghai).SetWeekStartsAt(carbon.Monday).StartOfWeek().ToDateString())
 	err = db.Group("COALESCE(sys_users.nick_name, '自然流量')").Select("COALESCE(sys_users.nick_name, '自然流量') as Name, COUNT(lg_order.id) as Count").Scan(&employeeTrendDataItems).Error
 
 	employeeStatisticData.EmployeeData = employeeTrendDataItems

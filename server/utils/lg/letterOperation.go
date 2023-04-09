@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg"
+	"github.com/golang-module/carbon"
 	"github.com/nguyenthenguyen/docx"
 	"io"
 	"os"
@@ -33,7 +34,7 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	} else if order.Letter != nil {
 		elogNo = *order.Letter.ElogNo
 	} else {
-		elogNo = GenerateMD5String([]byte(*order.OrderNo + time.Now().String()))
+		elogNo = global.GVA_CONFIG.Insurance.ElogPrefix + carbon.Now(carbon.Shanghai).Layout("20060102") + GenerateMD5String([]byte(*order.OrderNo + time.Now().String()))[:8]
 	}
 	insuredName := *order.Project.TendereeName
 	insureName := *order.Apply.InsureName
@@ -64,10 +65,6 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	projectOpenDateYear, projectOpenDateMonth, projectOpenDateDay := projectOpenDate.Date()
 	projectPublishDate, _ := time.ParseInLocation("2006-01-02 15:04:05", *order.Project.ProjectPublishTime, loc)
 	publishDateYear, publishDateMonth, publishDateDay := projectPublishDate.Date()
-	var validateUrl string
-	validateUrl = global.GVA_CONFIG.Insurance.APIDomain + "/elogValidate?elogNo=" + elogNo
-	validateUrl = global.GVA_CONFIG.Insurance.APIDomain + "/elogValidate?elogNo=" + elogNo
-	insureAddress := *order.Apply.InsureAddress
 
 	insuranceCreditCode := global.GVA_CONFIG.Insurance.CreditCode
 	urlString := GenerateMD5String([]byte(time.Now().String()))
@@ -77,6 +74,13 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	insureStartDateString := currentTime.Format("2006-01-02 15:04:05")
 	insureEndDateString := insureEndDate.Format("2006-01-02 15:04:05")
 	validateCode := urlString[12:20]
+
+	var validateUrl string
+	validateUrl = global.GVA_CONFIG.Insurance.APIDomain + "/elogValidate?elogNo=" + elogNo + "&validateCode=" + validateCode
+	insureAddress := *order.Apply.InsureAddress
+	if order.Delay != nil {
+		validateUrl = validateUrl + "&type=delay"
+	}
 
 	letterReader, _ := docx.ReadDocxFile(global.GVA_CONFIG.Insurance.TempDir + fileName + ".docx")
 	letterDocx := letterReader.Editable()
@@ -112,6 +116,20 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 	_ = letterDocx.Replace("{publishDateDay}", strconv.Itoa(publishDateDay), -1)
 	_ = letterDocx.Replace("{validateUrl}", validateUrl, -1)
 	_ = letterDocx.Replace("{insureAddress}", insureAddress, -1)
+
+	imageIndex := letterDocx.ImagesLen()
+	if imageIndex > 0 {
+		err = CreateQrCodeBs64WithLogo(validateUrl, global.GVA_CONFIG.Insurance.LogoFile, global.GVA_CONFIG.Insurance.TempDir+fileName+".png", 512)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer func() {
+			_ = os.Remove(global.GVA_CONFIG.Insurance.TempDir + fileName + ".png")
+		}()
+		_ = letterDocx.ReplaceImage("word/media/image"+strconv.Itoa(imageIndex)+".png", global.GVA_CONFIG.Insurance.TempDir+fileName+".png")
+	}
+
 	_ = letterDocx.WriteToFile(global.GVA_CONFIG.Insurance.TempDir + "letter" + fileName + ".docx")
 
 	letterEncryptReader, _ := docx.ReadDocxFile(global.GVA_CONFIG.Insurance.TempDir + fileName + ".docx")

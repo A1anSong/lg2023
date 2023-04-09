@@ -3,7 +3,7 @@
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
         <el-form-item label="订单编号">
-          <el-input v-model="searchInfo.orderNo" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.orderNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="开票时间">
           <el-date-picker
@@ -14,10 +14,10 @@
           />
         </el-form-item>
         <el-form-item label="发票抬头">
-          <el-input v-model="searchInfo.invoiceTile" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.invoiceTile" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="税号">
-          <el-input v-model="searchInfo.invoiceTaxNo" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.invoiceTaxNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>

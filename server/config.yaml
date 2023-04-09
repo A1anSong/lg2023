@@ -92,7 +92,9 @@ insurance:
   tel: 0793-2585999
   bankName: 中国建设银行玉山支行
   bankNo: 3605 0183 0450 0000 0145
+  elog-prefix: YSHYQBH
   temp-dir: ./tmp/
+  logo-file: ./jxbl/logo.png
   key-file: ./jxbl/jxbl.p12
   stamp-file: ./jxbl/stamp.png
   legal-file: ./jxbl/legal.png

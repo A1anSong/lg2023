@@ -2,7 +2,7 @@
   <el-card shadow="hover">
     <template #header>
       <div class="card-header">
-        <span>开单占比（总计）</span>
+        <span>开单占比（本周）</span>
       </div>
     </template>
     <div ref="echart" style="height: 291px; width: auto;" />

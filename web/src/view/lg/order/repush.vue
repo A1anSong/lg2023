@@ -3,16 +3,16 @@
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
         <el-form-item label="订单编号">
-          <el-input v-model="searchInfo.orderNo" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.orderNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="标段编号">
-          <el-input v-model="searchInfo.projectNo" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.projectNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="标段名称">
-          <el-input v-model="searchInfo.projectName" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.projectName" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="申请企业">
-          <el-input v-model="searchInfo.insureName" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.insureName" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="保函格式">
           <el-select v-model="searchInfo.elogTemplateId" placeholder="选择条件" clearable>
@@ -25,7 +25,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="保函编号">
-          <el-input v-model="searchInfo.elogNo" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.elogNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="审核状态">
           <el-select v-model="searchInfo.auditStatus" placeholder="选择条件" clearable>
@@ -62,7 +62,7 @@
           <el-input v-model.number="searchInfo.insureDay" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item v-auth="btnAuth.all" label="工号">
-          <el-input v-model="searchInfo.authCode" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.authCode" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>

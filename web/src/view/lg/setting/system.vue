@@ -30,8 +30,14 @@
           </el-form-item>
         </el-collapse-item>
         <el-collapse-item title="开函配置" name="2">
+          <el-form-item label="保函编号前缀">
+            <el-input v-model="config.insurance['elog-prefix']" />
+          </el-form-item>
           <el-form-item label="临时文件路径">
             <el-input v-model="config.insurance['temp-dir']" />
+          </el-form-item>
+          <el-form-item label="LOGO文件路径">
+            <el-input v-model="config.insurance['logo-file']" />
           </el-form-item>
           <el-form-item label="签章证书文件">
             <el-input v-model="config.insurance['key-file']" />

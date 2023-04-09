@@ -4,10 +4,10 @@
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
         <el-form-item label="标段编号">
-          <el-input v-model="searchInfo.projectNo" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.projectNo" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="标段名称">
-          <el-input v-model="searchInfo.projectName" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.projectName" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="开标时间">
           <el-date-picker
@@ -18,10 +18,10 @@
           />
         </el-form-item>
         <el-form-item label="所属市">
-          <el-input v-model="searchInfo.projectCity" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.projectCity" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="所属县">
-          <el-input v-model="searchInfo.projectCounty" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.projectCounty" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="保函模板">
           <el-select v-model="searchInfo.templateID" clearable placeholder="选择条件">

@@ -3,7 +3,7 @@
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
         <el-form-item label="发票抬头">
-          <el-input v-model="searchInfo.invoiceTile" placeholder="搜索条件" clearable />
+          <el-input v-model.trim="searchInfo.invoiceTile" placeholder="搜索条件" clearable />
         </el-form-item>
         <el-form-item label="申请时间">
           <el-date-picker
