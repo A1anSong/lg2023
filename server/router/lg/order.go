@@ -32,13 +32,15 @@ func (s *OrderRouter) InitOrderRouter(Router *gin.RouterGroup) {
 		orderRouter.PUT("assignOrder", orderApi.AssignOrder)              // 订单认领
 	}
 	{
-		orderRouterWithoutRecord.GET("findOrder", orderApi.FindOrder)                         // 根据ID获取Order
-		orderRouterWithoutRecord.GET("getOrderList", orderApi.GetOrderList)                   // 获取Order列表
-		orderRouterWithoutRecord.GET("getOrderStatisticData", orderApi.GetOrderStatisticData) // 获取Order统计数据
-		orderRouterWithoutRecord.GET("exportExcel", orderApi.ExportExcel)                     // 导出Order数据到excel
-		orderRouterWithoutRecord.GET("findOrderByNos", orderApi.FindOrderByNos)               // 根据OrderNo获取Order
-		orderRouterWithoutRecord.POST("markOfflineRefund", orderApi.MarkOfflineRefund)        // 绑定项目
-		orderRouterWithoutRecord.POST("unmarkOfflineRefund", orderApi.UnmarkOfflineRefund)    // 解绑项目
-		orderRouterWithoutRecord.GET("exportInvoiceExcel", orderApi.ExportInvoiceExcel)       // 导出Invoice数据到excel
+		orderRouterWithoutRecord.GET("findOrder", orderApi.FindOrder)                               // 根据ID获取Order
+		orderRouterWithoutRecord.GET("getOrderList", orderApi.GetOrderList)                         // 获取Order列表
+		orderRouterWithoutRecord.GET("getOrderStatisticData", orderApi.GetOrderStatisticData)       // 获取Order统计数据
+		orderRouterWithoutRecord.GET("getEmployeeStatisticData", orderApi.GetEmployeeStatisticData) // 获取Order趋势数据
+		orderRouterWithoutRecord.GET("getOrderTrendData", orderApi.GetOrderTrendData)               // 获取Order趋势数据
+		orderRouterWithoutRecord.GET("exportExcel", orderApi.ExportExcel)                           // 导出Order数据到excel
+		orderRouterWithoutRecord.GET("findOrderByNos", orderApi.FindOrderByNos)                     // 根据OrderNo获取Order
+		orderRouterWithoutRecord.POST("markOfflineRefund", orderApi.MarkOfflineRefund)              // 绑定项目
+		orderRouterWithoutRecord.POST("unmarkOfflineRefund", orderApi.UnmarkOfflineRefund)          // 解绑项目
+		orderRouterWithoutRecord.GET("exportInvoiceExcel", orderApi.ExportInvoiceExcel)             // 导出Invoice数据到excel
 	}
 }

@@ -266,12 +266,52 @@ func (orderApi *OrderApi) RePush(c *gin.Context) {
 }
 
 func (orderApi *OrderApi) GetOrderStatisticData(c *gin.Context) {
-	if orderStatisticData, err := orderService.GetOrderStatisticData(); err != nil {
+	var pageInfo lgReq.OrderSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if orderStatisticData, err := orderService.GetOrderStatisticData(pageInfo); err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{
 			"orderStatisticData": orderStatisticData,
+		}, "获取成功", c)
+	}
+}
+
+func (orderApi *OrderApi) GetEmployeeStatisticData(c *gin.Context) {
+	var pageInfo lgReq.OrderSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if employeeStatisticData, err := orderService.GetEmployeeStatisticData(pageInfo); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(gin.H{
+			"employeeStatisticData": employeeStatisticData,
+		}, "获取成功", c)
+	}
+}
+
+func (orderApi *OrderApi) GetOrderTrendData(c *gin.Context) {
+	var pageInfo lgReq.OrderSearch
+	err := c.ShouldBindQuery(&pageInfo)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if orderTrendData, err := orderService.GetOrderTrendData(pageInfo); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(gin.H{
+			"orderTrendData": orderTrendData,
 		}, "获取成功", c)
 	}
 }

@@ -137,6 +137,22 @@ export const getOrderStatisticData = (params) => {
   })
 }
 
+export const getEmployeeStatisticData = (params) => {
+  return service({
+    url: '/order/getEmployeeStatisticData',
+    method: 'get',
+    params
+  })
+}
+
+export const getOrderTrendData = (params) => {
+  return service({
+    url: '/order/getOrderTrendData',
+    method: 'get',
+    params
+  })
+}
+
 export const downloadExcel = (params) => {
   return service({
     url: '/order/exportExcel',

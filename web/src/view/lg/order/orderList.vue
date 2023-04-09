@@ -176,17 +176,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-card v-auth="btnAuth.all" shadow="always" style="float: left">
-        累计成功(未理赔，未退函)担保金额为
-        <span style="color: red">{{
-          statisticData.totalGuaranteeAmount.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
-        }}</span>
-        元，收取保函费用为
-        <span style="color: red">{{
-          statisticData.totalElogAmount.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
-        }}</span>
-        元
-      </el-card>
       <div class="gva-pagination">
         <el-pagination
           layout="total, sizes, prev, pager, next, jumper"
@@ -342,7 +331,6 @@ export default {
 <script setup>
 import {
   getOrderList,
-  getOrderStatisticData,
   downloadExcel
 } from '@/api/lg/order'
 
@@ -370,10 +358,6 @@ const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
 const templateData = ref([])
-const statisticData = ref({
-  totalGuaranteeAmount: 0.0,
-  totalElogAmount: 0.0,
-})
 const userStore = useUserStore()
 const userInfo = userStore.userInfo
 const btnAuth = useBtnAuth()
@@ -584,10 +568,6 @@ const getTableData = async() => {
     total.value = table.data.total
     page.value = table.data.page
     pageSize.value = table.data.pageSize
-  }
-  const statistic = await getOrderStatisticData()
-  if (statistic.code === 0) {
-    statisticData.value = statistic.data.orderStatisticData
   }
 }
 

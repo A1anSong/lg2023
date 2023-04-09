@@ -1,105 +1,355 @@
 <template>
   <div class="page">
-    <div class="gva-card-box">
-      <div class="gva-card gva-top-card">
-        <div class="gva-top-card-left">
-          <div class="gva-top-card-left-title">早安，管理员，请开始一天的工作吧</div>
-          <div class="gva-top-card-left-dot">{{ weatherInfo }}</div>
-          <div class="gva-top-card-left-rows">
-            <el-row>
-              <el-col :span="8" :xs="24" :sm="8">
-                <div class="flex-center">
-                  <el-icon class="dashboard-icon">
-                    <sort />
-                  </el-icon>
-                  今日流量 (1231231)
-                </div>
-              </el-col>
-              <el-col :span="8" :xs="24" :sm="8">
-                <div class="flex-center">
-                  <el-icon class="dashboard-icon">
-                    <avatar />
-                  </el-icon>
-                  总用户数 (24001)
-                </div>
-              </el-col>
-              <el-col :span="8" :xs="24" :sm="8">
-                <div class="flex-center">
-                  <el-icon class="dashboard-icon">
-                    <comment />
-                  </el-icon>
-                  好评率 (99%)
-                </div>
-              </el-col>
-            </el-row>
-          </div>
-          <!--          <div>-->
-          <!--            <div class="gva-top-card-left-item">-->
-          <!--              使用教学：-->
-          <!--              <a-->
-          <!--                style="color:#409EFF"-->
-          <!--                target="view_window"-->
-          <!--                href="https://www.bilibili.com/video/BV1Rg411u7xH/"-->
-          <!--              >https://www.bilibili.com/video/BV1Rg411u7xH</a>-->
-          <!--            </div>-->
-          <!--            <div class="gva-top-card-left-item">-->
-          <!--              插件仓库：-->
-          <!--              <a-->
-          <!--                style="color:#409EFF"-->
-          <!--                target="view_window"-->
-          <!--                href="https://plugin.gin-vue-admin.com/#/layout/home"-->
-          <!--              >https://plugin.gin-vue-admin.com</a>-->
-          <!--            </div>-->
-          <!--          </div>-->
-        </div>
-        <img src="@/assets/dashboard.png" class="gva-top-card-right" alt>
-      </div>
-    </div>
-    <div class="gva-card-box">
-      <el-card class="gva-card quick-entrance">
-        <template #header>
-          <div class="card-header">
-            <span>快捷入口</span>
-          </div>
-        </template>
-        <el-row :gutter="20">
-          <el-col
-            v-for="(card, key) in toolCards"
-            :key="key"
-            :span="4"
-            :xs="8"
-            class="quick-entrance-items"
-            @click="toTarget(card.name)"
-          >
-            <div class="quick-entrance-item">
-              <div class="quick-entrance-item-icon" :style="{ backgroundColor: card.bg }">
-                <el-icon>
-                  <component :is="card.icon" :style="{ color: card.color }" />
-                </el-icon>
+    <div class="gva-card">
+      <el-row :gutter="24">
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <template #header>
+              <div class="card-header">
+                <span style="font-size: 16px">今日数据</span>
               </div>
-              <p>{{ card.label }}</p>
+            </template>
+            <el-space wrap>
+              <div class="statistic-card">
+                <el-statistic :value="orderStatisticData.todayOrderCount">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      订单数量
+                      <el-tooltip
+                        effect="dark"
+                        :content="'昨天成交 '+orderStatisticData.yesterdayOrderCount+' 单'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较昨天</span>
+                    <span :class="compareValue(orderStatisticData.todayOrderCount, orderStatisticData.yesterdayOrderCount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.todayOrderCount, orderStatisticData.yesterdayOrderCount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.todayOrderCount, orderStatisticData.yesterdayOrderCount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="statistic-card">
+                <el-statistic :value="orderStatisticData.todayGuaranteeAmount/10000" :precision="4" suffix="万元">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      担保金额
+                      <el-tooltip
+                        effect="dark"
+                        :content="'昨天担保 '+(orderStatisticData.yesterdayGuaranteeAmount/10000).toFixed(4).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')+' 万元'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较昨天</span>
+                    <span :class="compareValue(orderStatisticData.todayGuaranteeAmount, orderStatisticData.yesterdayGuaranteeAmount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.todayGuaranteeAmount, orderStatisticData.yesterdayGuaranteeAmount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.todayGuaranteeAmount, orderStatisticData.yesterdayGuaranteeAmount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div v-auth="btnAuth.all" class="statistic-card">
+                <el-statistic :value="(orderStatisticData.todayElogAmount/1).toFixed(2)/1" :precision="2" suffix="元">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      保费金额
+                      <el-tooltip
+                        effect="dark"
+                        :content="'昨天保费 '+(orderStatisticData.yesterdayElogAmount/1).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')+' 元'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较昨天</span>
+                    <span :class="compareValue(orderStatisticData.todayElogAmount, orderStatisticData.yesterdayElogAmount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.todayElogAmount, orderStatisticData.yesterdayElogAmount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.todayElogAmount, orderStatisticData.yesterdayElogAmount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </el-space>
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <template #header>
+              <div class="card-header">
+                <span style="font-size: 16px">本周数据</span>
+              </div>
+            </template>
+            <el-space wrap>
+              <div class="statistic-card">
+                <el-statistic :value="orderStatisticData.weekOrderCount">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      订单数量
+                      <el-tooltip
+                        effect="dark"
+                        :content="'上周成交 '+orderStatisticData.lastWeekOrderCount+' 单'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较上周</span>
+                    <span :class="compareValue(orderStatisticData.weekOrderCount, orderStatisticData.lastWeekOrderCount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.weekOrderCount, orderStatisticData.lastWeekOrderCount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.weekOrderCount, orderStatisticData.lastWeekOrderCount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="statistic-card">
+                <el-statistic :value="orderStatisticData.weekGuaranteeAmount/10000" :precision="4" suffix="万元">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      担保金额
+                      <el-tooltip
+                        effect="dark"
+                        :content="'上周担保 '+(orderStatisticData.lastWeekGuaranteeAmount/10000).toFixed(4).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')+' 万元'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较上周</span>
+                    <span :class="compareValue(orderStatisticData.weekGuaranteeAmount, orderStatisticData.lastWeekGuaranteeAmount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.weekGuaranteeAmount, orderStatisticData.lastWeekGuaranteeAmount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.weekGuaranteeAmount, orderStatisticData.lastWeekGuaranteeAmount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div v-auth="btnAuth.all" class="statistic-card">
+                <el-statistic :value="(orderStatisticData.weekElogAmount/1).toFixed(2)/1" :precision="2" suffix="元">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      保费金额
+                      <el-tooltip
+                        effect="dark"
+                        :content="'上周保费 '+(orderStatisticData.lastWeekElogAmount/1).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')+' 元'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较上周</span>
+                    <span :class="compareValue(orderStatisticData.weekElogAmount, orderStatisticData.lastWeekElogAmount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.weekElogAmount, orderStatisticData.lastWeekElogAmount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.weekElogAmount, orderStatisticData.lastWeekElogAmount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </el-space>
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <template #header>
+              <div class="card-header">
+                <span style="font-size: 16px">本月数据</span>
+              </div>
+            </template>
+            <el-space wrap>
+              <div class="statistic-card">
+                <el-statistic :value="orderStatisticData.monthOrderCount">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      订单数量
+                      <el-tooltip
+                        effect="dark"
+                        :content="'上月成交 '+orderStatisticData.lastMonthOrderCount+' 单'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较上月</span>
+                    <span :class="compareValue(orderStatisticData.monthOrderCount, orderStatisticData.lastMonthOrderCount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.monthOrderCount, orderStatisticData.lastMonthOrderCount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.monthOrderCount, orderStatisticData.lastMonthOrderCount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="statistic-card">
+                <el-statistic :value="orderStatisticData.monthGuaranteeAmount/10000" :precision="4" suffix="万元">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      担保金额
+                      <el-tooltip
+                        effect="dark"
+                        :content="'上周担保 '+(orderStatisticData.lastMonthGuaranteeAmount/10000).toFixed(4).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')+' 万元'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较上周</span>
+                    <span :class="compareValue(orderStatisticData.monthGuaranteeAmount, orderStatisticData.lastMonthGuaranteeAmount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.monthGuaranteeAmount, orderStatisticData.lastMonthGuaranteeAmount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.monthGuaranteeAmount, orderStatisticData.lastMonthGuaranteeAmount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div v-auth="btnAuth.all" class="statistic-card">
+                <el-statistic :value="(orderStatisticData.monthElogAmount/1).toFixed(2)/1" :precision="2" suffix="元">
+                  <template #title>
+                    <div style="display: inline-flex; align-items: center">
+                      保费金额
+                      <el-tooltip
+                        effect="dark"
+                        :content="'上周保费 '+(orderStatisticData.lastMonthElogAmount/1).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')+' 元'"
+                        placement="top"
+                      >
+                        <el-icon style="margin-left: 4px" :size="12">
+                          <Warning />
+                        </el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                </el-statistic>
+                <div class="statistic-footer">
+                  <div class="footer-item">
+                    <span>较上周</span>
+                    <span :class="compareValue(orderStatisticData.monthElogAmount, orderStatisticData.lastMonthElogAmount)>=0?'red':'green'">
+                      {{ Math.abs(compareValue(orderStatisticData.monthElogAmount, orderStatisticData.lastMonthElogAmount))*100 }}%
+                      <el-icon>
+                        <CaretTop v-if="compareValue(orderStatisticData.monthElogAmount, orderStatisticData.lastMonthElogAmount)>=0" />
+                        <CaretBottom v-else />
+                      </el-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </el-space>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-row :gutter="24">
+        <el-col :span="8">
+          <el-card shadow="hover">
+            <template #header>
+              <div class="card-header">
+                <span>总计</span>
+              </div>
+            </template>
+            <div class="statistic-card">
+              <el-statistic :value="orderStatisticData.totalOrderCount">
+                <template #title>
+                  <div style="display: inline-flex; align-items: center">
+                    订单数量
+                  </div>
+                </template>
+              </el-statistic>
             </div>
-          </el-col>
-        </el-row>
-      </el-card>
-      <!-- <div class="quick-entrance-title"></div> -->
-    </div>
-    <div class="gva-card-box">
-      <div class="gva-card">
-        <div class="card-header">
-          <span>数据统计</span>
-        </div>
-        <div class="echart-box">
-          <el-row :gutter="20">
-            <el-col :xs="24" :sm="18">
-              <echarts-line />
-            </el-col>
-            <el-col :xs="24" :sm="6">
-              <dashboard-table />
-            </el-col>
-          </el-row>
-        </div>
-      </div>
+            <div class="statistic-card">
+              <el-statistic :value="orderStatisticData.totalGuaranteeAmount/10000" :precision="4" suffix="万元">
+                <template #title>
+                  <div style="display: inline-flex; align-items: center">
+                    担保金额
+                  </div>
+                </template>
+              </el-statistic>
+            </div>
+            <div v-auth="btnAuth.all" class="statistic-card">
+              <el-statistic :value="(orderStatisticData.totalElogAmount/1).toFixed(2)/1" :precision="2" suffix="元">
+                <template #title>
+                  <div style="display: inline-flex; align-items: center">
+                    保费金额
+                  </div>
+                </template>
+              </el-statistic>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col v-auth="btnAuth.all" :span="8">
+          <EmployeePieChart />
+        </el-col>
+        <el-col :span="8">
+          <GeoDistribution />
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -111,82 +361,79 @@ export default {
 </script>
 
 <script setup>
-import EchartsLine from '@/view/dashboard/dashboardCharts/echartsLine.vue'
-import DashboardTable from '@/view/dashboard/dashboardTable/dashboardTable.vue'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useWeatherInfo } from '@/view/dashboard/weather.js'
+import { Warning, CaretTop, CaretBottom } from '@element-plus/icons-vue'
+import EmployeePieChart from '@/view/lg/dashboard/dashboardCharts/employeeStatistic.vue'
+import GeoDistribution from '@/view/lg/dashboard/dashboardCharts/geoDistribution.vue'
 
-const weatherInfo = useWeatherInfo()
+import { useUserStore } from '@/pinia/modules/user'
+import { useBtnAuth } from '@/utils/btnAuth'
+import { getOrderStatisticData, getOrderTrendData } from '@/api/lg/order'
+const userStore = useUserStore()
+const userInfo = userStore.userInfo
+const btnAuth = useBtnAuth()
 
-const toolCards = ref([
-  {
-    label: '用户管理',
-    icon: 'monitor',
-    name: 'user',
-    color: '#ff9c6e',
-    bg: 'rgba(255, 156, 110,.3)'
-  },
-  {
-    label: '角色管理',
-    icon: 'setting',
-    name: 'authority',
-    color: '#69c0ff',
-    bg: 'rgba(105, 192, 255,.3)'
-  },
-  {
-    label: '菜单管理',
-    icon: 'menu',
-    name: 'menu',
-    color: '#b37feb',
-    bg: 'rgba(179, 127, 235,.3)'
-  },
-  {
-    label: '代码生成器',
-    icon: 'cpu',
-    name: 'autoCode',
-    color: '#ffd666',
-    bg: 'rgba(255, 214, 102,.3)'
-  },
-  {
-    label: '表单生成器',
-    icon: 'document-checked',
-    name: 'formCreate',
-    color: '#ff85c0',
-    bg: 'rgba(255, 133, 192,.3)'
-  },
-  {
-    label: '关于我们',
-    icon: 'user',
-    name: 'about',
-    color: '#5cdbd3',
-    bg: 'rgba(92, 219, 211,.3)'
+const searchInfo = ref({})
+const orderStatisticData = ref({})
+const orderTrendData = ref([])
+
+const checkAuthorityAll = () => {
+  const authority = btnAuth.all
+  let type = ''
+  switch (Object.prototype.toString.call(authority)) {
+    case '[object Array]':
+      type = 'Array'
+      break
+    case '[object String]':
+      type = 'String'
+      break
+    case '[object Number]':
+      type = 'Number'
+      break
+    default:
+      type = ''
+      break
   }
-])
-
-const router = useRouter()
-
-const toTarget = (name) => {
-  router.push({ name })
+  if (type === '') {
+    searchInfo.value.employeeNo = userInfo.ID
+    return
+  }
+  const waitUse = authority.toString().split(',')
+  const flag = waitUse.some(item => item === userInfo.authorityId.toString())
+  if (!flag) {
+    searchInfo.value.employeeNo = userInfo.ID
+  }
 }
 
+const getStatisticData = async() => {
+  const statistic = await getOrderStatisticData({ ...searchInfo.value })
+  if (statistic.code === 0) {
+    orderStatisticData.value = statistic.data.orderStatisticData
+  }
+}
+
+const getTrendData = async() => {
+  const trend = await getOrderTrendData({ ...searchInfo.value })
+  if (trend.code === 0) {
+    orderTrendData.value = trend.data.orderTrendData
+  }
+}
+
+const compareValue = (current, last) => {
+  if (last === 0) {
+    return (0).toFixed(4)
+  } else {
+    return (current / last - 1).toFixed(4)
+  }
+}
+
+checkAuthorityAll()
+getStatisticData()
+getTrendData()
 </script>
 
-<style lang="scss" scoped>
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-}
-.page {
-  background: #f0f2f5;
-  padding: 0;
-  .gva-card-box{
-    padding: 12px 16px;
-    &+.gva-card-box{
-      padding-top: 0px;
-    }
-  }
-  .gva-card {
+<style scoped>
+.gva-card {
     box-sizing: border-box;
     background-color: #fff;
     border-radius: 2px;
@@ -194,137 +441,45 @@ const toTarget = (name) => {
     padding: 26px 30px;
     overflow: hidden;
     box-shadow: 0 0 7px 1px rgba(0, 0, 0, 0.03);
-  }
-  .gva-top-card {
-    height: 260px;
-    @include flex-center;
-    justify-content: space-between;
-    color: #777;
-    &-left {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      &-title {
-        font-size: 22px;
-        color: #343844;
-      }
-      &-dot {
-        font-size: 16px;
-        color: #6B7687;
-        margin-top: 24px;
-      }
-      &-rows {
-        // margin-top: 15px;
-        margin-top: 18px;
-        color: #6B7687;
-        width: 600px;
-        align-items: center;
-      }
-      &-item{
-        +.gva-top-card-left-item{
-          margin-top: 24px;
-        }
-        margin-top: 14px;
-      }
-    }
-    &-right {
-      height: 600px;
-      width: 600px;
-      margin-top: 28px;
-    }
-  }
-  ::v-deep(.el-card__header){
-    padding:0;
-    border-bottom: none;
-  }
-  .card-header{
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e8e8e8;
-  }
-  .quick-entrance-title {
-    height: 30px;
-    font-size: 22px;
-    color: #333;
-    width: 100%;
-    border-bottom: 1px solid #eee;
-  }
-  .quick-entrance-items {
-    @include flex-center;
-    justify-content: center;
-    text-align: center;
-    color: #333;
-    .quick-entrance-item {
-      padding: 16px 28px;
-      margin-top: -16px;
-      margin-bottom: -16px;
-      border-radius: 4px;
-      transition: all 0.2s;
-      &:hover{
-        box-shadow: 0px 0px 7px 0px rgba(217, 217, 217, 0.55);
-      }
-      cursor: pointer;
-      height: auto;
-      text-align: center;
-      // align-items: center;
-      &-icon {
-        width: 50px;
-        height: 50px !important;
-        border-radius: 8px;
-        @include flex-center;
-        justify-content: center;
-        margin: 0 auto;
-        i {
-          font-size: 24px;
-        }
-      }
-      p {
-        margin-top: 10px;
-      }
-    }
-  }
-  .echart-box{
-    padding: 14px;
-  }
-}
-.dashboard-icon {
-  font-size: 20px;
-  color: rgb(85, 160, 248);
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
-  @include flex-center;
-}
-.flex-center {
-  @include flex-center;
 }
 
-//小屏幕不显示右侧，将登录框居中
-@media (max-width: 750px) {
-  .gva-card {
-    padding: 20px 10px !important;
-    .gva-top-card {
-      height: auto;
-      &-left {
-        &-title {
-          font-size: 20px !important;
-        }
-        &-rows {
-          margin-top: 15px;
-          align-items: center;
-        }
-      }
-      &-right {
-        display: none;
-      }
-    }
-    .gva-middle-card {
-      &-item {
-        line-height: 20px;
-      }
-    }
-    .dashboard-icon {
-      font-size: 18px;
-    }
-  }
+.el-statistic {
+    --el-statistic-content-font-size: 28px;
+}
+
+.statistic-card{
+    height: 100%;
+    padding: 20px;
+    border-radius: 4px;
+    background-color: var(--el-bg-color-overlay);
+}
+
+.statistic-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+    margin-top: 16px;
+}
+
+.statistic-footer .footer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.statistic-footer .footer-item span:last-child {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+}
+
+.green {
+    color: var(--el-color-success);
+}
+.red {
+    color: var(--el-color-error);
 }
 </style>

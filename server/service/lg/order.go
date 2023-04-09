@@ -18,6 +18,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	lg2 "github.com/flipped-aurora/gin-vue-admin/server/utils/lg"
 	"github.com/go-resty/resty/v2"
+	"github.com/golang-module/carbon"
 	"github.com/xuri/excelize/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -932,17 +933,104 @@ func (orderService *OrderService) RePush(order lg.Order) (err error) {
 	return err
 }
 
-func (orderService *OrderService) GetOrderStatisticData() (orderStatisticData nonmigrate.OrderStatisticData, err error) {
-	db := global.GVA_DB.Model(&lg.Order{})
-	db.Joins("Pay").Joins("Letter").Joins("Refund").Joins("Claim")
-	//未撤函，未理赔，未退函
-	db = db.Where("lg_order.revoke_id is null")
-	db = db.Where("lg_order.claim_id is null")
-	db = db.Where("lg_order.refund_id is null")
+func (orderService *OrderService) GetOrderStatisticData(info lgReq.OrderSearch) (orderStatisticData nonmigrate.OrderStatisticData, err error) {
+	dbTotal := generateStaticDB(info)
+	dbToday := generateStaticDB(info)
+	dbYesterday := generateStaticDB(info)
+	dbWeek := generateStaticDB(info)
+	dbLastWeek := generateStaticDB(info)
+	dbMonth := generateStaticDB(info)
+	dbLastMonth := generateStaticDB(info)
 
-	err = db.Select("COALESCE(SUM(Letter.tender_deposit), 0) as TotalGuaranteeAmount, COALESCE(SUM(Pay.pay_amount), 0) as TotalElogAmount").Scan(&orderStatisticData).Error
+	// 获取总计统计数据
+	err = dbTotal.Select("COALESCE(COUNT(*), 0) as TotalOrderCount, COALESCE(SUM(lg_project.tender_deposit), 0) as TotalGuaranteeAmount, COALESCE(SUM(lg_pay.pay_amount), 0) as TotalElogAmount").Scan(&orderStatisticData).Error
+	// 获取今日统计数据
+	err = dbToday.Where("lg_order.created_at >= ?", carbon.Now(carbon.Shanghai).ToDateString()).Select("COALESCE(COUNT(*), 0) as TodayOrderCount, COALESCE(SUM(lg_project.tender_deposit), 0) as TodayGuaranteeAmount, COALESCE(SUM(lg_pay.pay_amount), 0) as TodayElogAmount").Scan(&orderStatisticData).Error
+	// 获取昨日统计数据
+	err = dbYesterday.Where("lg_order.created_at >= ? and lg_order.created_at < ?", carbon.Yesterday(carbon.Shanghai).ToDateString(), carbon.Now(carbon.Shanghai).ToDateString()).Select("COALESCE(COUNT(*), 0) as YesterdayOrderCount, COALESCE(SUM(lg_project.tender_deposit), 0) as YesterdayGuaranteeAmount, COALESCE(SUM(lg_pay.pay_amount), 0) as YesterdayElogAmount").Scan(&orderStatisticData).Error
+	// 获取本周统计数据（从周一开始）
+	err = dbWeek.Where("lg_order.created_at >= ?", carbon.Now(carbon.Shanghai).SetWeekStartsAt(carbon.Monday).StartOfWeek().ToDateString()).Select("COALESCE(COUNT(*), 0) as WeekOrderCount, COALESCE(SUM(lg_project.tender_deposit), 0) as WeekGuaranteeAmount, COALESCE(SUM(lg_pay.pay_amount), 0) as WeekElogAmount").Scan(&orderStatisticData).Error
+	// 获取上周统计数据（从周一开始）
+	err = dbLastWeek.Where("lg_order.created_at >= ? and lg_order.created_at < ?", carbon.Now(carbon.Shanghai).SubWeek().SetWeekStartsAt(carbon.Monday).StartOfWeek().ToDateString(), carbon.Now(carbon.Shanghai).SetWeekStartsAt(carbon.Monday).StartOfWeek().ToDateString()).Select("COALESCE(COUNT(*), 0) as LastWeekOrderCount, COALESCE(SUM(lg_project.tender_deposit), 0) as LastWeekGuaranteeAmount, COALESCE(SUM(lg_pay.pay_amount), 0) as LastWeekElogAmount").Scan(&orderStatisticData).Error
+	// 获取本月统计数据（从1号开始，月底结束）
+	err = dbMonth.Where("lg_order.created_at >= ?", carbon.Now(carbon.Shanghai).StartOfMonth().ToDateString()).Select("COALESCE(COUNT(*), 0) as MonthOrderCount, COALESCE(SUM(lg_project.tender_deposit), 0) as MonthGuaranteeAmount, COALESCE(SUM(lg_pay.pay_amount), 0) as MonthElogAmount").Scan(&orderStatisticData).Error
+	// 获取上月统计数据（从1号开始，月底结束）
+	err = dbLastMonth.Where("lg_order.created_at >= ? and lg_order.created_at < ?", carbon.Now(carbon.Shanghai).SubMonthNoOverflow().StartOfMonth().ToDateString(), carbon.Now(carbon.Shanghai).StartOfMonth().ToDateString()).Select("COALESCE(COUNT(*), 0) as LastMonthOrderCount, COALESCE(SUM(lg_project.tender_deposit), 0) as LastMonthGuaranteeAmount, COALESCE(SUM(lg_pay.pay_amount), 0) as LastMonthElogAmount").Scan(&orderStatisticData).Error
 
 	return orderStatisticData, err
+}
+
+func generateStaticDB(info lgReq.OrderSearch) *gorm.DB {
+	db := global.GVA_DB.Model(&lg.Order{}).
+		Joins("left join lg_pay on lg_pay.id = lg_order.pay_id").
+		Joins("left join lg_project on lg_project.id = lg_order.project_id")
+	// 未撤函，已付款，未理赔，未退函
+	db = db.Where("lg_order.revoke_id is null")
+	db = db.Where("lg_order.pay_id is not null")
+	db = db.Where("lg_order.claim_id is null")
+	db = db.Where("lg_order.refund_id is null")
+	if info.EmployeeNo != nil {
+		db = db.Where("lg_order.employee_id = ?", info.EmployeeNo)
+	}
+	return db
+}
+
+func (orderService *OrderService) GetEmployeeStatisticData(info lgReq.OrderSearch) (employeeStatisticData nonmigrate.EmployeeStatisticData, err error) {
+	var employeeTrendDataItems []nonmigrate.EmployeeTrendDataItem
+
+	db := global.GVA_DB.Model(&lg.Order{})
+	db.Joins("left join sys_users ON sys_users.id = lg_order.employee_id")
+	db = db.Where("lg_order.revoke_id is null")
+	db = db.Where("lg_order.pay_id is not null")
+	db = db.Where("lg_order.claim_id is null")
+	db = db.Where("lg_order.refund_id is null")
+	err = db.Group("COALESCE(sys_users.nick_name, '自然流量')").Select("COALESCE(sys_users.nick_name, '自然流量') as Name, COUNT(lg_order.id) as Count").Scan(&employeeTrendDataItems).Error
+
+	employeeStatisticData.EmployeeData = employeeTrendDataItems
+
+	return employeeStatisticData, err
+}
+
+func (orderService *OrderService) GetOrderTrendData(info lgReq.OrderSearch) (orderTrendData nonmigrate.OrderTrendData, err error) {
+	db7Days := generateTrendDB(info, 7)
+	db30Days := generateTrendDB(info, 30)
+
+	var orderTrendDataItems7Days []nonmigrate.TrendDataItem
+	var orderTrendDataItems30Days []nonmigrate.TrendDataItem
+
+	// 获取最近7天趋势数据
+	err = db7Days.Scan(&orderTrendDataItems7Days).Error
+	// 获取最近30天趋势数据
+	err = db30Days.Scan(&orderTrendDataItems30Days).Error
+
+	orderTrendData.TrendData7Days = orderTrendDataItems7Days
+	orderTrendData.TrendData30Days = orderTrendDataItems30Days
+
+	return orderTrendData, err
+}
+
+func generateTrendDB(info lgReq.OrderSearch, days int) *gorm.DB {
+	// 定义Joins连接语句
+	joinStr := "LEFT JOIN lg_order ON DATE(lg_order.created_at) = date_list.date AND lg_order.revoke_id IS NULL AND lg_order.pay_id IS NOT NULL AND lg_order.claim_id IS NULL AND lg_order.refund_id IS NULL"
+	if info.EmployeeNo != nil {
+		joinStr = joinStr + " AND lg_order.employee_id = " + strconv.Itoa(int(*info.EmployeeNo))
+	}
+	db := global.GVA_DB.Raw(`SELECT 
+  date_list.date, 
+  COUNT(lg_order.created_at) AS OrderCount, 
+  IFNULL(SUM(lg_project.tender_deposit), 0) AS GuaranteeAmount, 
+  IFNULL(SUM(lg_pay.pay_amount), 0) AS ElogAmount
+FROM 
+(
+  SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n DAY), '%Y-%m-%d') AS date
+  FROM (SELECT @n := @n + 1 AS n FROM (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) a, (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) b, (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) c, (SELECT @n := -1) d) numbers
+  WHERE n < ?
+) date_list
+`+joinStr+`
+LEFT JOIN lg_pay ON lg_pay.id = lg_order.pay_id
+LEFT JOIN lg_project ON lg_project.id = lg_order.project_id
+GROUP BY date_list.date`, days)
+	return db
 }
 
 func (orderService *OrderService) ExportExcel(info lgReq.OrderSearch) (excelData []byte, err error) {
