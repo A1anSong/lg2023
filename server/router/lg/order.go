@@ -34,8 +34,10 @@ func (s *OrderRouter) InitOrderRouter(Router *gin.RouterGroup) {
 	{
 		orderRouterWithoutRecord.GET("findOrder", orderApi.FindOrder)                               // 根据ID获取Order
 		orderRouterWithoutRecord.GET("getOrderList", orderApi.GetOrderList)                         // 获取Order列表
+		orderRouterWithoutRecord.GET("getInsuranceBalance", orderApi.GetInsuranceBalance)           // 获取担保额度
 		orderRouterWithoutRecord.GET("getOrderStatisticData", orderApi.GetOrderStatisticData)       // 获取Order统计数据
-		orderRouterWithoutRecord.GET("getEmployeeStatisticData", orderApi.GetEmployeeStatisticData) // 获取Order趋势数据
+		orderRouterWithoutRecord.GET("getEmployeeStatisticData", orderApi.GetEmployeeStatisticData) // 获取Order开单数据
+		orderRouterWithoutRecord.GET("getGEODistributionData", orderApi.GetGEODistributionData)     // 获取Order地理分布数据
 		orderRouterWithoutRecord.GET("getOrderTrendData", orderApi.GetOrderTrendData)               // 获取Order趋势数据
 		orderRouterWithoutRecord.GET("exportExcel", orderApi.ExportExcel)                           // 导出Order数据到excel
 		orderRouterWithoutRecord.GET("findOrderByNos", orderApi.FindOrderByNos)                     // 根据OrderNo获取Order

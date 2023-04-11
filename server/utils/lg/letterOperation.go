@@ -121,13 +121,14 @@ func OpenLetter(order lg.Order, templateFile lg.File) (letter lg.Letter, file lg
 			fmt.Println(err)
 			return
 		}
-		defer func() {
-			_ = os.Remove(global.GVA_CONFIG.Insurance.TempDir + fileName + ".png")
-		}()
 		_ = letterDocx.ReplaceImage("word/media/image"+strconv.Itoa(imageIndex)+".png", global.GVA_CONFIG.Insurance.TempDir+fileName+".png")
 	}
 
 	_ = letterDocx.WriteToFile(global.GVA_CONFIG.Insurance.TempDir + "letter" + fileName + ".docx")
+
+	defer func() {
+		_ = os.Remove(global.GVA_CONFIG.Insurance.TempDir + fileName + ".png")
+	}()
 
 	letterEncryptReader, _ := docx.ReadDocxFile(global.GVA_CONFIG.Insurance.TempDir + fileName + ".docx")
 	letterEncryptDocx := letterEncryptReader.Editable()

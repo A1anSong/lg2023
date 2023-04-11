@@ -129,6 +129,14 @@ export const rePush = (data) => {
   })
 }
 
+export const getInsuranceBalance = (params) => {
+  return service({
+    url: '/order/getInsuranceBalance',
+    method: 'get',
+    params
+  })
+}
+
 export const getOrderStatisticData = (params) => {
   return service({
     url: '/order/getOrderStatisticData',
@@ -140,6 +148,14 @@ export const getOrderStatisticData = (params) => {
 export const getEmployeeStatisticData = (params) => {
   return service({
     url: '/order/getEmployeeStatisticData',
+    method: 'get',
+    params
+  })
+}
+
+export const getGEODistributionData = (params) => {
+  return service({
+    url: '/order/getGEODistributionData',
     method: 'get',
     params
   })

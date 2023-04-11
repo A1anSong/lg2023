@@ -92,6 +92,7 @@ insurance:
   tel: 0793-2585999
   bankName: 中国建设银行玉山支行
   bankNo: 3605 0183 0450 0000 0145
+  insurance-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcmVhIjoiIiwicmVhbE5hbWUiOiLnjonlsbHljr_njonmuIXono3otYTmi4Xkv53mnInpmZDotKPku7vlhazlj7giLCJpc3MiOiJpc3N1ZXIiLCJpZCI6IjVlZWY1N2U0NzY5MjRkNjM4YzVhMGVhYTM4MDgyNWQzIiwidXNlclR5cGUiOiI3MDAwMCIsImV4cCI6MTY4MTI0Njg1OCwidXNlck5hbWUiOiIxMzY0NzA5NDY3NSIsImlhdCI6MTY4MTIwMzY1OH0.vZ9OkORyE9UTcCV0j5hI6ww483ZyVw10tWBdLWuje5g
   host-domain: https://lg.jxbolong.cn
   elog-prefix: YSHYQBH
   temp-dir: ./tmp/

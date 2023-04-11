@@ -265,6 +265,17 @@ func (orderApi *OrderApi) RePush(c *gin.Context) {
 	}
 }
 
+func (orderApi *OrderApi) GetInsuranceBalance(c *gin.Context) {
+	if insuranceBalance, err := orderService.GetInsuranceBalance(); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(gin.H{
+			"insuranceBalance": insuranceBalance,
+		}, "获取成功", c)
+	}
+}
+
 func (orderApi *OrderApi) GetOrderStatisticData(c *gin.Context) {
 	var pageInfo lgReq.OrderSearch
 	err := c.ShouldBindQuery(&pageInfo)
@@ -283,18 +294,29 @@ func (orderApi *OrderApi) GetOrderStatisticData(c *gin.Context) {
 }
 
 func (orderApi *OrderApi) GetEmployeeStatisticData(c *gin.Context) {
+	if employeeStatisticData, err := orderService.GetEmployeeStatisticData(); err != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(gin.H{
+			"employeeStatisticData": employeeStatisticData,
+		}, "获取成功", c)
+	}
+}
+
+func (orderApi *OrderApi) GetGEODistributionData(c *gin.Context) {
 	var pageInfo lgReq.OrderSearch
 	err := c.ShouldBindQuery(&pageInfo)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	if employeeStatisticData, err := orderService.GetEmployeeStatisticData(pageInfo); err != nil {
+	if geoDistributionData, err := orderService.GetGEODistributionData(pageInfo); err != nil {
 		global.GVA_LOG.Error("获取失败!", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(gin.H{
-			"employeeStatisticData": employeeStatisticData,
+			"geoDistributionData": geoDistributionData,
 		}, "获取成功", c)
 	}
 }
