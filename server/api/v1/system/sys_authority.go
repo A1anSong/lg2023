@@ -219,7 +219,7 @@ func (a *AuthorityApi) CreateDepartment(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	authority.DefaultRouter = "dash"
+	authority.DefaultRouter = "Dash"
 	if authBack, err := authorityService.CreateAuthority(authority); err != nil {
 		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败"+err.Error(), c)

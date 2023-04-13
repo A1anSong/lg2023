@@ -30,8 +30,8 @@ func DepartmentMenu() []system.SysBaseMenu {
 	return []system.SysBaseMenu{{
 		GVA_MODEL: global.GVA_MODEL{ID: 30},
 		ParentId:  "0",
-		Path:      "dash",
-		Name:      "dash",
+		Path:      "Dash",
+		Name:      "Dash",
 		Component: "view/lg/dashboard/dash.vue",
 		Sort:      101,
 		Meta: system.Meta{

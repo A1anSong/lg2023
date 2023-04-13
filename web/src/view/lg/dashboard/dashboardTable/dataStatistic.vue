@@ -36,7 +36,7 @@
           <div class="footer-item">
             <span>较{{ lastPeriod(periodType) }}</span>
             <span :class="compareValue(statisticData.orderCount, comparedStatisticData.orderCount)>=0?'red':'green'">
-              {{ Math.abs(compareValue(statisticData.orderCount, comparedStatisticData.orderCount))*100 }}%
+              {{ (Math.abs(compareValue(statisticData.orderCount, comparedStatisticData.orderCount))*100).toFixed(2) }}%
               <el-icon>
                 <CaretTop v-if="compareValue(statisticData.orderCount, comparedStatisticData.orderCount)>=0" />
                 <CaretBottom v-else />
@@ -67,7 +67,7 @@
           <div class="footer-item">
             <span>较{{ lastPeriod(periodType) }}</span>
             <span :class="compareValue(statisticData.guaranteeAmount, comparedStatisticData.guaranteeAmount)>=0?'red':'green'">
-              {{ Math.abs(compareValue(statisticData.guaranteeAmount, comparedStatisticData.guaranteeAmount))*100 }}%
+              {{ (Math.abs(compareValue(statisticData.guaranteeAmount, comparedStatisticData.guaranteeAmount))*100).toFixed(2) }}%
               <el-icon>
                 <CaretTop v-if="compareValue(statisticData.guaranteeAmount, comparedStatisticData.guaranteeAmount)>=0" />
                 <CaretBottom v-else />
@@ -98,7 +98,7 @@
           <div class="footer-item">
             <span>较{{ lastPeriod(periodType) }}</span>
             <span :class="compareValue(statisticData.elogAmount, comparedStatisticData.elogAmount)>=0?'red':'green'">
-              {{ Math.abs(compareValue(statisticData.elogAmount, comparedStatisticData.elogAmount))*100 }}%
+              {{ (Math.abs(compareValue(statisticData.elogAmount, comparedStatisticData.elogAmount))*100).toFixed(2) }}%
               <el-icon>
                 <CaretTop v-if="compareValue(statisticData.elogAmount, comparedStatisticData.elogAmount)>=0" />
                 <CaretBottom v-else />

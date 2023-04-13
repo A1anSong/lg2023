@@ -267,8 +267,8 @@ func (orderApi *OrderApi) RePush(c *gin.Context) {
 
 func (orderApi *OrderApi) GetInsuranceBalance(c *gin.Context) {
 	if insuranceBalance, err := orderService.GetInsuranceBalance(); err != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Error(err))
-		response.FailWithMessage("获取失败", c)
+		global.GVA_LOG.Error("获取额度失败!", zap.Error(err))
+		response.FailWithMessage("获取额度失败："+err.Error(), c)
 	} else {
 		response.OkWithDetailed(gin.H{
 			"insuranceBalance": insuranceBalance,

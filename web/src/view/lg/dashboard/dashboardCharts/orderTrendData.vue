@@ -2,7 +2,7 @@
   <el-card shadow="hover">
     <template #header>
       <div class="card-header">
-        <span style="font-size: 16px">分布图</span>
+        <span style="font-size: 16px">订单趋势</span>
         <el-select v-model="periodType" style="width: 100px" @change="refreshData">
           <el-option
             v-for="type in periodCollection"
@@ -19,20 +19,18 @@
 
 <script>
 export default {
-  name: 'GeoDistribution'
+  name: 'OrderTrendData'
 }
 </script>
-
 <script setup>
 import * as echarts from 'echarts'
 import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue'
-import { getGEODistributionData } from '@/api/lg/order'
-import jxData from '@/assets/jiangxi.json'
 const chart = shallowRef(null)
 const echart = ref(null)
 
 import { useUserStore } from '@/pinia/modules/user'
 import { useBtnAuth } from '@/utils/btnAuth'
+import { getOrderTrendData } from '@/api/lg/order'
 const userStore = useUserStore()
 const userInfo = userStore.userInfo
 const btnAuth = useBtnAuth()
@@ -40,48 +38,27 @@ const btnAuth = useBtnAuth()
 const searchInfo = ref({})
 
 const dataAll = ref({
-  day: [],
-  week: [],
-  month: [],
-  total: []
+  seven: [],
+  thirty: []
 })
 const dataSet = computed(() => {
   return dataAll.value[periodType.value]
 })
-const dataSetMin = computed(() => {
-  return Math.min.apply(null, dataAll.value[periodType.value].map((item) => {
-    return item[1]
-  }))
-})
-const dataSetMax = computed(() => {
-  return Math.max.apply(null, dataAll.value[periodType.value].map((item) => {
-    return item[1]
-  }))
-})
 
 const periodCollection = ref([
   {
-    label: '今天',
-    value: 'day'
+    label: '近7天',
+    value: 'seven'
   },
   {
-    label: '这周',
-    value: 'week'
-  },
-  {
-    label: '这个月',
-    value: 'month'
-  },
-  {
-    label: '总计',
-    value: 'total'
+    label: '近30天',
+    value: 'thirty'
   }
 ])
-const periodType = ref('day')
+const periodType = ref('seven')
 
 const initChart = () => {
   chart.value = echarts.init(echart.value, '', { locale: 'ZH' })
-  echarts.registerMap('jiangxi', jxData)
   checkAuthorityAll()
   getData()
 }
@@ -117,39 +94,78 @@ const checkAuthorityAll = () => {
 // 绘制图表
 const getData = async() => {
   chart.value.showLoading()
-  const table = await getGEODistributionData({ ...searchInfo.value })
+  const table = await getOrderTrendData({ ...searchInfo.value })
   if (table.code === 0) {
-    table.data.geoDistributionData.day.forEach((item) => {
-      dataAll.value.day.push([item.city, item.count])
+    table.data.orderTrendData.seven.forEach((item) => {
+      dataAll.value.seven.push([item.date, item.orderCount, item.guaranteeAmount])
     })
-    table.data.geoDistributionData.week.forEach((item) => {
-      dataAll.value.week.push([item.city, item.count])
-    })
-    table.data.geoDistributionData.month.forEach((item) => {
-      dataAll.value.month.push([item.city, item.count])
-    })
-    table.data.geoDistributionData.total.forEach((item) => {
-      dataAll.value.total.push([item.city, item.count])
+    table.data.orderTrendData.thirty.forEach((item) => {
+      dataAll.value.thirty.push([item.date, item.orderCount, item.guaranteeAmount])
     })
     chart.value.setOption({
-      tooltip: {},
-      visualMap: {
-        min: dataSetMin.value,
-        max: dataSetMax.value,
-        text: ['多', '少'],
-        calculable: true,
-        inRange: {
-          color: ['white', 'yellow', 'red']
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'cross' },
+      },
+      legend: {},
+      xAxis: {
+        type: 'time',
+        axisLabel: {
+          formatter: '{MMM}{d}日'
+        },
+        axisPointer: {
+          label: {
+            formatter: (params) => {
+              return echarts.format.formatTime('M月d日', params.value)
+            }
+          }
         }
       },
-      series: [{
-        type: 'map',
-        map: 'jiangxi',
-      }],
+      yAxis: [
+        {
+          name: '订单数量',
+          type: 'value',
+          position: 'left',
+          splitLine: {
+            show: false,
+          },
+        },
+        {
+          name: '担保金额',
+          type: 'value',
+          position: 'right',
+          axisLabel: {
+            formatter: (value) => {
+              return (value / 10000).toFixed(0) + '万元'
+            }
+          },
+        }
+      ],
       dataset: {
-        dimensions: ['城市单量', '值'],
+        dimensions: ['日期', '订单数量', '担保金额'],
         source: dataSet.value
       },
+      series: [
+        {
+          name: '订单数量',
+          type: 'bar',
+          yAxisIndex: 0
+        },
+        {
+          name: '担保金额',
+          type: 'line',
+          smooth: true,
+          yAxisIndex: 1,
+          encode: {
+            y: 2
+          },
+          tooltip: {
+            valueFormatter: (value) => {
+              return (value / 10000).toFixed(0) + '万元'
+            }
+          }
+        }
+      ],
     })
     chart.value.hideLoading()
   }
@@ -158,10 +174,6 @@ const getData = async() => {
 const refreshData = async() => {
   chart.value.showLoading()
   chart.value.setOption({
-    visualMap: {
-      min: dataSetMin.value,
-      max: dataSetMax.value,
-    },
     dataset: {
       source: dataSet.value
     },
@@ -185,12 +197,7 @@ onUnmounted(() => {
   chart.value = null
 })
 </script>
-
 <style scoped>
-.el-card {
-    margin-bottom: 20px;
-}
-
 .card-header {
     display: flex;
     justify-content: space-between;

@@ -954,7 +954,11 @@ func (orderService *OrderService) GetInsuranceBalance() (insuranceBalance nonmig
 		return
 	}
 	if resp.StatusCode() == http.StatusOK {
-		insuranceBalance = res.Data.Results[0]
+		if res.Code == 0 {
+			insuranceBalance = res.Data.Results[0]
+		} else {
+			err = errors.New("获取额度失败，请稍后刷新重试")
+		}
 	}
 	return insuranceBalance, err
 }
@@ -1071,16 +1075,10 @@ ON cities.city_name = orders.city;`)
 }
 
 func (orderService *OrderService) GetOrderTrendData(info lgReq.OrderSearch) (orderTrendData nonmigrate.OrderTrendData, err error) {
-	var orderTrendDataItems7Days []nonmigrate.TrendDataItem
-	var orderTrendDataItems30Days []nonmigrate.TrendDataItem
-
 	// 获取最近7天趋势数据
-	err = generateTrendDB(info, 7).Scan(&orderTrendDataItems7Days).Error
+	err = generateTrendDB(info, 7).Scan(&orderTrendData.Seven).Error
 	// 获取最近30天趋势数据
-	err = generateTrendDB(info, 30).Scan(&orderTrendDataItems30Days).Error
-
-	orderTrendData.TrendData7Days = orderTrendDataItems7Days
-	orderTrendData.TrendData30Days = orderTrendDataItems30Days
+	err = generateTrendDB(info, 30).Scan(&orderTrendData.Thirty).Error
 
 	return orderTrendData, err
 }
@@ -1094,8 +1092,7 @@ func generateTrendDB(info lgReq.OrderSearch, days int) *gorm.DB {
 	db := global.GVA_DB.Raw(`SELECT 
   date_list.date, 
   COUNT(lg_order.created_at) AS OrderCount, 
-  IFNULL(SUM(lg_project.tender_deposit), 0) AS GuaranteeAmount, 
-  IFNULL(SUM(lg_pay.pay_amount), 0) AS ElogAmount
+  IFNULL(SUM(lg_project.tender_deposit), 0) AS GuaranteeAmount
 FROM 
 (
   SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n DAY), '%Y-%m-%d') AS date

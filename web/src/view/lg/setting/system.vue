@@ -28,6 +28,9 @@
           <el-form-item label="银行账户">
             <el-input v-model="config.insurance['bankNo']" />
           </el-form-item>
+          <el-form-item label="额度token">
+            <el-input v-model="config.insurance['insurance-token']" />
+          </el-form-item>
         </el-collapse-item>
         <el-collapse-item title="开函配置" name="2">
           <el-form-item label="域名地址">

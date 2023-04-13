@@ -28,7 +28,6 @@ import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue
 import { getEmployeeStatisticData } from '@/api/lg/order'
 const chart = shallowRef(null)
 const echart = ref(null)
-const dataTitle = ref(['来源', '数量'])
 const dataAll = ref({
   day: [],
   week: [],
@@ -36,7 +35,7 @@ const dataAll = ref({
   total: []
 })
 const dataSet = computed(() => {
-  return [dataTitle.value, ...dataAll.value[periodType.value]]
+  return dataAll.value[periodType.value]
 })
 
 const periodCollection = ref([
@@ -68,22 +67,31 @@ const getData = async() => {
   chart.value.showLoading()
   const table = await getEmployeeStatisticData()
   if (table.code === 0) {
-    table.data.employeeStatisticData.day.forEach((item) => {
-      dataAll.value.day.push([item.name, item.count])
-    })
-    table.data.employeeStatisticData.week.forEach((item) => {
-      dataAll.value.week.push([item.name, item.count])
-    })
-    table.data.employeeStatisticData.month.forEach((item) => {
-      dataAll.value.month.push([item.name, item.count])
-    })
-    table.data.employeeStatisticData.total.forEach((item) => {
-      dataAll.value.total.push([item.name, item.count])
-    })
+    if (table.data.employeeStatisticData.day) {
+      table.data.employeeStatisticData.day.forEach((item) => {
+        dataAll.value.day.push([item.name, item.count])
+      })
+    }
+    if (table.data.employeeStatisticData.week) {
+      table.data.employeeStatisticData.week.forEach((item) => {
+        dataAll.value.week.push([item.name, item.count])
+      })
+    }
+    if (table.data.employeeStatisticData.month) {
+      table.data.employeeStatisticData.month.forEach((item) => {
+        dataAll.value.month.push([item.name, item.count])
+      })
+    }
+    if (table.data.employeeStatisticData.total) {
+      table.data.employeeStatisticData.total.forEach((item) => {
+        dataAll.value.total.push([item.name, item.count])
+      })
+    }
     chart.value.setOption({
       tooltip: {},
       series: [{ type: 'pie' }],
       dataset: {
+        dimensions: ['来源', '数量'],
         source: dataSet.value
       },
     })
