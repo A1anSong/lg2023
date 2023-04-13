@@ -30,5 +30,7 @@ type OrderSearch struct {
 	InvoiceTime     []time.Time `json:"invoiceTime" form:"invoiceTime[]"`
 	InvoiceTile     *string     `json:"invoiceTile" form:"invoiceTile"`
 	InvoiceTaxNo    *string     `json:"invoiceTaxNo" form:"invoiceTaxNo"`
+	IsDelayed       *bool       `json:"isDelayed" form:"isDelayed"`
+	IsRefunded      *bool       `json:"isRefunded" form:"isRefunded"`
 	request.PageInfo
 }

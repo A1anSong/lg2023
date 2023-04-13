@@ -1601,6 +1601,20 @@ func dbFilter(db *gorm.DB, info lgReq.OrderSearch) (newDB *gorm.DB) {
 	if info.InvoiceTaxNo != nil {
 		db = db.Where("lg_invoice.tax_no like ?", "%"+*info.InvoiceTaxNo+"%")
 	}
+	if info.IsDelayed != nil {
+		if *info.IsDelayed == true {
+			db = db.Where("lg_order.delay_id is not null")
+		} else {
+			db = db.Where("lg_order.delay_id is null")
+		}
+	}
+	if info.IsRefunded != nil {
+		if *info.IsRefunded == true {
+			db = db.Where("lg_order.refund_id is not null")
+		} else {
+			db = db.Where("lg_order.refund_id is null")
+		}
+	}
 	return db
 }
 

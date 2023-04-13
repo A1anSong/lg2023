@@ -38,11 +38,10 @@
             <el-option value="销函" />
           </el-select>
         </el-form-item>
-        <el-form-item label="审核状态">
-          <el-select v-model="searchInfo.auditStatus" placeholder="选择条件" clearable>
-            <el-option label="待审" value="1" />
-            <el-option label="通过" value="2" />
-            <el-option label="拒绝" value="3" />
+        <el-form-item label="延期审核状态">
+          <el-select v-model="searchInfo.isDelayed" placeholder="选择条件" clearable>
+            <el-option label="已审" :value="true" />
+            <el-option label="未审" :value="false" />
           </el-select>
         </el-form-item>
         <el-form-item label="开标时间">
