@@ -1603,16 +1603,16 @@ func dbFilter(db *gorm.DB, info lgReq.OrderSearch) (newDB *gorm.DB) {
 	}
 	if info.IsDelayed != nil {
 		if *info.IsDelayed == true {
-			db = db.Where("lg_order.delay_id is not null")
+			db = db.Where("lg_delay.audit_status is not null")
 		} else {
-			db = db.Where("lg_order.delay_id is null")
+			db = db.Where("lg_delay.audit_status is null")
 		}
 	}
 	if info.IsRefunded != nil {
 		if *info.IsRefunded == true {
-			db = db.Where("lg_order.refund_id is not null")
+			db = db.Where("lg_refund.audit_status <> 1")
 		} else {
-			db = db.Where("lg_order.refund_id is null")
+			db = db.Where("lg_refund.audit_status = 1")
 		}
 	}
 	return db
