@@ -5,13 +5,13 @@ import "github.com/flipped-aurora/gin-vue-admin/server/model/lg"
 func OrderStatus(order lg.Order) (status string) {
 	if order.RevokeID != nil {
 		status = "撤单"
-	} else if order.RefundID != nil && *order.Refund.AuditStatus == 2 {
+	} else if order.RefundID != nil && order.Refund.AuditStatus != nil && *order.Refund.AuditStatus == 2 {
 		status = "退函"
-	} else if order.ClaimID != nil && *order.Claim.AuditStatus == 2 {
+	} else if order.ClaimID != nil && order.Claim.AuditStatus != nil && *order.Claim.AuditStatus == 2 {
 		status = "理赔"
 	} else if order.LogoutID != nil {
 		status = "销函"
-	} else if order.DelayID != nil && *order.Delay.AuditStatus == 2 {
+	} else if order.DelayID != nil && order.Delay.AuditStatus != nil && *order.Delay.AuditStatus == 2 {
 		status = "延期"
 	} else if order.LetterID != nil {
 		status = "已开"
