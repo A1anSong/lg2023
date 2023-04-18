@@ -83,6 +83,6 @@ func (templateService *TemplateService) GetTemplateInfoList(info lgReq.TemplateS
 		return
 	}
 
-	err = db.Limit(limit).Preload(clause.Associations).Order("created_at desc").Offset(offset).Find(&templates).Error
+	err = db.Limit(limit).Preload("TemplateFile", excludeFileField).Order("created_at desc").Offset(offset).Find(&templates).Error
 	return templates, total, err
 }

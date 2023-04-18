@@ -75,10 +75,10 @@ func (orderService *OrderService) GetOrderInfoList(info lgReq.OrderSearch) (list
 	err = db.Limit(limit).
 		Preload(clause.Associations).
 		Preload("Project.Template").
-		Preload("Letter.ElogFile").
-		Preload("Letter.ElogEncryptFile").
-		Preload("Delay.ElogFile").
-		Preload("Delay.ElogEncryptFile").
+		Preload("Letter.ElogFile", excludeFileField).
+		Preload("Letter.ElogEncryptFile", excludeFileField).
+		Preload("Delay.ElogFile", excludeFileField).
+		Preload("Delay.ElogEncryptFile", excludeFileField).
 		Order("lg_order.created_at desc").Offset(offset).Find(&orders).Error
 	return orders, total, err
 }
@@ -985,12 +985,14 @@ func (orderService *OrderService) GetOrderStatisticData(info lgReq.OrderSearch) 
 func generateStatisticDB(info lgReq.OrderSearch) *gorm.DB {
 	db := global.GVA_DB.Model(&lg.Order{}).
 		Joins("left join lg_pay on lg_pay.id = lg_order.pay_id").
-		Joins("left join lg_project on lg_project.id = lg_order.project_id")
+		Joins("left join lg_project on lg_project.id = lg_order.project_id").
+		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").
+		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	// 未撤函，已付款，未理赔，未退函
 	db = db.Where("lg_order.revoke_id is null")
 	db = db.Where("lg_order.pay_id is not null")
-	db = db.Where("lg_order.claim_id is null")
-	db = db.Where("lg_order.refund_id is null")
+	db = db.Where("lg_order.claim_id is null OR lg_claim.audit_status <> 2")
+	db = db.Where("lg_order.refund_id is null OR lg_refund.audit_status <> 2")
 	if info.EmployeeNo != nil {
 		db = db.Where("lg_order.employee_id = ?", info.EmployeeNo)
 	}
@@ -1013,11 +1015,13 @@ func (orderService *OrderService) GetEmployeeStatisticData() (employeeStatisticD
 
 func generateEmployeeStatisticDB() *gorm.DB {
 	db := global.GVA_DB.Model(&lg.Order{}).
-		Joins("left join sys_users ON sys_users.id = lg_order.employee_id")
+		Joins("left join sys_users ON sys_users.id = lg_order.employee_id").
+		Joins("left join lg_claim on lg_claim.id = lg_order.claim_id").
+		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id")
 	db = db.Where("lg_order.revoke_id is null")
 	db = db.Where("lg_order.pay_id is not null")
-	db = db.Where("lg_order.claim_id is null")
-	db = db.Where("lg_order.refund_id is null")
+	db = db.Where("lg_order.claim_id is null OR lg_claim.audit_status <> 2")
+	db = db.Where("lg_order.refund_id is null OR lg_refund.audit_status <> 2")
 	db = db.Group("COALESCE(sys_users.nick_name, '自然流量')").Select("COALESCE(sys_users.nick_name, '自然流量') as Name, COUNT(lg_order.id) as Count")
 	return db
 }
@@ -1063,10 +1067,10 @@ LEFT JOIN (
   COUNT(lg_order.id) AS order_count
 FROM lg_order
 LEFT JOIN lg_project ON lg_project.id = lg_order.project_id
+LEFT JOIN lg_claim ON lg_claim.id = lg_order.claim_id AND (lg_order.claim_id IS NULL OR lg_claim.audit_status <> 2)
+LEFT JOIN lg_refund ON lg_refund.id = lg_order.refund_id AND (lg_order.refund_id IS NULL OR lg_refund.audit_status <> 2)
 WHERE lg_order.revoke_id IS NULL
   AND lg_order.pay_id IS NOT NULL
-  AND lg_order.claim_id IS NULL
-  AND lg_order.refund_id IS NULL
   ` + joinStr + `
 GROUP BY city
 ) AS orders
@@ -1102,6 +1106,8 @@ FROM
 `+joinStr+`
 LEFT JOIN lg_pay ON lg_pay.id = lg_order.pay_id
 LEFT JOIN lg_project ON lg_project.id = lg_order.project_id
+LEFT JOIN lg_claim ON lg_claim.id = lg_order.claim_id AND (lg_order.claim_id IS NULL OR lg_claim.audit_status <> 2)
+LEFT JOIN lg_refund ON lg_refund.id = lg_order.refund_id AND (lg_order.refund_id IS NULL OR lg_refund.audit_status <> 2)
 GROUP BY date_list.date`, days)
 	return db
 }
@@ -1523,32 +1529,18 @@ func dbFilter(db *gorm.DB, info lgReq.OrderSearch) (newDB *gorm.DB) {
 			db = db.Where("lg_order.logout_id is not null")
 		}
 		if *info.OrderStatus == "理赔" {
-			db = db.Where("lg_order.logout_id is null")
 			db = db.Where("lg_order.claim_id is not null AND lg_claim.audit_status = 2")
 		}
 		if *info.OrderStatus == "退函" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
 			db = db.Where("lg_order.refund_id is not null AND lg_refund.audit_status = 2")
 		}
 		if *info.OrderStatus == "延期" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
 			db = db.Where("lg_order.delay_id is not null AND lg_delay.audit_status = 2")
 		}
 		if *info.OrderStatus == "已开" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is null")
 			db = db.Where("lg_order.letter_id is not null")
 		}
 		if *info.OrderStatus == "未开" {
-			db = db.Where("lg_order.logout_id is null")
-			db = db.Where("lg_order.claim_id is null")
-			db = db.Where("lg_order.refund_id is null")
-			db = db.Where("lg_order.delay_id is null")
 			db = db.Where("lg_order.letter_id is null")
 		}
 	}
@@ -1616,6 +1608,10 @@ func dbFilter(db *gorm.DB, info lgReq.OrderSearch) (newDB *gorm.DB) {
 		}
 	}
 	return db
+}
+
+func excludeFileField(db *gorm.DB) *gorm.DB {
+	return db.Select("id, created_at, updated_at, deleted_at, file_name")
 }
 
 func (orderService *OrderService) ElogValidate(elogValidate lgReq.ElogValidate) (elogValidateMessage lgRes.ElogValidateMessage, err error) {
