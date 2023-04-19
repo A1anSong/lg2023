@@ -21,6 +21,7 @@ type Insurance struct {
 	JRAPIDomain    string  `mapstructure:"jr-api-domain" json:"jr-api-domain" yaml:"jr-api-domain"`
 	AppKey         string  `mapstructure:"app-key" json:"app-key" yaml:"app-key"`
 	AppSecret      string  `mapstructure:"app-secret" json:"app-secret" yaml:"app-secret"`
+	DiskPath       string  `mapstructure:"disk-path" json:"disk-path" yaml:"disk-path"`
 	ElogRate       float64 `mapstructure:"elog-rate" json:"elog-rate" yaml:"elog-rate"`
 	ElogMinAmount  float64 `mapstructure:"elog-min-amount" json:"elog-min-amount" yaml:"elog-min-amount"`
 	NNRequestUrl   string  `mapstructure:"nn-request-url" json:"nn-request-url" yaml:"nn-request-url"`
@@ -31,5 +32,6 @@ type Insurance struct {
 	NNChecker      string  `mapstructure:"nn-checker" json:"nn-checker" yaml:"nn-checker"`
 	NNPayee        string  `mapstructure:"nn-payee" json:"nn-payee" yaml:"nn-payee"`
 	NNClerk        string  `mapstructure:"nn-clerk" json:"nn-clerk" yaml:"nn-clerk"`
-	NNAccessToken  string  `mapstructure:"nn-acccess-token" json:"nn-acccess-token" yaml:"nn-acccess-token"`
+	NNAccessToken  string  `mapstructure:"nn-access-token" json:"nn-access-token" yaml:"nn-access-token"`
+	NNGoodsCode    string  `mapstructure:"nn-goods-code" json:"nn-goods-code" yaml:"nn-goods-code"`
 }

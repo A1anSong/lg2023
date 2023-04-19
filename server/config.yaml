@@ -105,6 +105,7 @@ insurance:
   jr-api-domain: http://112.95.248.184:9110/api/lemon-openapi
   app-key: 9f51b7f0fee948018de82ab36f605d1d
   app-secret: KHDmhq7KAIT2Dmr7
+  disk-path: /
   elog-rate: 0.0006
   elog-min-amount: 60
   nn-request-url: https://sandbox.nuonuocs.cn/open/v1/services
@@ -115,7 +116,8 @@ insurance:
   nn-checker: 胡怀闽
   nn-payee: 游丹
   nn-clerk: 游丹
-  nn-acccess-token: fa35aa5f2feb821e9c02c00jk1ctdhbs
+  nn-access-token: fa35aa5f2feb821e9c02c00jk1ctdhbs
+  nn-goods-code: 30602
 jwt:
   signing-key: 6384fe2c-e99f-48f3-a770-0db405f68ef8
   expires-time: 7d

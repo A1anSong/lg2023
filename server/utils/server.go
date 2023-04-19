@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"runtime"
 	"time"
 
@@ -105,7 +106,7 @@ func InitRAM() (r Ram, err error) {
 //@return: d Disk, err error
 
 func InitDisk() (d Disk, err error) {
-	if u, err := disk.Usage("/"); err != nil {
+	if u, err := disk.Usage(global.GVA_CONFIG.Insurance.DiskPath); err != nil {
 		return d, err
 	} else {
 		d.UsedMB = int(u.Used) / MB

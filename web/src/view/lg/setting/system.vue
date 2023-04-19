@@ -6,7 +6,7 @@
       <!--  System start  -->
       <el-collapse v-model="activeNames">
 
-        <el-collapse-item title="信息配置" name="1">
+        <el-collapse-item title="金融机构信息配置" name="1">
           <el-form-item label="单位名称">
             <el-input v-model="config.insurance['name']" />
           </el-form-item>
@@ -71,6 +71,9 @@
           <el-form-item label="交易中心AppSecret">
             <el-input v-model="config.insurance['app-secret']" />
           </el-form-item>
+          <el-form-item label="磁盘路径">
+            <el-input v-model="config.insurance['disk-path']" />
+          </el-form-item>
         </el-collapse-item>
         <el-collapse-item title="保函费用配置" name="4">
           <el-form-item label="保函费率">
@@ -106,7 +109,10 @@
             <el-input v-model="config.insurance['nn-clerk']" />
           </el-form-item>
           <el-form-item label="AccessToken">
-            <el-input v-model="config.insurance['nn-acccess-token']" :disabled="true" />
+            <el-input v-model="config.insurance['nn-access-token']" :disabled="true" />
+          </el-form-item>
+          <el-form-item label="商品税收分类编码">
+            <el-input v-model="config.insurance['nn-goods-code']" />
           </el-form-item>
         </el-collapse-item>
       </el-collapse>

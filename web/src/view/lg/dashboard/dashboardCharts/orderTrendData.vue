@@ -56,6 +56,7 @@ const periodCollection = ref([
   }
 ])
 const periodType = ref('seven')
+const weekArr = ['日', '一', '二', '三', '四', '五', '六']
 
 const initChart = () => {
   chart.value = echarts.init(echart.value, '', { locale: 'ZH' })
@@ -116,7 +117,10 @@ const getData = async() => {
         axisPointer: {
           label: {
             formatter: (params) => {
-              return echarts.format.formatTime('M月d日', params.value)
+              // return echarts.format.formatTime('M月d日', params.value)
+              //   return params.value.format('M月d日')
+              const date = new Date(params.value)
+              return `${date.getMonth() + 1}月${date.getDate()}日 星期${weekArr[date.getDay()]}`
             }
           }
         }

@@ -382,6 +382,7 @@ func AuditRejectInvoiceApply(invoiceApply lg.InvoiceApply, auditOpinion string) 
 func RequestInvoice(order lg.Order, invoiceApply lg.InvoiceApply) {
 	type NNDetail struct {
 		GoodsName   string `json:"goodsName"`
+		GoodsCode   string `json:"goodsCode"`
 		WithTaxFlag string `json:"withTaxFlag"`
 		Price       string `json:"price"`
 		Num         string `json:"num"`
@@ -452,6 +453,7 @@ func RequestInvoice(order lg.Order, invoiceApply lg.InvoiceApply) {
 			InvoiceType:  "1",
 			InvoiceDetail: []NNDetail{{
 				GoodsName:   "电子保函",
+				GoodsCode:   global.GVA_CONFIG.Insurance.NNGoodsCode,
 				WithTaxFlag: "1",
 				Price:       strconv.FormatFloat(*order.Pay.PayAmount, 'f', 8, 64),
 				Num:         "1",
