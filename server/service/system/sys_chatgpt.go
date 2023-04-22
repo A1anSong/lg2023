@@ -45,6 +45,7 @@ func (chat *ChatGptService) GetTable(req request.ChatGptRequest) (sql string, re
 	var tablesInfo []system.ChatField
 	var tableName string
 	global.GVA_DB.Table("information_schema.columns").Where("TABLE_SCHEMA = ?", req.DBName).Scan(&tablesInfo)
+
 	for i := range tablesInfo {
 		tableName += tablesInfo[i].TABLE_NAME + ","
 	}
@@ -71,12 +72,19 @@ func (chat *ChatGptService) GetTable(req request.ChatGptRequest) (sql string, re
 
 func getTables(ctx context.Context, client *openai.Client, tables string, chat string) (string, error) {
 	var tablePrompt = `You are a database administrator
+
 If I want to query at least those tables, I will provide you with the following table configuration information:
+
 Table 1, Table 2, Table 3
+
 Please return the table name I need according to the input format
+
 Please do not return information other than the table
+
 Configured as:
+
 %s
+
 The problem is:
 %s
 `
@@ -100,17 +108,21 @@ The problem is:
 
 func getSql(ctx context.Context, client *openai.Client, tables []string, ChatField []system.ChatField, chat string) (string, error) {
 	var sqlPrompt = `You are a database administrator
+
 Give me an SQL statement based on my question
+
 I will provide you with my current database table configuration information in the form below
+
 Table Name | Column Name | Column Description
 
 Do not return information other than SQL
+
 Configured as:
-user | username | 用户名
-user | sex | 性别
-user | age | 年龄
-user | pwd | 密码
+
+%s
+
 The problem is:
+
 %s`
 	var configured string
 
