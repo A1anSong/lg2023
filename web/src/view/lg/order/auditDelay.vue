@@ -133,7 +133,7 @@
         </el-table-column>
         <el-table-column align="center" label="订单编号" prop="orderNo" width="120px" />
         <el-table-column align="center" label="申请时间" width="100px">
-          <template #default="scope">{{ date(scope.row.apply.CreatedAt) }}</template>
+          <template #default="scope">{{ date(scope.row.delay.CreatedAt) }}</template>
         </el-table-column>
         <el-table-column align="center" label="产品类型" width="80px">
           <template #default="scope">{{ productType(scope.row.apply.productType) }}</template>

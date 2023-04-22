@@ -1403,13 +1403,9 @@ func (orderService *OrderService) AssignOrder(assign lgReq.AssignOrder) (err err
 			return err
 		}
 	}
-	if order.EmployeeID != nil {
-		return errors.New("该订单已经分配")
-	} else {
-		order.EmployeeID = &assign.EmployeeId
-		order.Apply.ApplicantAuthCode = employee.EmployeeNo
-		return global.GVA_DB.Save(&order).Error
-	}
+	order.EmployeeID = &assign.EmployeeId
+	order.Apply.ApplicantAuthCode = employee.EmployeeNo
+	return global.GVA_DB.Save(&order).Error
 }
 
 func (orderService *OrderService) MarkOfflineRefund(order lg.Order) (err error) {
