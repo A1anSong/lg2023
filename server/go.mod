@@ -22,6 +22,7 @@ require (
 	github.com/jordan-wright/email v0.0.0-20200824153738-3f5bafa1cd84
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mojocn/base64Captcha v1.3.1
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/nguyenthenguyen/docx v0.0.0-20220721043308-1903da0ef37d
 	github.com/otiai10/copy v1.7.0
 	github.com/pkg/errors v0.9.1
@@ -30,6 +31,7 @@ require (
 	github.com/sashabaranov/go-openai v1.5.7
 	github.com/satori/go.uuid v1.2.0
 	github.com/shirou/gopsutil/v3 v3.22.5
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/songzhibin97/gkit v1.2.7
 	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.8.1
@@ -106,7 +108,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/mozillazg/go-httpheader v0.2.1 // indirect
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/pelletier/go-toml v1.6.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
@@ -114,7 +115,6 @@ require (
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
-	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
