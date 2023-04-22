@@ -1,9 +1,6 @@
 package lg
 
 type ApiGroup struct {
-	ApplyApi
-	ClaimApi
-	DelayApi
 	FileApi
 	InvoiceApi
 	InvoiceApplyApi

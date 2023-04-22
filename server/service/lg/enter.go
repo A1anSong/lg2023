@@ -1,9 +1,6 @@
 package lg
 
 type ServiceGroup struct {
-	ApplyService
-	ClaimService
-	DelayService
 	FileService
 	InvoiceService
 	InvoiceApplyService

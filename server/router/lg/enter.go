@@ -1,9 +1,6 @@
 package lg
 
 type RouterGroup struct {
-	ApplyRouter
-	ClaimRouter
-	DelayRouter
 	FileRouter
 	InvoiceRouter
 	InvoiceApplyRouter
