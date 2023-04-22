@@ -30,16 +30,6 @@ func (projectService *ProjectService) CreateProject(project lg.Project) (err err
 	return err
 }
 
-func (projectService *ProjectService) DeleteProject(project lg.Project) (err error) {
-	err = global.GVA_DB.Delete(&project).Error
-	return err
-}
-
-func (projectService *ProjectService) DeleteProjectByIds(ids request.IdsReq) (err error) {
-	err = global.GVA_DB.Delete(&[]lg.Project{}, "id in ?", ids.Ids).Error
-	return err
-}
-
 func (projectService *ProjectService) EnableProjectByIds(ids request.IdsReq) (err error) {
 	err = global.GVA_DB.Model(&lg.Project{}).Where("id in ?", ids.Ids).Update("is_enable", true).Error
 	return err

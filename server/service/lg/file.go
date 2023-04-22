@@ -2,9 +2,7 @@ package lg
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg"
-	lgReq "github.com/flipped-aurora/gin-vue-admin/server/model/lg/request"
 	"io"
 	"mime/multipart"
 	"os"
@@ -15,50 +13,6 @@ import (
 )
 
 type FileService struct {
-}
-
-func (fileService *FileService) CreateFile(file lg.File) (err error) {
-	err = global.GVA_DB.Create(&file).Error
-	return err
-}
-
-func (fileService *FileService) DeleteFile(file lg.File) (err error) {
-	err = global.GVA_DB.Delete(&file).Error
-	return err
-}
-
-func (fileService *FileService) DeleteFileByIds(ids request.IdsReq) (err error) {
-	err = global.GVA_DB.Delete(&[]lg.File{}, "id in ?", ids.Ids).Error
-	return err
-}
-
-func (fileService *FileService) UpdateFile(file lg.File) (err error) {
-	err = global.GVA_DB.Save(&file).Error
-	return err
-}
-
-func (fileService *FileService) GetFile(id uint) (file lg.File, err error) {
-	err = global.GVA_DB.Where("id = ?", id).First(&file).Error
-	return
-}
-
-func (fileService *FileService) GetFileInfoList(info lgReq.FileSearch) (list []lg.File, total int64, err error) {
-	limit := info.PageSize
-	offset := info.PageSize * (info.Page - 1)
-	// 创建db
-	db := global.GVA_DB.Model(&lg.File{})
-	var files []lg.File
-	// 如果有条件搜索 下方会自动创建搜索语句
-	if info.StartCreatedAt != nil && info.EndCreatedAt != nil {
-		db = db.Where("created_at BETWEEN ? AND ?", info.StartCreatedAt, info.EndCreatedAt)
-	}
-	err = db.Count(&total).Error
-	if err != nil {
-		return
-	}
-
-	err = db.Limit(limit).Offset(offset).Find(&files).Error
-	return files, total, err
 }
 
 func (fileService *FileService) UploadFile(file *multipart.FileHeader) (fileName string, err error) {

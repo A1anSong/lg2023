@@ -32,36 +32,6 @@ func (projectApi *ProjectApi) CreateProject(c *gin.Context) {
 	}
 }
 
-func (projectApi *ProjectApi) DeleteProject(c *gin.Context) {
-	var project lg.Project
-	err := c.ShouldBindJSON(&project)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	if err := projectService.DeleteProject(project); err != nil {
-		global.GVA_LOG.Error("删除失败!", zap.Error(err))
-		response.FailWithMessage("删除失败", c)
-	} else {
-		response.OkWithMessage("删除成功", c)
-	}
-}
-
-func (projectApi *ProjectApi) DeleteProjectByIds(c *gin.Context) {
-	var IDS request.IdsReq
-	err := c.ShouldBindJSON(&IDS)
-	if err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
-	}
-	if err := projectService.DeleteProjectByIds(IDS); err != nil {
-		global.GVA_LOG.Error("批量删除失败!", zap.Error(err))
-		response.FailWithMessage("批量删除失败", c)
-	} else {
-		response.OkWithMessage("批量删除成功", c)
-	}
-}
-
 func (projectApi *ProjectApi) EnableProjectByIds(c *gin.Context) {
 	var IDS request.IdsReq
 	err := c.ShouldBindJSON(&IDS)

@@ -1,54 +1,6 @@
 import service from '@/utils/request'
 import { ElMessage } from 'element-plus'
 
-export const createFile = (data) => {
-  return service({
-    url: '/file/createFile',
-    method: 'post',
-    data
-  })
-}
-
-export const deleteFile = (data) => {
-  return service({
-    url: '/file/deleteFile',
-    method: 'delete',
-    data
-  })
-}
-
-export const deleteFileByIds = (data) => {
-  return service({
-    url: '/file/deleteFileByIds',
-    method: 'delete',
-    data
-  })
-}
-
-export const updateFile = (data) => {
-  return service({
-    url: '/file/updateFile',
-    method: 'put',
-    data
-  })
-}
-
-export const findFile = (params) => {
-  return service({
-    url: '/file/findFile',
-    method: 'get',
-    params
-  })
-}
-
-export const getFileList = (params) => {
-  return service({
-    url: '/file/getFileList',
-    method: 'get',
-    params
-  })
-}
-
 export const downloadFile = (file) => {
   return service({
     url: '/file/download',

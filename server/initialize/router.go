@@ -79,15 +79,9 @@ func Routers() *gin.Engine {
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup) // 文件上传下载功能路由
 
 		lgRouter.InitFileRouter(PrivateGroup)
-		lgRouter.InitInvoiceRouter(PrivateGroup)
 		lgRouter.InitInvoiceApplyRouter(PrivateGroup)
-		lgRouter.InitLetterRouter(PrivateGroup)
-		lgRouter.InitLogoutRouter(PrivateGroup)
 		lgRouter.InitOrderRouter(PrivateGroup)
-		lgRouter.InitPayRouter(PrivateGroup)
 		lgRouter.InitProjectRouter(PrivateGroup)
-		lgRouter.InitRefundRouter(PrivateGroup)
-		lgRouter.InitRevokeRouter(PrivateGroup)
 		lgRouter.InitTemplateRouter(PrivateGroup)
 	}
 

@@ -10,8 +10,8 @@
         tooltip-effect="dark"
         :data="tableData"
         row-key="ID"
-        @selection-change="handleSelectionChange"
         height="800"
+        @selection-change="handleSelectionChange"
       >
         <el-table-column align="left" label="模板名称" prop="templateName" min-width="120px" />
         <el-table-column align="center" label="操作" width="200" fixed="right">
@@ -81,10 +81,7 @@ export default {
 <script setup>
 import {
   createTemplate,
-  deleteTemplate,
-  deleteTemplateByIds,
   updateTemplate,
-  findTemplate,
   getTemplateList
 } from '@/api/lg/template'
 
@@ -92,6 +89,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 import { useUserStore } from '@/pinia/modules/user'
 import { downloadFile } from '@/api/lg/file'
+import { UploadFilled } from '@element-plus/icons-vue'
 
 const path = ref(import.meta.env.VITE_BASE_API)
 
@@ -115,19 +113,6 @@ const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({})
-
-// 重置
-const onReset = () => {
-  searchInfo.value = {}
-  getTableData()
-}
-
-// 搜索
-const onSubmit = () => {
-  page.value = 1
-  pageSize.value = 10
-  getTableData()
-}
 
 // 分页
 const handleSizeChange = (val) => {
@@ -181,64 +166,8 @@ const deleteRow = (row) => {
   })
 }
 
-// 批量删除控制标记
-const deleteVisible = ref(false)
-
-// 多选删除
-const onDelete = async() => {
-  const ids = []
-  if (multipleSelection.value.length === 0) {
-    ElMessage({
-      type: 'warning',
-      message: '请选择要删除的数据'
-    })
-    return
-  }
-  multipleSelection.value &&
-  multipleSelection.value.map(item => {
-    ids.push(item.ID)
-  })
-  const res = await deleteTemplateByIds({ ids })
-  if (res.code === 0) {
-    ElMessage({
-      type: 'success',
-      message: '删除成功'
-    })
-    if (tableData.value.length === ids.length && page.value > 1) {
-      page.value--
-    }
-    deleteVisible.value = false
-    getTableData()
-  }
-}
-
 // 行为控制标记（弹窗内部需要增还是改）
 const type = ref('')
-
-// 更新行
-const updateTemplateFunc = async(row) => {
-  const res = await findTemplate({ ID: row.ID })
-  type.value = 'update'
-  if (res.code === 0) {
-    formData.value = res.data.retemplate
-    dialogFormVisible.value = true
-  }
-}
-
-// 删除行
-const deleteTemplateFunc = async(row) => {
-  const res = await deleteTemplate({ ID: row.ID })
-  if (res.code === 0) {
-    ElMessage({
-      type: 'success',
-      message: '删除成功'
-    })
-    if (tableData.value.length === 1 && page.value > 1) {
-      page.value--
-    }
-    getTableData()
-  }
-}
 
 // 弹窗控制标记
 const dialogFormVisible = ref(false)

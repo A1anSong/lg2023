@@ -15,8 +15,6 @@ func (s *ProjectRouter) InitProjectRouter(Router *gin.RouterGroup) {
 	var projectApi = v1.ApiGroupApp.LgApiGroup.ProjectApi
 	{
 		projectRouter.POST("createProject", projectApi.CreateProject)                // 新建Project
-		projectRouter.DELETE("deleteProject", projectApi.DeleteProject)              // 删除Project
-		projectRouter.DELETE("deleteProjectByIds", projectApi.DeleteProjectByIds)    // 批量删除Project
 		projectRouter.PUT("updateProject", projectApi.UpdateProject)                 // 更新Project
 		projectRouter.PUT("enableProjectByIds", projectApi.EnableProjectByIds)       // 批量上架Project
 		projectRouter.PUT("autoMaticProjectByIds", projectApi.AutoMaticProjectByIds) // 批量自动审批Project

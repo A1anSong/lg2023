@@ -130,7 +130,6 @@ export default {
 </script>
 <script setup>
 import { getSystemConfig, setSystemConfig } from '@/api/system'
-import { emailTest } from '@/api/email'
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import WarningBar from '@/components/warningBar/warningBar.vue'
@@ -168,7 +167,6 @@ const initForm = async() => {
   }
 }
 initForm()
-const reload = () => {}
 const update = async() => {
   const res = await setSystemConfig({ config: config.value })
   if (res.code === 0) {
@@ -177,21 +175,6 @@ const update = async() => {
       message: '配置文件设置成功'
     })
     await initForm()
-  }
-}
-const email = async() => {
-  const res = await emailTest()
-  if (res.code === 0) {
-    ElMessage({
-      type: 'success',
-      message: '邮件发送成功'
-    })
-    await initForm()
-  } else {
-    ElMessage({
-      type: 'error',
-      message: '邮件发送失败'
-    })
   }
 }
 

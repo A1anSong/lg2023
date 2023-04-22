@@ -9,22 +9,6 @@ export const createProject = (data) => {
   })
 }
 
-export const deleteProject = (data) => {
-  return service({
-    url: '/project/deleteProject',
-    method: 'delete',
-    data
-  })
-}
-
-export const deleteProjectByIds = (data) => {
-  return service({
-    url: '/project/deleteProjectByIds',
-    method: 'delete',
-    data
-  })
-}
-
 export const updateProject = (data) => {
   return service({
     url: '/project/updateProject',

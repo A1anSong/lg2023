@@ -2,12 +2,10 @@ package lg
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/lg/nonmigrate"
 	lgReq "github.com/flipped-aurora/gin-vue-admin/server/model/lg/request"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"io"
 	"os"
 )
@@ -48,24 +46,9 @@ func (templateService *TemplateService) CreateTemplate(templateAndFile nonmigrat
 	return err
 }
 
-func (templateService *TemplateService) DeleteTemplate(template lg.Template) (err error) {
-	err = global.GVA_DB.Select(clause.Associations).Delete(&template).Error
-	return err
-}
-
-func (templateService *TemplateService) DeleteTemplateByIds(ids request.IdsReq) (err error) {
-	err = global.GVA_DB.Delete(&[]lg.Template{}, "id in ?", ids.Ids).Error
-	return err
-}
-
 func (templateService *TemplateService) UpdateTemplate(template lg.Template) (err error) {
 	err = global.GVA_DB.Save(&template).Error
 	return err
-}
-
-func (templateService *TemplateService) GetTemplate(id uint) (template lg.Template, err error) {
-	err = global.GVA_DB.Where("id = ?", id).First(&template).Error
-	return
 }
 
 func (templateService *TemplateService) GetTemplateInfoList(info lgReq.TemplateSearch) (list []lg.Template, total int64, err error) {
