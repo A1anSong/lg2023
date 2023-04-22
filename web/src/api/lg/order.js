@@ -1,46 +1,6 @@
 import service from '@/utils/request'
 import { ElMessage } from 'element-plus'
 
-export const createOrder = (data) => {
-  return service({
-    url: '/order/createOrder',
-    method: 'post',
-    data
-  })
-}
-
-export const deleteOrder = (data) => {
-  return service({
-    url: '/order/deleteOrder',
-    method: 'delete',
-    data
-  })
-}
-
-export const deleteOrderByIds = (data) => {
-  return service({
-    url: '/order/deleteOrderByIds',
-    method: 'delete',
-    data
-  })
-}
-
-export const updateOrder = (data) => {
-  return service({
-    url: '/order/updateOrder',
-    method: 'put',
-    data
-  })
-}
-
-export const findOrder = (params) => {
-  return service({
-    url: '/order/findOrder',
-    method: 'get',
-    params
-  })
-}
-
 export const getOrderList = (params) => {
   return service({
     url: '/order/getOrderList',
@@ -76,22 +36,6 @@ export const approveDelay = (data) => {
 export const rejectDelay = (data) => {
   return service({
     url: '/order/rejectDelay',
-    method: 'put',
-    data
-  })
-}
-
-export const approveRefund = (data) => {
-  return service({
-    url: '/order/approveRefund',
-    method: 'put',
-    data
-  })
-}
-
-export const rejectRefund = (data) => {
-  return service({
-    url: '/order/rejectRefund',
     method: 'put',
     data
   })
@@ -202,30 +146,6 @@ const handleExcelError = (res) => {
     a.download = (new Date().getTime()).toString() + '.xlsx'
     a.click()
   }
-}
-
-export const findOrderByNos = (params) => {
-  return service({
-    url: '/order/findOrderByNos',
-    method: 'get',
-    params
-  })
-}
-
-export const requestInvoice = (data) => {
-  return service({
-    url: '/order/requestInvoice',
-    method: 'put',
-    data
-  })
-}
-
-export const queryInvoice = (data) => {
-  return service({
-    url: '/order/queryInvoice',
-    method: 'put',
-    data
-  })
 }
 
 export const assignOrder = (data) => {
