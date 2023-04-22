@@ -44,5 +44,9 @@ func Timer() {
 		if err != nil {
 			fmt.Println("设置每小时自动下架项目失败：", err)
 		}
+		_, err = global.GVA_Timer.AddTaskByFunc("AutoMaticRefundOrder", "* * * * *", lg.AutoMaticRefundOrder)
+		if err != nil {
+			fmt.Println("设置每分钟自动退函失败：", err)
+		}
 	}
 }

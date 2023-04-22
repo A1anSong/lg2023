@@ -94,20 +94,13 @@
       >
         <el-table-column v-auth="btnAuth.operation" align="center" label="操作" min-width="200" fixed="left">
           <template #default="scope">
-            <el-button
-              v-if="scope.row.refund.auditStatus!==2 && scope.row.refund.auditStatus!==3"
-              type="success"
-              icon="select"
-              @click="approveRefundFunc(scope.row)"
-            >通过
-            </el-button>
-            <el-button
-              v-if="scope.row.refund.auditStatus!==2 && scope.row.refund.auditStatus!==3"
-              type="danger"
-              icon="closeBold"
-              @click="rejectRefundFunc(scope.row)"
-            >拒绝
-            </el-button>
+            <el-tag
+              v-if="scope.row.refund.auditStatus===1"
+              type="info"
+              effect="dark"
+              size="large"
+            >已开启自动化退函
+            </el-tag>
             <el-tag
               v-if="scope.row.refund.auditStatus===2"
               type="success"
@@ -358,12 +351,9 @@ export default {
 
 <script setup>
 import {
-  getOrderList,
-  approveRefund,
-  rejectRefund
+  getOrderList
 } from '@/api/lg/order'
 
-import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, computed } from 'vue'
 
 import { date } from '@/utils/lg/date'
@@ -646,40 +636,6 @@ const downloadLetterEncryptFile = (order) => {
   } else {
     downloadFile(order.letter.elogEncryptFile)
   }
-}
-
-const approveRefundFunc = async(apply) => {
-  ElMessageBox.confirm('确定要通过吗?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async() => {
-    const res = await approveRefund(apply)
-    if (res.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '提交成功'
-      })
-      await getTableData()
-    }
-  })
-}
-
-const rejectRefundFunc = async(apply) => {
-  ElMessageBox.confirm('确定要拒绝吗?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async() => {
-    const res = await rejectRefund(apply)
-    if (res.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '提交成功'
-      })
-      await getTableData()
-    }
-  })
 }
 </script>
 

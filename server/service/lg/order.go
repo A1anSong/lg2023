@@ -1665,3 +1665,94 @@ func (orderService *OrderService) ElogValidate(elogValidate lgReq.ElogValidate) 
 		return elogValidateMessage, nil
 	}
 }
+
+func AutoMaticRefundOrder() {
+	var orders []lg.Order
+	err := global.GVA_DB.
+		Joins("left join lg_refund on lg_refund.id = lg_order.refund_id").
+		Joins("left join lg_project on lg_project.id = lg_order.project_id").
+		Where("lg_order.refund_id is not null AND lg_refund.audit_status = 1").
+		Where("? < lg_project.project_open_time", carbon.Now(carbon.Shanghai)).
+		Preload(clause.Associations).
+		Find(&orders).Error
+	if err != nil {
+		return
+	}
+	for _, order := range orders {
+		go RefundOrder(order)
+	}
+}
+
+func RefundOrder(order lg.Order) {
+	err := global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+		auditStatus := int64(2)
+		auditOpinion := "受理成功"
+		auditDate := time.Now().Format("2006-01-02 15:04:05")
+		order.Refund.AuditStatus = &auditStatus
+		order.Refund.AuditOpinion = &auditOpinion
+		order.Refund.AuditDate = &auditDate
+		order.Refund.PayAmount = order.Pay.PayAmount
+		err := tx.Save(&order.Refund).Error
+		if err != nil {
+			return err
+		}
+
+		if global.GVA_CONFIG.Insurance.JRAPIDomain != "" {
+			apiPath := "/jrapi/lg/refundPush"
+			var refundPush = jrclientrequest.RefundPush{
+				OrderNo:      *order.OrderNo,
+				ApplyNo:      *order.Refund.ApplyNo,
+				ElogNo:       *order.Refund.ElogNo,
+				AuditStatus:  *order.Refund.AuditStatus,
+				AuditOpinion: *order.Refund.AuditOpinion,
+				AuditDate:    *order.Refund.AuditDate,
+				PayAmount:    *order.Refund.PayAmount,
+			}
+			req, err := lg2.GenJRRequest(refundPush)
+			if err != nil {
+				return err
+			}
+			var res jrresponse.JRResponse
+			client := resty.New()
+			resp, err := client.R().
+				SetBody(&req).
+				SetResult(&res).
+				Post(global.GVA_CONFIG.Insurance.JRAPIDomain + apiPath)
+			if err != nil {
+				return err
+			}
+			if resp.StatusCode() == http.StatusOK {
+				if res.Code != 0 {
+					err := errors.New(res.Msg)
+					global.GVA_LOG.Error("调用"+apiPath+"失败", zap.Error(err))
+					return err
+				} else {
+					byteEncryptData, err := base64.StdEncoding.DecodeString(res.Data)
+					if err != nil {
+						return err
+					}
+					jsonData, err := lg2.Sm4Decrypt(byteEncryptData)
+					if err != nil {
+						return err
+					}
+					var resData jrclientresponse.Response
+					err = json.Unmarshal([]byte(jsonData), &resData)
+					if err != nil {
+						return err
+					}
+					if resData.ReceiveResult != "success" {
+						global.GVA_LOG.Error("调用"+apiPath+"结果不为success", zap.Error(err))
+						return errors.New("接收结果不为success")
+					}
+				}
+			} else {
+				return errors.New("交易中心响应失败")
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return
+	}
+}
