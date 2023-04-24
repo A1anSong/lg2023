@@ -22,15 +22,15 @@ type Apply struct {
 	ElogTemplateNo      *string  `json:"elogTemplateNo" form:"elogTemplateNo" gorm:"type:varchar(14);"`
 	ElogTemplateName    *string  `json:"elogTemplateName" form:"elogTemplateName" gorm:"type:varchar(256);"`
 	InsuredName         *string  `json:"insuredName" form:"insuredName" gorm:"type:varchar(256);"`
-	InsuredCreditCode   *string  `json:"insuredCreditCode" form:"insuredCreditCode" gorm:"type:varchar(18);"`
+	InsuredCreditCode   *string  `json:"insuredCreditCode" form:"insuredCreditCode" gorm:"type:varchar(64);"`
 	InsuredAddress      *string  `json:"insuredAddress" form:"insuredAddress" gorm:"type:varchar(256);"`
 	InsureName          *string  `json:"insureName" form:"insureName" gorm:"type:varchar(256);"`
-	InsureCreditCode    *string  `json:"insureCreditCode" form:"insureCreditCode" gorm:"type:varchar(18);"`
+	InsureCreditCode    *string  `json:"insureCreditCode" form:"insureCreditCode" gorm:"type:varchar(64);"`
 	InsureLegalName     *string  `json:"insureLegalName" form:"insureLegalName" gorm:"type:varchar(64);"`
-	InsureLegalIdCard   *string  `json:"insureLegalIdCard" form:"insureLegalIdCard" gorm:"type:varchar(18);"`
+	InsureLegalIdCard   *string  `json:"insureLegalIdCard" form:"insureLegalIdCard" gorm:"type:varchar(64);"`
 	InsureAddress       *string  `json:"insureAddress" form:"insureAddress" gorm:"type:varchar(256);"`
 	ApplicantName       *string  `json:"applicantName" form:"applicantName" gorm:"type:varchar(64);"`
-	ApplicantIdCard     *string  `json:"applicantIdCard" form:"applicantIdCard" gorm:"type:varchar(18);"`
+	ApplicantIdCard     *string  `json:"applicantIdCard" form:"applicantIdCard" gorm:"type:varchar(64);"`
 	ApplicantTel        *string  `json:"applicantTel" form:"applicantTel" gorm:"type:varchar(64);"`
 	ApplicantAuthCode   *string  `json:"applicantAuthCode" form:"applicantAuthCode" gorm:"type:varchar(12);"`
 	AttachInfo          *string  `json:"attachInfo" form:"attachInfo" gorm:"type:text;"`
